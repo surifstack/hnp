@@ -1,0 +1,33 @@
+{
+  "common": {
+    "signIn": "साइन इन",
+    "cart": "कार्ट",
+    "contact": "संपर्क",
+    "dashboard": "डैशबोर्ड",
+    "loading": "लोड हो रहा है…",
+    "continue": "जारी रखें",
+    "enterOrder": "ऑर्डर शुरू करें",
+    "chooseProduct": "अपना प्रोडक्ट चुनें",
+    "info": "जानकारी",
+    "orderId": "ऑर्डर आईडी",
+    "makeChanges": "बदलाव करें",
+    "enterAnotherOrder": "नया ऑर्डर"
+  },
+  "order": {
+    "textLockedTitle": "टेक्स्ट (लॉक्ड)",
+    "textLockedSubtitle": "आगे बढ़ने के लिए हर स्टेप अप्रूव करें।",
+    "approve": "अप्रूव",
+    "edit": "एडिट",
+    "finalReview": "फाइनल रिव्यू",
+    "approveAllContinue": "सब अप्रूव करके आगे बढ़ें",
+    "editAny": "कोई भी सेक्शन एडिट करें",
+    "previewTitle": "प्रीव्यू"
+  },
+  "proof": {
+    "title": "प्रूफ",
+    "almostThere": "बस थोड़ा सा!",
+    "createAccountToView": "प्रूफ देखने के लिए अकाउंट बनाएं",
+    "createAccount": "अकाउंट बनाएं",
+    "approveAndOrder": "अप्रूव करें और ऑर्डर करें"
+  }
+}
