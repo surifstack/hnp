@@ -1,5 +1,5 @@
 export const API_BASE_URL =
-  import.meta.env.VITE_API_URL?.toString().trim() || "https://hnp-api.onrender.com/";
+  import.meta.env.VITE_API_URL?.toString().trim() || "https://hnp-api.onrender.com";
 
 export class ApiError extends Error {
   status: number;
