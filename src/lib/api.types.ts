@@ -68,3 +68,53 @@ export interface Order {
   };
   userId?: string;
 }
+
+export interface CheckoutProductSnapshot {
+  slug: ProductSlug;
+  name: string;
+  pricing: Product["pricing"];
+}
+
+export interface CheckoutItemInput {
+  clientItemId: string;
+  productSlug: ProductSlug;
+  product: CheckoutProductSnapshot;
+  quantity: number;
+  colorPms: PmsColor;
+  languageCode: string;
+  titleLines: string[];
+  secondaryLines: string[];
+  labelLines: string[];
+}
+
+export interface CheckoutCustomerInput {
+  name: string;
+  email: string;
+  phone: string;
+  country: string;
+}
+
+export type CheckoutAddressInput = Record<string, string>;
+
+export interface CheckoutRequest {
+  items: CheckoutItemInput[];
+  customer: CheckoutCustomerInput;
+  address: CheckoutAddressInput;
+  otpVerified: boolean;
+  promoCode?: string;
+}
+
+export interface MoneyTotals {
+  subtotal: number;
+  shipping: number;
+  taxes: number;
+  total: number;
+  currency: string;
+}
+
+export interface CheckoutResponse {
+  acceptedAt: string;
+  itemCount: number;
+  orderIds: string[];
+  totals: MoneyTotals;
+}

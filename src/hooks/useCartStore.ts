@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { apiJson } from "@/lib/api";
 import type { Order, Product } from "@/lib/api.types";
+import { cloneOrder } from "@/lib/order-draft";
 
 export type CartItem = {
   orderId: string;
@@ -19,19 +19,22 @@ interface CartState {
   setActive: (orderId: string) => void;
   remove: (orderId: string) => void;
   clear: () => void;
-
-  addOrder: (order: Order) => Promise<void>;
-  addOrderId: (orderId: string) => Promise<void>;
-  refreshItem: (orderId: string) => Promise<void>;
+  addOrder: (order: Order, product?: Product | null) => void;
+  updateQuantity: (orderId: string, quantity: number) => void;
+  upsertOrder: (order: Order, product?: Product | null) => void;
 }
 
 function nowIso() {
   return new Date().toISOString();
 }
 
+function updateMatchingItem(items: CartItem[], orderId: string, updater: (item: CartItem) => CartItem) {
+  return items.map((item) => (item.orderId === orderId ? updater(item) : item));
+}
+
 export const useCartStore = create<CartState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       items: [],
       activeOrderId: null,
       loading: false,
@@ -40,95 +43,73 @@ export const useCartStore = create<CartState>()(
       setActive: (orderId) => set({ activeOrderId: orderId }),
 
       remove: (orderId) =>
-        set((s) => {
-          const next = s.items.filter((i) => i.orderId !== orderId);
-          const activeOrderId =
-            s.activeOrderId === orderId ? (next[0]?.orderId ?? null) : s.activeOrderId;
-          return { items: next, activeOrderId };
+        set((state) => {
+          const next = state.items.filter((item) => item.orderId !== orderId);
+          return {
+            items: next,
+            activeOrderId:
+              state.activeOrderId === orderId ? (next[0]?.orderId ?? null) : state.activeOrderId,
+          };
         }),
 
-      clear: () => set({ items: [], activeOrderId: null }),
+      clear: () => set({ items: [], activeOrderId: null, error: null }),
 
-      addOrder: async (order) => {
-        const existing = get().items.find((i) => i.orderId === order.id);
-        if (existing) {
-          set({ activeOrderId: existing.orderId });
-          return;
-        }
+      addOrder: (order, product = null) =>
+        set((state) => {
+          const existing = state.items.find((item) => item.orderId === order.id);
+          if (existing) {
+            return {
+              items: updateMatchingItem(state.items, order.id, (item) => ({
+                ...item,
+                order: cloneOrder(order),
+                product: product ?? item.product,
+              })),
+              activeOrderId: order.id,
+              error: null,
+            };
+          }
 
-        set({ loading: true, error: null });
-        try {
-          const product = await apiJson<Product>(`/products/${order.productSlug}`);
           const item: CartItem = {
             orderId: order.id,
             addedAt: nowIso(),
-            order,
+            order: cloneOrder(order),
             product,
           };
-          set((s) => ({
-            items: [item, ...s.items],
+          return {
+            items: [item, ...state.items],
             activeOrderId: order.id,
-            loading: false,
-          }));
-        } catch (e) {
-          set({ loading: false, error: e instanceof Error ? e.message : "Failed to add to cart" });
-        }
-      },
-
-      addOrderId: async (orderId) => {
-        const existing = get().items.find((i) => i.orderId === orderId);
-        if (existing) {
-          set({ activeOrderId: existing.orderId });
-          return;
-        }
-
-        set({ loading: true, error: null });
-        try {
-          const order = await apiJson<Order>(`/orders/${orderId}`);
-          const product = await apiJson<Product>(`/products/${order.productSlug}`);
-          const item: CartItem = {
-            orderId,
-            addedAt: nowIso(),
-            order,
-            product,
+            error: null,
           };
-          set((s) => ({
-            items: [item, ...s.items],
-            activeOrderId: orderId,
-            loading: false,
-          }));
-        } catch (e) {
-          set({
-            loading: false,
-            error: e instanceof Error ? e.message : "Failed to load order for cart",
-          });
-        }
-      },
+        }),
 
-      refreshItem: async (orderId) => {
-        const item = get().items.find((i) => i.orderId === orderId);
-        if (!item) return;
-        set({ loading: true, error: null });
-        try {
-          const order = await apiJson<Order>(`/orders/${orderId}`);
-          const product = await apiJson<Product>(`/products/${order.productSlug}`);
-          set((s) => ({
-            items: s.items.map((i) => (i.orderId === orderId ? { ...i, order, product } : i)),
-            loading: false,
-          }));
-        } catch (e) {
-          set({
-            loading: false,
-            error: e instanceof Error ? e.message : "Failed to refresh cart item",
-          });
-        }
-      },
+      updateQuantity: (orderId, quantity) =>
+        set((state) => ({
+          items: updateMatchingItem(state.items, orderId, (item) => ({
+            ...item,
+            order: {
+              ...cloneOrder(item.order),
+              updatedAt: nowIso(),
+              setup: {
+                ...item.order.setup,
+                quantity,
+              },
+            },
+          })),
+        })),
+
+      upsertOrder: (order, product = null) =>
+        set((state) => ({
+          items: updateMatchingItem(state.items, order.id, (item) => ({
+            ...item,
+            order: cloneOrder(order),
+            product: product ?? item.product,
+          })),
+        })),
     }),
     {
       name: "hnp-cart",
-      version: 1,
-      partialize: (s) => ({ items: s.items, activeOrderId: s.activeOrderId }),
+      version: 2,
+      partialize: (state) => ({ items: state.items, activeOrderId: state.activeOrderId }),
     },
   ),
 );
-

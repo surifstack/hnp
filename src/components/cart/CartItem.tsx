@@ -11,6 +11,7 @@ export function CartItems({
   const items = useCartStore((s) => s.items);
   const setActive = useCartStore((s) => s.setActive);
   const remove = useCartStore((s) => s.remove);
+  const updateQuantity = useCartStore((s) => s.updateQuantity);
   const loading = useCartStore((s) => s.loading);
 
   const totals = sumCartTotals(items);
@@ -52,18 +53,39 @@ export function CartItems({
                   isActive ? "border-black" : "border-gray-200"
                 }`}
               >
-                <button
-                  onClick={() => setActive(item.orderId)}
-                  className="text-left flex-1"
-                >
-                  <div className="font-semibold">{name}</div>
+                <div className="flex-1">
+                  <button onClick={() => setActive(item.orderId)} className="text-left w-full">
+                    <div className="font-semibold">{name}</div>
+                  </button>
                   <div className="text-xs text-gray-500">
                     Qty: {item.order.setup.quantity}
+                  </div>
+                  <div className="mt-2 flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        updateQuantity(item.orderId, Math.max(40, item.order.setup.quantity - 40));
+                      }}
+                    >
+                      -
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        updateQuantity(item.orderId, Math.min(400, item.order.setup.quantity + 40));
+                      }}
+                    >
+                      +
+                    </Button>
                   </div>
                   <div className="font-bold">
                     {formatCents(t.total, t.currency)}
                   </div>
-                </button>
+                </div>
 
                 <Button size="sm" variant="outline" onClick={() => remove(item.orderId)}>
                   Remove

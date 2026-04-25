@@ -1,9 +1,7 @@
-import { useEffect } from "react";
 import { Link, useRouter } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { useOrderFlowStore } from "@/hooks/useOrderFlowStore";
-import { useSessionStore } from "@/hooks/useSessionStore";
 import { useTranslation } from "react-i18next";
 import { useCartStore } from "@/hooks/useCartStore";
 import type { Order, PmsColor } from "@/lib/api.types";
@@ -260,19 +258,13 @@ export function ProofPage({ slug }: { slug: string }) {
   const router = useRouter();
   const { t } = useTranslation();
 
-  const userId = useSessionStore((s) => s.userId);
   const order = useOrderFlowStore((s) => s.order);
-  const fetchProofSvg = useOrderFlowStore((s) => s.fetchProofSvg);
+  const product = useOrderFlowStore((s) => s.product);
   const reset = useOrderFlowStore((s) => s.reset);
   const addOrder = useCartStore((s) => s.addOrder);
 
   const loading = useOrderFlowStore((s) => s.loading);
   const error = useOrderFlowStore((s) => s.error);
-
-  useEffect(() => {
-    if (!userId) return;
-    void fetchProofSvg({ userId });
-  }, [fetchProofSvg, userId, order?.id, order?.updatedAt]);
 
   /* ---------------- NO ORDER ---------------- */
   if (!order) {
@@ -296,44 +288,6 @@ export function ProofPage({ slug }: { slug: string }) {
   }
 
   /* ---------------- NOT LOGGED IN ---------------- */
-  if (!userId) {
-    return (
-      <SiteLayout>
-        <div className="mx-auto w-full max-w-xl bg-white rounded-xl p-6 shadow border text-center space-y-4">
-          <h1 className="text-lg font-semibold">
-            {t("proof.createAccount")}
-          </h1>
-
-          <p className="text-sm text-gray-500">
-            {t("proof.createAccountToView")}
-          </p>
-
-          <div className="space-y-2">
-            <Button asChild size="lg" className="w-full bg-black text-white">
-              <Link
-                to="/create-account"
-                search={{ redirect: `/products/${slug}/proof` }}
-              >
-                {t("proof.createAccount")}
-              </Link>
-            </Button>
-
-            <Button asChild size="lg" variant="outline" className="w-full">
-              <Link
-                to="/signin"
-                search={{ redirect: `/products/${slug}/proof` }}
-              >
-                {t("common.signIn")}
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </SiteLayout>
-    );
-  }
-
-  /* ---------------- MAIN UI ---------------- */
-
   return (
     <SiteLayout>
       <div className="mx-auto w-full max-w-5xl space-y-4 pb-28 md:pb-6">
@@ -364,7 +318,7 @@ export function ProofPage({ slug }: { slug: string }) {
             <Link
               to="/cart"
               onClick={() => {
-                void addOrder(order);
+                addOrder(order, product);
               }}
             >
               {t("proof.approveAndOrder") || "Approve & Order"}

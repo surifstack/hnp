@@ -1,17 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { SiteLayout } from "@/components/SiteLayout";
 import { Stepper } from "@/components/cart/Stepper";
 import { StepBasicDetails } from "@/components/cart/StepBasicDetails";
 import { StepOtp } from "@/components/cart/StepOtp";
 import { StepAddress } from "@/components/cart/StepAddress";
 import { StepCheckout } from "@/components/cart/StepCheckout";
-import {
-  initialFormState,
-  type FormState,
-  type Step,
-} from "@/components/cart/types";
 import { useCartStore } from "@/hooks/useCartStore";
+import { useCheckoutFlowStore } from "@/hooks/useCheckoutFlowStore";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/cart")({
@@ -28,24 +24,22 @@ export const Route = createFileRoute("/cart")({
 function Cart() {
   const { orderId } = Route.useSearch();
 
-  const [step, setStep] = useState<Step>(1);
-  const [form, setForm] = useState<FormState>(initialFormState);
-
   const items = useCartStore((s) => s.items);
   const activeOrderId = useCartStore((s) => s.activeOrderId);
   const setActive = useCartStore((s) => s.setActive);
-  const addOrderId = useCartStore((s) => s.addOrderId);
   const loading = useCartStore((s) => s.loading);
+  const step = useCheckoutFlowStore((s) => s.step);
+  const form = useCheckoutFlowStore((s) => s.form);
+  const setStep = useCheckoutFlowStore((s) => s.setStep);
+  const setBasic = useCheckoutFlowStore((s) => s.setBasic);
+  const setAddress = useCheckoutFlowStore((s) => s.setAddress);
+  const setOtpVerified = useCheckoutFlowStore((s) => s.setOtpVerified);
 
   /* ---------------- INIT ORDER ---------------- */
 
-  useEffect(() => {
-    if (!orderId) return;
-    void addOrderId(orderId);
-  }, [addOrderId, orderId]);
-
   const effectiveActiveOrderId = useMemo(() => {
-    return orderId ?? activeOrderId ?? items[0]?.orderId ?? null;
+    const matchingOrderId = orderId && items.some((item) => item.orderId === orderId) ? orderId : null;
+    return matchingOrderId ?? activeOrderId ?? items[0]?.orderId ?? null;
   }, [orderId, activeOrderId, items]);
 
   useEffect(() => {
@@ -91,7 +85,7 @@ function Cart() {
             {step === 1 && (
               <StepBasicDetails
                 value={form.basic}
-                onChange={(basic) => setForm((p) => ({ ...p, basic }))}
+                onChange={setBasic}
                 onNext={() => setStep(2)}
               />
             )}
@@ -101,9 +95,7 @@ function Cart() {
               <StepOtp
                 email={form.basic.email}
                 verified={form.otpVerified}
-                onVerified={() =>
-                  setForm((p) => ({ ...p, otpVerified: true }))
-                }
+                onVerified={() => setOtpVerified(true)}
                 onBack={() => setStep(1)}
                 onNext={() => setStep(3)}
               />
@@ -114,9 +106,7 @@ function Cart() {
               <StepAddress
                 country={form.basic.country}
                 value={form.address}
-                onChange={(address) =>
-                  setForm((p) => ({ ...p, address }))
-                }
+                onChange={setAddress}
                 onBack={() => setStep(2)}
                 onNext={() => setStep(4)}
               />

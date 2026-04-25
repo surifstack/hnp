@@ -1,16 +1,31 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { apiJson, apiText } from "@/lib/api";
-import type { Language, Order, PmsColor, Product } from "@/lib/api.types";
+import { apiJson } from "@/lib/api";
+import {
+  applySetupToOrder,
+  applyTextStep,
+  cloneOrder,
+  createClientOrderDraft,
+  finalizeOrderDraft,
+  splitDraftLines,
+} from "@/lib/order-draft";
+import type { Language, Order, PmsColor, Product, ProductSlug } from "@/lib/api.types";
+import { useCartStore } from "@/hooks/useCartStore";
 
 type TextStep = "title" | "secondary" | "label" | "review";
+
+interface SetupDraft {
+  quantity: number;
+  colorPms: PmsColor;
+  languageCode: string;
+}
 
 interface OrderFlowState {
   productSlug: string | null;
   product: Product | null;
   languages: Language[];
   order: Order | null;
-  setupDraft: { quantity: number; colorPms: PmsColor; languageCode: string } | null;
+  setupDraft: SetupDraft | null;
   activeStep: TextStep;
   draft: {
     title: string;
@@ -21,20 +36,16 @@ interface OrderFlowState {
   loading: boolean;
   error: string | null;
 
-  setSetupDraft: (next: { quantity: number; colorPms: PmsColor; languageCode: string }) => void;
+  setSetupDraft: (next: SetupDraft) => void;
   setDraft: (key: "title" | "secondary" | "label", value: string) => void;
   setActiveStep: (step: TextStep) => void;
   reset: () => void;
 
   loadProduct: (slug: string) => Promise<void>;
   loadOrder: (id: string) => Promise<void>;
-  startOrder: (slug: string) => Promise<Order | null>;
+  startOrder: (slug: ProductSlug) => Promise<Order | null>;
   refreshOrder: () => Promise<void>;
-  updateSetup: (setup: {
-    quantity: number;
-    colorPms: PmsColor;
-    languageCode: string;
-  }) => Promise<void>;
+  updateSetup: (setup: SetupDraft) => Promise<void>;
 
   approveTitle: () => Promise<void>;
   approveSecondary: () => Promise<void>;
@@ -43,12 +54,16 @@ interface OrderFlowState {
   fetchProofSvg: (opts: { userId: string | null }) => Promise<"ok" | "need-account">;
 }
 
-function splitLines(text: string, maxLines: number) {
-  return text
-    .split("\n")
-    .map((l) => l.trim())
-    .filter(Boolean)
-    .slice(0, maxLines);
+function draftFromOrder(order: Order) {
+  return {
+    title: order.text.titleLines.join("\n"),
+    secondary: order.text.secondaryLines.join("\n"),
+    label: order.text.labelLines.join("\n"),
+  };
+}
+
+function defaultSetup(order: Order): SetupDraft {
+  return { ...order.setup };
 }
 
 export const useOrderFlowStore = create<OrderFlowState>()(
@@ -65,8 +80,15 @@ export const useOrderFlowStore = create<OrderFlowState>()(
       loading: false,
       error: null,
 
-      setSetupDraft: (next) => set({ setupDraft: next }),
-      setDraft: (key, value) => set((s) => ({ draft: { ...s.draft, [key]: value } })),
+      setSetupDraft: (next) => {
+        const order = get().order;
+        set({
+          setupDraft: next,
+          order: order ? applySetupToOrder(order, next) : order,
+        });
+      },
+
+      setDraft: (key, value) => set((state) => ({ draft: { ...state.draft, [key]: value } })),
       setActiveStep: (step) => set({ activeStep: step }),
 
       reset: () =>
@@ -83,7 +105,7 @@ export const useOrderFlowStore = create<OrderFlowState>()(
           error: null,
         }),
 
-      loadProduct: async (slug: string) => {
+      loadProduct: async (slug) => {
         set({ loading: true, error: null, productSlug: slug });
         try {
           const [product, languages] = await Promise.all([
@@ -91,214 +113,158 @@ export const useOrderFlowStore = create<OrderFlowState>()(
             apiJson<Language[]>(`/products/${slug}/languages`),
           ]);
           set({ product, languages, loading: false });
-        } catch (e) {
+        } catch (error) {
           set({
             loading: false,
-            error: e instanceof Error ? e.message : "Failed to load product",
+            error: error instanceof Error ? error.message : "Failed to load product",
             product: null,
             languages: [],
           });
         }
       },
 
-      loadOrder: async (id: string) => {
-        set({ loading: true, error: null });
-        try {
-          const order = await apiJson<Order>(`/orders/${id}`);
-          const [product, languages] = await Promise.all([
-            apiJson<Product>(`/products/${order.productSlug}`),
-            apiJson<Language[]>(`/products/${order.productSlug}/languages`),
-          ]);
-
-          set({
-            order,
-            setupDraft: { ...order.setup },
-            productSlug: order.productSlug,
-            product,
-            languages,
-            loading: false,
-          });
-        } catch (e) {
-          set({
-            loading: false,
-            error: e instanceof Error ? e.message : "Failed to load order",
-          });
+      loadOrder: async (id) => {
+        const item = useCartStore.getState().items.find((entry) => entry.orderId === id);
+        if (!item) {
+          set({ error: "Cart item not found" });
+          return;
         }
+
+        const order = cloneOrder(item.order);
+        set({
+          order,
+          productSlug: order.productSlug,
+          product: item.product,
+          setupDraft: defaultSetup(order),
+          draft: draftFromOrder(order),
+          activeStep: order.approvals.final ? "review" : "title",
+          error: null,
+        });
       },
 
-      startOrder: async (slug: string) => {
-        set({ loading: true, error: null, proofSvg: null, productSlug: slug });
-        try {
-          const order = await apiJson<Order>("/orders", {
-            method: "POST",
-            body: JSON.stringify({ productSlug: slug }),
-          });
-          set({
-            order,
-            setupDraft: { ...order.setup },
-            activeStep: "title",
-            draft: { title: "", secondary: "", label: "" },
-            loading: false,
-          });
-          return order;
-        } catch (e) {
-          set({
-            loading: false,
-            error: e instanceof Error ? e.message : "Failed to create order",
-          });
-          return null;
+      startOrder: async (slug) => {
+        const current = get().order;
+        if (current?.productSlug === slug) {
+          return current;
         }
+
+        const order = createClientOrderDraft(slug);
+        set({
+          productSlug: slug,
+          order,
+          setupDraft: defaultSetup(order),
+          activeStep: "title",
+          draft: { title: "", secondary: "", label: "" },
+          proofSvg: null,
+          error: null,
+        });
+        return order;
       },
 
       refreshOrder: async () => {
         const id = get().order?.id;
         if (!id) return;
-        set({ loading: true, error: null });
-        try {
-          const order = await apiJson<Order>(`/orders/${id}`);
-          set({ order, setupDraft: { ...order.setup }, loading: false });
-        } catch (e) {
-          set({
-            loading: false,
-            error: e instanceof Error ? e.message : "Failed to refresh order",
-          });
-        }
+        const item = useCartStore.getState().items.find((entry) => entry.orderId === id);
+        if (!item) return;
+
+        const order = cloneOrder(item.order);
+        set({
+          order,
+          setupDraft: defaultSetup(order),
+          draft: draftFromOrder(order),
+        });
       },
 
       updateSetup: async (setup) => {
-        const id = get().order?.id;
-        if (!id) return;
-        set({ loading: true, error: null });
-        try {
-          const order = await apiJson<Order>(`/orders/${id}/setup`, {
-            method: "PATCH",
-            body: JSON.stringify(setup),
-          });
-          set({ order, setupDraft: { ...order.setup }, loading: false });
-        } catch (e) {
-          set({
-            loading: false,
-            error: e instanceof Error ? e.message : "Failed to update setup",
-          });
-        }
+        const order = get().order;
+        if (!order) return;
+        set({
+          error: null,
+          setupDraft: setup,
+          order: applySetupToOrder(order, setup),
+        });
       },
 
       approveTitle: async () => {
         const { order, draft } = get();
         if (!order) return;
-        set({ loading: true, error: null });
-        try {
-          const lines = splitLines(draft.title, 2);
-          await apiJson<Order>(`/orders/${order.id}/text/title`, {
-            method: "PUT",
-            body: JSON.stringify({ lines }),
-          });
-          const approved = await apiJson<Order>(`/orders/${order.id}/approve/title`, {
-            method: "POST",
-          });
-          set({ order: approved, loading: false, activeStep: "secondary" });
-        } catch (e) {
-          set({
-            loading: false,
-            error: e instanceof Error ? e.message : "Failed to approve title",
-          });
+        const lines = splitDraftLines(draft.title, 2);
+        if (lines.length === 0) {
+          set({ error: "Title is required" });
+          return;
         }
+
+        set({
+          error: null,
+          order: applyTextStep(order, "title", lines),
+          activeStep: "secondary",
+        });
       },
 
       approveSecondary: async () => {
         const { order, draft } = get();
         if (!order) return;
-        set({ loading: true, error: null });
-        try {
-          const lines = splitLines(draft.secondary, 3);
-          await apiJson<Order>(`/orders/${order.id}/text/secondary`, {
-            method: "PUT",
-            body: JSON.stringify({ lines }),
-          });
-          const approved = await apiJson<Order>(`/orders/${order.id}/approve/secondary`, {
-            method: "POST",
-          });
-          set({ order: approved, loading: false, activeStep: "label" });
-        } catch (e) {
-          set({
-            loading: false,
-            error: e instanceof Error ? e.message : "Failed to approve secondary title",
-          });
+        const lines = splitDraftLines(draft.secondary, 3);
+        if (lines.length === 0) {
+          set({ error: "Secondary text is required" });
+          return;
         }
+
+        set({
+          error: null,
+          order: applyTextStep(order, "secondary", lines),
+          activeStep: "label",
+        });
       },
 
       approveLabel: async () => {
         const { order, draft } = get();
         if (!order) return;
-        set({ loading: true, error: null });
-        try {
-          const lines = splitLines(draft.label, 2);
-          await apiJson<Order>(`/orders/${order.id}/text/label`, {
-            method: "PUT",
-            body: JSON.stringify({ lines }),
-          });
-          const approved = await apiJson<Order>(`/orders/${order.id}/approve/label`, {
-            method: "POST",
-          });
-          set({ order: approved, loading: false, activeStep: "review" });
-        } catch (e) {
-          set({
-            loading: false,
-            error: e instanceof Error ? e.message : "Failed to approve label text",
-          });
+        const lines = splitDraftLines(draft.label, 2);
+        if (lines.length === 0) {
+          set({ error: "Label text is required" });
+          return;
         }
+
+        set({
+          error: null,
+          order: applyTextStep(order, "label", lines),
+          activeStep: "review",
+        });
       },
 
       approveAll: async () => {
         const order = get().order;
         if (!order) return;
-        set({ loading: true, error: null });
-        try {
-          const next = await apiJson<Order>(`/orders/${order.id}/approve-all`, { method: "POST" });
-          set({ order: next, loading: false });
-        } catch (e) {
-          set({
-            loading: false,
-            error: e instanceof Error ? e.message : "Failed to approve all",
-          });
+        if (!order.approvals.title || !order.approvals.secondary || !order.approvals.label) {
+          set({ error: "Approve all text sections before continuing" });
+          return;
         }
+
+        set({
+          error: null,
+          order: finalizeOrderDraft(order),
+          activeStep: "review",
+        });
       },
 
-      fetchProofSvg: async ({ userId }) => {
-        const order = get().order;
-        if (!order || !userId) return "need-account";
-        set({ loading: true, error: null });
-        try {
-          const svg = await apiText(`/orders/${order.id}/proof.svg`, {
-            headers: { "x-user-id": userId },
-          });
-          set({ proofSvg: svg, loading: false });
-          return "ok";
-        } catch (e) {
-          set({
-            loading: false,
-            error: e instanceof Error ? e.message : "Failed to load proof",
-          });
-          return "need-account";
-        }
+      fetchProofSvg: async () => {
+        set({ proofSvg: null, error: null });
+        return "ok";
       },
     }),
     {
       name: "hnp-order-flow",
-      version: 1,
-      partialize: (s) => ({
-        productSlug: s.productSlug,
-        order: s.order,
-        setupDraft: s.setupDraft,
-        activeStep: s.activeStep,
-        draft: s.draft,
+      version: 2,
+      partialize: (state) => ({
+        productSlug: state.productSlug,
+        product: state.product,
+        languages: state.languages,
+        order: state.order,
+        setupDraft: state.setupDraft,
+        activeStep: state.activeStep,
+        draft: state.draft,
       }),
-      onRehydrateStorage: () => (state) => {
-        if (state?.order?.id) {
-          // Refresh silently; ignore errors.
-          void state.refreshOrder();
-        }
-      },
     },
   ),
 );

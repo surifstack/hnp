@@ -15,6 +15,7 @@ export function CartSheet({
   const activeOrderId = useCartStore((s) => s.activeOrderId);
   const setActive = useCartStore((s) => s.setActive);
   const remove = useCartStore((s) => s.remove);
+  const updateQuantity = useCartStore((s) => s.updateQuantity);
   const clear = useCartStore((s) => s.clear);
   const loading = useCartStore((s) => s.loading);
   const error = useCartStore((s) => s.error);
@@ -71,6 +72,32 @@ export function CartSheet({
                             <span>Qty: {qty}</span>
                             <span>•</span>
                             <span>Color: {color}</span>
+                          </div>
+                          <div className="mt-2 flex gap-2">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                updateQuantity(item.orderId, Math.max(40, qty - 40));
+                              }}
+                            >
+                              -
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                updateQuantity(item.orderId, Math.min(400, qty + 40));
+                              }}
+                            >
+                              +
+                            </Button>
                           </div>
                           <div className="mt-2 text-sm font-bold">
                             {formatCents(t.total, t.currency)}

@@ -6,12 +6,12 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { apiJson } from "@/lib/api";
 import { useSessionStore } from "@/hooks/useSessionStore";
-import { useOrderFlowStore } from "@/hooks/useOrderFlowStore";
-import { skuForSelection } from "@/lib/sku";
+import { useCartStore } from "@/hooks/useCartStore";
 import type { FormState } from "./types";
 import { COUNTRY_ADDRESS_FIELDS } from "./types";
 import { basicDetailsSchema, buildAddressSchema } from "./validation";
 import { CartItems } from "@/components/cart/CartItem";
+import type { CheckoutRequest, CheckoutResponse } from "@/lib/api.types";
 
 interface Props {
   state: FormState;
@@ -19,33 +19,34 @@ interface Props {
   onBack: () => void;
 }
 
-type PaymentIntentResp = {
-  totals: { subtotal: number; shipping: number; taxes: number; total: number; currency: string };
-  stripe: { paymentIntentId: string; clientSecret?: string };
-};
-
 export function StepCheckout({ state, orderId, onBack }: Props) {
   const [submitted, setSubmitted] = useState(false);
-  const [payment, setPayment] = useState<PaymentIntentResp | null>(null);
+  const [checkout, setCheckout] = useState<CheckoutResponse | null>(null);
 
   const [promo, setPromo] = useState("");
   const [promoApplied, setPromoApplied] = useState<string | null>(null);
 
   const userId = useSessionStore((s) => s.userId);
-  const loadOrder = useOrderFlowStore((s) => s.loadOrder);
-  const storeOrderId = useOrderFlowStore((s) => s.order?.id);
-  const orderLoading = useOrderFlowStore((s) => s.loading);
+  const items = useCartStore((s) => s.items);
+  const activeOrderId = useCartStore((s) => s.activeOrderId);
+  const setActive = useCartStore((s) => s.setActive);
 
-  const effectiveOrderId = orderId ?? storeOrderId;
+  const effectiveOrderId = orderId ?? activeOrderId;
 
   useEffect(() => {
     if (!effectiveOrderId) return;
-    if (storeOrderId === effectiveOrderId) return;
-    void loadOrder(effectiveOrderId);
-  }, [effectiveOrderId, loadOrder, storeOrderId]);
+    if (activeOrderId === effectiveOrderId) return;
+    setActive(effectiveOrderId);
+  }, [activeOrderId, effectiveOrderId, setActive]);
 
   const missing = useMemo(() => {
     const issues: string[] = [];
+    if (items.length === 0) {
+      issues.push("Cart is empty");
+    }
+    if (items.some((item) => !item.product)) {
+      issues.push("One or more cart items are missing product data");
+    }
     if (!basicDetailsSchema.safeParse(state.basic).success) {
       issues.push("Basic details are incomplete");
     }
@@ -60,13 +61,46 @@ export function StepCheckout({ state, orderId, onBack }: Props) {
     }
 
     return issues;
-  }, [state]);
+  }, [items, state]);
+
+  const checkoutPayload = useMemo<CheckoutRequest | null>(() => {
+    if (items.length === 0) return null;
+
+    return {
+      items: items
+        .filter((item) => item.product)
+        .map((item) => ({
+          clientItemId: item.orderId,
+          productSlug: item.order.productSlug,
+          product: {
+            slug: item.product!.slug,
+            name: item.product!.name,
+            pricing: item.product!.pricing,
+          },
+          quantity: item.order.setup.quantity,
+          colorPms: item.order.setup.colorPms,
+          languageCode: item.order.setup.languageCode,
+          titleLines: item.order.text.titleLines,
+          secondaryLines: item.order.text.secondaryLines,
+          labelLines: item.order.text.labelLines,
+        })),
+      customer: {
+        name: state.basic.name,
+        email: state.basic.email,
+        phone: state.basic.phone,
+        country: state.basic.country,
+      },
+      address: state.address,
+      otpVerified: state.otpVerified,
+      promoCode: promoApplied ?? undefined,
+    };
+  }, [items, promoApplied, state.address, state.basic, state.otpVerified]);
 
   const placeOrder = () => {
-    if (missing.length > 0) return;
+    if (missing.length > 0 || !checkoutPayload) return;
 
     if (!userId) {
-      toast.error("Please sign in to pay");
+      toast.error("Please sign in to submit your order");
       return;
     }
 
@@ -74,18 +108,19 @@ export function StepCheckout({ state, orderId, onBack }: Props) {
 
     void (async () => {
       try {
-        const resp = await apiJson<PaymentIntentResp>(
-          `/orders/${effectiveOrderId}/payment/intent`,
+        const resp = await apiJson<CheckoutResponse>(
+          "/orders/checkout",
           {
             method: "POST",
             headers: { "x-user-id": userId },
+            body: JSON.stringify(checkoutPayload),
           }
         );
 
-        setPayment(resp);
-        toast.success("PaymentIntent created");
+        setCheckout(resp);
+        toast.success("Order submitted successfully");
       } catch (e) {
-        toast.error(e instanceof Error ? e.message : "Payment failed");
+        toast.error(e instanceof Error ? e.message : "Checkout failed");
       } finally {
         setSubmitted(false);
       }
@@ -102,7 +137,7 @@ export function StepCheckout({ state, orderId, onBack }: Props) {
     toast.success("Promo code applied");
   };
 
-  if (!effectiveOrderId) {
+  if (!effectiveOrderId && items.length === 0) {
     return (
       <section className="bg-white rounded-2xl p-6 shadow border text-center space-y-3">
         <h2 className="text-lg font-bold uppercase">Cart is empty</h2>
@@ -136,13 +171,8 @@ export function StepCheckout({ state, orderId, onBack }: Props) {
 
       {/* CART ITEMS (WITH TOTALS INSIDE) */}
       <section className="bg-white rounded-2xl p-5 shadow border space-y-3">
-        <h2 className="text-lg font-bold uppercase">Selected product</h2>
-
-        {orderLoading && (
-          <p className="text-sm text-gray-500">Loading your order…</p>
-        )}
-
-        <CartItems effectiveActiveOrderId={orderId as string} />
+        <h2 className="text-lg font-bold uppercase">Selected products</h2>
+        <CartItems effectiveActiveOrderId={effectiveOrderId ?? null} />
       </section>
 
       {/* ORDER DETAILS */}
@@ -193,20 +223,25 @@ export function StepCheckout({ state, orderId, onBack }: Props) {
 
       {/* PAYMENT */}
       <section className="bg-white rounded-2xl p-5 shadow border">
-        <h2 className="text-lg font-bold uppercase mb-2">Payment</h2>
+        <h2 className="text-lg font-bold uppercase mb-2">Checkout submission</h2>
 
         <p className="text-sm text-gray-500">
-          Secure payment powered by Stripe.
+          Submit the full persisted cart to the backend in one validated request.
         </p>
 
         <div className="mt-3 p-4 border-dashed border text-center text-sm">
-          Stripe placeholder
+          Backend checkout payload preview
 
-          {payment?.stripe?.paymentIntentId && (
-            <p className="text-xs mt-2">
-              {payment.stripe.paymentIntentId}
-            </p>
-          )}
+          {checkout?.orderIds?.length ? (
+            <>
+              <p className="text-xs mt-2">
+                Saved orders: {checkout.orderIds.join(", ")}
+              </p>
+              <p className="text-xs mt-1">
+                Total: {(checkout.totals.total / 100).toFixed(2)} {checkout.totals.currency.toUpperCase()}
+              </p>
+            </>
+          ) : null}
         </div>
       </section>
 
@@ -219,9 +254,9 @@ export function StepCheckout({ state, orderId, onBack }: Props) {
         <Button
           onClick={placeOrder}
           className="flex-1 font-bold uppercase"
-          disabled={missing.length > 0 || submitted}
+          disabled={missing.length > 0 || submitted || !checkoutPayload}
         >
-          {submitted ? "Working…" : "Pay now"}
+          {submitted ? "Working…" : "Submit order"}
         </Button>
       </div>
     </div>

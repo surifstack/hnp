@@ -1,12 +1,5 @@
 import type { CartItem } from "@/hooks/useCartStore";
-
-export type MoneyTotals = {
-  subtotal: number;
-  shipping: number;
-  taxes: number;
-  total: number;
-  currency: string;
-};
+import type { MoneyTotals } from "@/lib/api.types";
 
 export function estimateItemTotals(item: CartItem): MoneyTotals {
   const product = item.product;
@@ -45,4 +38,3 @@ export function formatCents(cents: number, currency: string) {
   const value = (cents / 100).toFixed(2);
   return `${value} ${currency.toUpperCase()}`;
 }
-
