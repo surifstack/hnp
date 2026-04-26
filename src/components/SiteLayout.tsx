@@ -41,27 +41,29 @@ export function SiteLayout({
         backgroundRepeat: "no-repeat",
       }}
     >
-      {/* Top bar */}
-      <header className="w-full px-4 pt-4 pb-3 sm:px-6">
+      {/* Header */}
+      <header className="w-full px-3 pt-4 pb-3 sm:px-6">
         <div className="mx-auto w-full max-w-6xl">
-          <div className="flex items-center justify-between gap-2 mb-3">
+          {/* Top Bar */}
+          <div className="flex items-center justify-between gap-3 mb-4">
             <Link
               to="/signin"
-              className="flex items-center gap-1 text-xs font-bold uppercase tracking-wide bg-black text-white px-3 py-1.5 rounded-full"
+              className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide bg-black text-white px-4 py-2 rounded-full whitespace-nowrap"
             >
-              <User className="h-3.5 w-3.5" />
+              <User className="h-4 w-4" />
               {t("common.signIn")}
             </Link>
+
             <CartSheet
               trigger={
                 <button
                   type="button"
-                  className="flex items-center gap-1 text-xs font-bold uppercase tracking-wide bg-black text-white px-3 py-1.5 rounded-full"
+                  className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide bg-black text-white px-4 py-2 rounded-full whitespace-nowrap"
                 >
-                  <ShoppingCart className="h-3.5 w-3.5" />
+                  <ShoppingCart className="h-4 w-4" />
                   {t("common.cart")}
                   {cartCount > 0 && (
-                    <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-white px-1.5 text-[10px] font-extrabold text-black">
+                    <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-white px-1.5 text-xs font-extrabold text-black">
                       {cartCount}
                     </span>
                   )}
@@ -70,37 +72,40 @@ export function SiteLayout({
             />
           </div>
 
-          {/* Logo centered */}
-          <Link to="/" className="block mx-auto w-full max-w-md">
-            <img src={logo} alt="Hot Neon Posters" className="w-full h-auto" />
+          {/* Logo */}
+          <Link to="/" className="block mx-auto text-center">
+            <img
+              src={logo}
+              alt="Hot Neon Posters"
+className="w-52 sm:w-64 md:w-80 lg:w-[420px] xl:w-[520px] mx-auto h-auto"            />
           </Link>
 
-          {/* Product tab */}
+          {/* Tabs */}
           {showTabs && (
-            <nav className="mt-4">
-              <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:justify-center">
+            <nav className="mt-5">
+              <div className="flex justify-center sm:justify-center gap-3 overflow-x-auto pb-2 px-1 snap-x snap-mandatory">
                 <Link
                   to="/products"
-                  className="shrink-0 px-4 py-2 text-xs font-extrabold uppercase tracking-widest bg-white/90 text-black rounded-full border-2 border-black shadow"
-                 
+                  className="shrink-0 snap-start px-4 py-2 text-xs sm:text-sm font-bold uppercase tracking-widest bg-[var(--neon-green)] text-black rounded-full border-2 border-black shadow-md active:scale-95 transition-transform whitespace-nowrap"
                 >
                   {t("common.products", { defaultValue: "Products" })}
                 </Link>
-            
               </div>
             </nav>
           )}
         </div>
       </header>
 
-      {/* Page content */}
-      <main className="flex-1 px-4 py-4 sm:px-6">
-        <div className="mx-auto w-full max-w-6xl">{children}</div>
+      {/* Main Content */}
+      <main className="flex-1 px-3 py-3 sm:px-6">
+        <div className="mx-auto w-full max-w-6xl">
+          {children}
+        </div>
       </main>
 
       {/* Footer */}
-      <footer className="w-full px-4 py-4 mt-6 sm:px-6">
-        <div className="mx-auto w-full max-w-6xl flex justify-between items-center text-[10px] uppercase tracking-widest font-semibold">
+      <footer className="w-full px-3 py-4 mt-6 sm:px-6">
+        <div className="mx-auto w-full max-w-6xl flex justify-between items-center text-xs sm:text-sm uppercase tracking-widest font-semibold">
           <Link to="/contact" className="text-black hover:underline">
             {t("common.contact")}
           </Link>
@@ -110,8 +115,9 @@ export function SiteLayout({
         </div>
       </footer>
 
+      {/* Language Switcher */}
       {showLanguageSwitcher && (
-        <div className="fixed bottom-4 right-4 z-50">
+        <div className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
           <LanguageSwitcher />
         </div>
       )}
