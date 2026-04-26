@@ -2,9 +2,11 @@ import promoVideo from "/HNP_video_COMPRESSED.mp4";
 import { Link } from "@tanstack/react-router";
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export function VideoBlock() {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const { t } = useTranslation();
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
@@ -50,14 +52,16 @@ export function VideoBlock() {
     <section className="w-full flex justify-center items-center min-h-[70vh] px-3 py-4">
       
       {/* Responsive container */}
-<div className="w-full max-w-md sm:max-w-2xl lg:max-w-4xl mx-auto flex justify-center rounded-none sm:rounded-3xl bg-transparent sm:bg-black/90 p-0 sm:p-8 lg:p-10 shadow-none sm:shadow-2xl ring-0 sm:ring-1 sm:ring-white/10">        {/* Video wrapper */}
-        <div className="relative aspect-[9/16] w-full max-h-[75vh] sm:max-h-[85vh] mx-auto rounded-none sm:rounded-2xl overflow-hidden">
+      <div className="w-full max-w-md sm:max-w-2xl lg:max-w-4xl mx-auto flex justify-center rounded-none sm:rounded-3xl bg-transparent sm:bg-black/90 p-0 sm:p-8 lg:p-10 shadow-none sm:shadow-2xl ring-0 sm:ring-1 sm:ring-white/10">
 
-          {/* VIDEO */}
+        {/* Video wrapper (keeps correct ratio) */}
+        <div className="relative aspect-[9/16] w-full max-h-[90vh] mx-auto rounded-none sm:rounded-2xl overflow-hidden bg-black">
+
+          {/* VIDEO (FIXED: no crop) */}
           <video
             ref={videoRef}
             src={promoVideo}
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-contain"
             muted={isMuted}
             playsInline
             onClick={togglePlay}
@@ -75,10 +79,10 @@ export function VideoBlock() {
             }}
           />
 
-          {/* OVERLAY */}
+          {/* Overlay gradient */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/60 pointer-events-none" />
 
-          {/* PLAY BUTTON */}
+          {/* Play button */}
           {!isPlaying && !showOrderNow && (
             <button
               type="button"
@@ -94,13 +98,13 @@ export function VideoBlock() {
           {/* CTA */}
           {showOrderNow && (
             <div className="absolute inset-0 flex flex-col items-center justify-end pb-6 gap-3 bg-black/40">
-
               <Link
                 to="/products"
                 className="w-[80%] text-center py-3 rounded-full bg-[var(--neon-green)] text-black text-base font-extrabold uppercase tracking-widest shadow-xl active:scale-95 transition"
                 onClick={(e) => e.stopPropagation()}
               >
-                Order Now
+                {t("common.orderNow", { defaultValue: "Order Now" })}
+
               </Link>
 
               <button
@@ -109,12 +113,13 @@ export function VideoBlock() {
                 className="text-white text-xs font-bold uppercase tracking-widest flex items-center gap-2 opacity-80 active:scale-95 transition"
               >
                 <RotateCcw className="w-4 h-4" />
-                Replay
+                                  {t("common.replay", { defaultValue: "Replay" })}
+
               </button>
             </div>
           )}
 
-          {/* MUTE */}
+          {/* Mute button */}
           <button
             type="button"
             onClick={toggleMute}
@@ -127,14 +132,15 @@ export function VideoBlock() {
             )}
           </button>
 
-          {/* PROGRESS */}
+          {/* Progress bar */}
           <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
             <div
               className="h-full bg-[var(--neon-green)]"
-              style={{ width: `${Math.min(100, Math.max(0, progress * 100))}%` }}
+              style={{
+                width: `${Math.min(100, Math.max(0, progress * 100))}%`,
+              }}
             />
           </div>
-
         </div>
       </div>
     </section>

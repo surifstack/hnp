@@ -149,7 +149,7 @@ export function TextApprovalFlowPage({ slug }: { slug: string }) {
               router.navigate({ to: "/products/$slug/order", params: { slug } })
             }
           >
-            Go to setup
+            {t("order.backToProduct")}
           </Button>
         </div>
       </SiteLayout>
@@ -175,10 +175,10 @@ export function TextApprovalFlowPage({ slug }: { slug: string }) {
         {/* Progress */}
         <div className="space-y-2">
           <div className="flex justify-between text-xs font-semibold uppercase">
-            <span className={titleApproved ? "text-green-500" : ""}>Title</span>
-            <span className={secondaryApproved ? "text-green-500" : "text-gray-400"}>Secondary</span>
-            <span className={labelApproved ? "text-green-500" : "text-gray-400"}>Label</span>
-            <span className={allApproved ? "text-green-500" : "text-gray-400"}>Done</span>
+            <span className={titleApproved ? "text-green-500" : ""}>{t("order.title")}</span>
+            <span className={secondaryApproved ? "text-green-500" : "text-gray-400"}>{t("order.secondary")}</span>
+            <span className={labelApproved ? "text-green-500" : "text-gray-400"}>{t("order.label")}</span>
+            <span className={allApproved ? "text-green-500" : "text-gray-400"}>{t("order.done")}</span>
           </div>
 
           <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -254,17 +254,17 @@ export function TextApprovalFlowPage({ slug }: { slug: string }) {
 
             <div className="space-y-4 text-sm">
               <div className="p-3 rounded-lg bg-gray-50">
-                <p className="text-gray-400 text-xs">Title</p>
+                <p className="text-gray-400 text-xs">{t("order.title")}</p>
                 <p className="font-semibold">{draft.title || "—"}</p>
               </div>
 
               <div className="p-3 rounded-lg bg-gray-50">
-                <p className="text-gray-400 text-xs">Secondary</p>
+                <p className="text-gray-400 text-xs">{t("order.secondary")}</p>
                 <p>{draft.secondary || "—"}</p>
               </div>
 
               <div className="p-3 rounded-lg bg-gray-50">
-                <p className="text-gray-400 text-xs">Label</p>
+                <p className="text-gray-400 text-xs">{t("order.label")}</p>
                 <p>{draft.label || "—"}</p>
               </div>
             </div>

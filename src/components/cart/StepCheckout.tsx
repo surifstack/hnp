@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { apiJson } from "@/lib/api";
 import { useSessionStore } from "@/hooks/useSessionStore";
 import { useCartStore } from "@/hooks/useCartStore";
+import { useTranslation } from "react-i18next";
 import type { FormState } from "./types";
 import { COUNTRY_ADDRESS_FIELDS } from "./types";
 import { basicDetailsSchema, buildAddressSchema } from "./validation";
@@ -20,6 +21,8 @@ interface Props {
 }
 
 export function StepCheckout({ state, orderId, onBack }: Props) {
+  const { t } = useTranslation();
+
   const [submitted, setSubmitted] = useState(false);
   const [checkout, setCheckout] = useState<CheckoutResponse | null>(null);
 
@@ -41,16 +44,22 @@ export function StepCheckout({ state, orderId, onBack }: Props) {
 
   const missing = useMemo(() => {
     const issues: string[] = [];
+
     if (items.length === 0) {
-      issues.push("Cart is empty");
+      issues.push(t("cart.cartEmptyTitle"));
     }
+
     if (items.some((item) => !item.product)) {
       issues.push("One or more cart items are missing product data");
     }
+
     if (!basicDetailsSchema.safeParse(state.basic).success) {
       issues.push("Basic details are incomplete");
     }
-    if (!state.otpVerified) issues.push("Email is not verified");
+
+    if (!state.otpVerified) {
+      issues.push("Email is not verified");
+    }
 
     const fields = COUNTRY_ADDRESS_FIELDS[state.basic.country] ?? [];
     if (
@@ -61,7 +70,7 @@ export function StepCheckout({ state, orderId, onBack }: Props) {
     }
 
     return issues;
-  }, [items, state]);
+  }, [items, state, t]);
 
   const checkoutPayload = useMemo<CheckoutRequest | null>(() => {
     if (items.length === 0) return null;
@@ -94,13 +103,13 @@ export function StepCheckout({ state, orderId, onBack }: Props) {
       otpVerified: state.otpVerified,
       promoCode: promoApplied ?? undefined,
     };
-  }, [items, promoApplied, state.address, state.basic, state.otpVerified]);
+  }, [items, promoApplied, state]);
 
   const placeOrder = () => {
     if (missing.length > 0 || !checkoutPayload) return;
 
     if (!userId) {
-      toast.error("Please sign in to submit your order");
+      toast.error(t("cart.signInRequired"));
       return;
     }
 
@@ -108,19 +117,16 @@ export function StepCheckout({ state, orderId, onBack }: Props) {
 
     void (async () => {
       try {
-        const resp = await apiJson<CheckoutResponse>(
-          "/orders/checkout",
-          {
-            method: "POST",
-            headers: { "x-user-id": userId },
-            body: JSON.stringify(checkoutPayload),
-          }
-        );
+        const resp = await apiJson<CheckoutResponse>("/orders/checkout", {
+          method: "POST",
+          headers: { "x-user-id": userId },
+          body: JSON.stringify(checkoutPayload),
+        });
 
         setCheckout(resp);
-        toast.success("Order submitted successfully");
+        toast.success(t("cart.checkoutSuccess"));
       } catch (e) {
-        toast.error(e instanceof Error ? e.message : "Checkout failed");
+        toast.error(e instanceof Error ? e.message : t("cart.checkoutFailed"));
       } finally {
         setSubmitted(false);
       }
@@ -129,23 +135,25 @@ export function StepCheckout({ state, orderId, onBack }: Props) {
 
   const applyPromo = () => {
     if (!promo.trim()) {
-      toast.error("Enter a promo code");
+      toast.error(t("cart.promoRequired"));
       return;
     }
 
     setPromoApplied(promo.trim());
-    toast.success("Promo code applied");
+    toast.success(t("cart.promoAppliedSuccess"));
   };
 
   if (!effectiveOrderId && items.length === 0) {
     return (
       <section className="bg-white rounded-2xl p-6 shadow border text-center space-y-3">
-        <h2 className="text-lg font-bold uppercase">Cart is empty</h2>
+        <h2 className="text-lg font-bold uppercase">
+          {t("cart.cartEmptyTitle")}
+        </h2>
         <p className="text-sm text-gray-500">
-          Add a product to your cart to continue checkout.
+          {t("cart.cartEmptyDesc")}
         </p>
         <Button asChild>
-          <Link to="/products">Browse products</Link>
+          <Link to="/products">{t("cart.browseProducts")}</Link>
         </Button>
       </section>
     );
@@ -154,11 +162,10 @@ export function StepCheckout({ state, orderId, onBack }: Props) {
   return (
     <div className="space-y-4">
 
-      {/* ERRORS */}
       {missing.length > 0 && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Cannot place order yet</AlertTitle>
+          <AlertTitle>{t("cart.cannotPlaceOrder")}</AlertTitle>
           <AlertDescription>
             <ul className="list-disc pl-4 mt-1">
               {missing.map((m) => (
@@ -169,86 +176,88 @@ export function StepCheckout({ state, orderId, onBack }: Props) {
         </Alert>
       )}
 
-      {/* CART ITEMS (WITH TOTALS INSIDE) */}
       <section className="bg-white rounded-2xl p-5 shadow border space-y-3">
-        <h2 className="text-lg font-bold uppercase">Selected products</h2>
+        <h2 className="text-lg font-bold uppercase">
+          {t("cart.selectedProducts")}
+        </h2>
         <CartItems effectiveActiveOrderId={effectiveOrderId ?? null} />
       </section>
 
-      {/* ORDER DETAILS */}
       <section className="bg-white rounded-2xl p-5 shadow border space-y-2">
-        <h2 className="text-lg font-bold uppercase">Order summary</h2>
+        <h2 className="text-lg font-bold uppercase">
+          {t("cart.orderSummary")}
+        </h2>
 
-        <Row label="Customer" value={state.basic.name} />
-        <Row label="Email" value={state.basic.email} />
-        <Row label="Phone" value={state.basic.phone} />
-        <Row label="Country" value={state.basic.country} />
+        <Row label={t("cart.customer")} value={state.basic.name} />
+        <Row label={t("cart.email")} value={state.basic.email} />
+        <Row label={t("cart.phone")} value={state.basic.phone} />
+        <Row label={t("cart.country")} value={state.basic.country} />
 
         <div className="border-t pt-2 mt-2">
           <p className="text-xs font-bold uppercase mb-1">
-            Shipping address
+            {t("cart.shippingAddress")}
           </p>
 
           {(COUNTRY_ADDRESS_FIELDS[state.basic.country] ?? []).map((f) => (
             <Row key={f} label={f} value={state.address[f] ?? ""} />
           ))}
         </div>
-
-      
       </section>
 
-      {/* PROMO */}
       <section className="bg-white rounded-2xl p-5 shadow border space-y-3">
-        <h2 className="text-lg font-bold uppercase">Promo Code</h2>
+        <h2 className="text-lg font-bold uppercase">
+          {t("cart.promoCode")}
+        </h2>
 
         <div className="flex gap-2">
           <input
             value={promo}
             onChange={(e) => setPromo(e.target.value)}
-            placeholder="Enter promo code"
+            placeholder={t("cart.enterPromo")}
             className="flex-1 border rounded-lg px-3 py-2 text-sm"
           />
 
           <Button variant="outline" onClick={applyPromo}>
-            Apply
+            {t("cart.apply")}
           </Button>
         </div>
 
         {promoApplied && (
           <p className="text-sm text-green-600">
-            Applied: {promoApplied}
+            {t("cart.appliedPromo", { code: promoApplied })}
           </p>
         )}
       </section>
 
-      {/* PAYMENT */}
       <section className="bg-white rounded-2xl p-5 shadow border">
-        <h2 className="text-lg font-bold uppercase mb-2">Checkout submission</h2>
+        <h2 className="text-lg font-bold uppercase mb-2">
+          {t("cart.checkoutSubmission")}
+        </h2>
 
         <p className="text-sm text-gray-500">
-          Submit the full persisted cart to the backend in one validated request.
+          {t("cart.checkoutSubmittion")}
         </p>
 
         <div className="mt-3 p-4 border-dashed border text-center text-sm">
-          Backend checkout payload preview
+          {t("cart.backendPreview")}
 
           {checkout?.orderIds?.length ? (
             <>
               <p className="text-xs mt-2">
-                Saved orders: {checkout.orderIds.join(", ")}
+                {t("cart.savedOrders")}: {checkout.orderIds.join(", ")}
               </p>
               <p className="text-xs mt-1">
-                Total: {(checkout.totals.total / 100).toFixed(2)} {checkout.totals.currency.toUpperCase()}
+                {t("cart.total")}: {(checkout.totals.total / 100).toFixed(2)}{" "}
+                {checkout.totals.currency.toUpperCase()}
               </p>
             </>
           ) : null}
         </div>
       </section>
 
-      {/* ACTIONS */}
       <div className="flex gap-2">
         <Button variant="outline" onClick={onBack} className="flex-1">
-          <ChevronLeft className="h-4 w-4" /> Back
+          <ChevronLeft className="h-4 w-4" /> {t("cart.back")}
         </Button>
 
         <Button
@@ -256,14 +265,13 @@ export function StepCheckout({ state, orderId, onBack }: Props) {
           className="flex-1 font-bold uppercase"
           disabled={missing.length > 0 || submitted || !checkoutPayload}
         >
-          {submitted ? "Working…" : "Submit order"}
+          {submitted ? t("cart.working") : t("cart.submitOrder")}
         </Button>
       </div>
     </div>
   );
 }
 
-/* SMALL ROW COMPONENT */
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between text-sm">

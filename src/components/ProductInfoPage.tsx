@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 export function ProductInfoPage({ slug }: { slug: string }) {
   const router = useRouter();
   const { t } = useTranslation();
+
   const loadProduct = useOrderFlowStore((s) => s.loadProduct);
   const product = useOrderFlowStore((s) => s.product);
   const loading = useOrderFlowStore((s) => s.loading);
@@ -26,11 +27,12 @@ export function ProductInfoPage({ slug }: { slug: string }) {
     <SiteLayout>
       <div className="mx-auto w-full max-w-6xl">
         <div className="grid gap-6 md:grid-cols-2">
+
           {/* LEFT */}
           <section className="group bg-white rounded-2xl p-6 shadow-md border transition hover:shadow-xl hover:-translate-y-1">
             <header className="space-y-3">
               <h1 className="text-3xl font-extrabold tracking-wide">
-                {product?.name ?? "Product"}
+                {product?.name ?? t("product.fallbackTitle")}
               </h1>
 
               {error && (
@@ -38,15 +40,16 @@ export function ProductInfoPage({ slug }: { slug: string }) {
               )}
 
               <p className="text-sm text-gray-600 leading-relaxed">
-                {product?.description ?? ""}
+                {product?.description ?? t("product.noDescription")}
               </p>
             </header>
 
             {/* PROCESS */}
             <div className="mt-6 border-t pt-4">
               <h2 className="text-xs font-semibold text-gray-400 uppercase mb-3">
-                How it works
+                {t("product.howItWorks")}
               </h2>
+
               <ol className="space-y-2 text-sm">
                 {(product?.processSteps ?? []).map((s, idx) => (
                   <li key={idx} className="flex gap-3 group/item">
@@ -64,31 +67,37 @@ export function ProductInfoPage({ slug }: { slug: string }) {
             {/* SKU */}
             <div className="mt-6 border-t pt-4">
               <h2 className="text-xs font-semibold text-gray-400 uppercase mb-3">
-                SKUs
+                {t("product.skus")}
               </h2>
+
               <div className="grid grid-cols-3 gap-3">
-                <SkuCard label="Green" value={skuMap?.G ?? "—"} />
-                <SkuCard label="Pink" value={skuMap?.P ?? "—"} />
-                <SkuCard label="Yellow" value={skuMap?.Y ?? "—"} />
+                <SkuCard label={t("product.green")} value={skuMap?.G ?? "—"} />
+                <SkuCard label={t("product.pink")} value={skuMap?.P ?? "—"} />
+                <SkuCard label={t("product.yellow")} value={skuMap?.Y ?? "—"} />
               </div>
             </div>
           </section>
 
           {/* RIGHT */}
           <aside className="group bg-white rounded-2xl p-6 shadow-md border transition hover:shadow-xl hover:-translate-y-1 space-y-5">
+
+            {/* DOCUMENTATION */}
             <div>
               <h2 className="text-xs font-semibold text-gray-400 uppercase mb-2">
-                Documentation
+                {t("product.documentation")}
               </h2>
+
               <p className="text-sm text-gray-600 leading-relaxed">
-                {documentation?.overview ?? "—"}
+                {documentation?.overview ?? t("product.noOverview")}
               </p>
             </div>
 
+            {/* SPECS */}
             <div className="border-t pt-4">
               <h3 className="text-xs font-semibold text-gray-400 uppercase mb-3">
-                Specs
+                {t("product.specs")}
               </h3>
+
               <dl className="space-y-2">
                 {(documentation?.specs ?? []).map((row) => (
                   <div
@@ -102,11 +111,15 @@ export function ProductInfoPage({ slug }: { slug: string }) {
               </dl>
             </div>
 
+            {/* BUTTON */}
             <Button
               size="lg"
               className="w-full text-base font-bold uppercase transition hover:scale-[1.02]"
               onClick={() =>
-                router.navigate({ to: "/products/$slug/order", params: { slug } })
+                router.navigate({
+                  to: "/products/$slug/order",
+                  params: { slug },
+                })
               }
             >
               {t("common.enterOrder")}
@@ -118,6 +131,7 @@ export function ProductInfoPage({ slug }: { slug: string }) {
   );
 }
 
+/* SKU CARD */
 function SkuCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg border px-3 py-2 transition hover:border-black hover:bg-gray-50">
@@ -129,6 +143,7 @@ function SkuCard({ label, value }: { label: string; value: string }) {
   );
 }
 
+/* SKELETON */
 function SkeletonPage() {
   return (
     <SiteLayout>
@@ -142,7 +157,6 @@ function SkeletonPage() {
             <div className="space-y-2 pt-4 border-t">
               <div className="h-3 w-24 bg-gray-200 rounded" />
               <div className="h-3 w-full bg-gray-200 rounded" />
-              <div className="h-3 w-5/6 bg-gray-200 rounded" />
             </div>
 
             <div className="space-y-2 pt-4 border-t">

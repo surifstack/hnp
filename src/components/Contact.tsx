@@ -6,9 +6,12 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useTranslation } from "react-i18next";
+
 export function Contact() {
   const [hasOrder, setHasOrder] = useState(false);
   const [message, setMessage] = useState("");
+  const { t } = useTranslation();
 
   return (
     <SiteLayout>
@@ -21,11 +24,12 @@ export function Contact() {
           }}
         >
           <div className="space-y-1.5">
-            <Label htmlFor="first">First name</Label>
+            <Label htmlFor="first">{t("contact.firstName", { defaultValue: "First Name" })}</Label>
             <Input id="first" required />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="email">Email address</Label>
+            <Label htmlFor="email">              {t("contact.email", { defaultValue: "Email Address" })}
+</Label>
             <Input id="email" type="email" required />
           </div>
           <div className="flex items-start gap-2">
@@ -35,18 +39,22 @@ export function Contact() {
               onCheckedChange={(v) => setHasOrder(v === true)}
             />
             <Label htmlFor="hasOrder" className="text-sm font-normal">
-              This is about an existing order
+              
+              {t("contact.existsOrder", { defaultValue: "This is about an existing order" })}
+
             </Label>
           </div>
           {hasOrder && (
             <div className="space-y-1.5">
-              <Label htmlFor="orderNum">Order number</Label>
+              <Label htmlFor="orderNum">                                          {t("contact.orderNumber", { defaultValue: "Order Number" })}
+</Label>
               <Input id="orderNum" required />
             </div>
           )}
           <div className="space-y-1.5">
             <Label htmlFor="msg">
-              Message <span className="text-xs text-muted-foreground">({message.length}/500)</span>
+                                          {t("contact.message", { defaultValue: "Message" })}
+ <span className="text-xs text-muted-foreground">({message.length}/500)</span>
             </Label>
             <Textarea
               id="msg"
@@ -58,7 +66,8 @@ export function Contact() {
             />
           </div>
           <Button type="submit" className="w-full" size="lg">
-            Send message
+                            {t("contact.sendMessage", { defaultValue: "Send message" })}
+
           </Button>
         </form>
       </div>

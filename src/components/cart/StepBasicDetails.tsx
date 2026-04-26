@@ -12,6 +12,7 @@ import { FieldRow } from "./FieldRow";
 import type { BasicDetails, FieldErrors } from "./types";
 import { COUNTRIES } from "./types";
 import { basicDetailsSchema, zodErrorsToMap } from "./validation";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   value: BasicDetails;
@@ -20,12 +21,18 @@ interface Props {
 }
 
 export function StepBasicDetails({ value, onChange, onNext }: Props) {
+  const { t } = useTranslation();
+
   const [errors, setErrors] = useState<FieldErrors>({});
 
-  const isValid = useMemo(() => basicDetailsSchema.safeParse(value).success, [value]);
+  const isValid = useMemo(
+    () => basicDetailsSchema.safeParse(value).success,
+    [value]
+  );
 
   const update = <K extends keyof BasicDetails>(key: K, v: BasicDetails[K]) => {
     onChange({ ...value, [key]: v });
+
     if (errors[key as string]) {
       setErrors((prev) => {
         const { [key as string]: _, ...rest } = prev;
@@ -36,11 +43,14 @@ export function StepBasicDetails({ value, onChange, onNext }: Props) {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
+
     const result = basicDetailsSchema.safeParse(value);
+
     if (!result.success) {
       setErrors(zodErrorsToMap(result.error));
       return;
     }
+
     setErrors({});
     onNext();
   };
@@ -51,45 +61,63 @@ export function StepBasicDetails({ value, onChange, onNext }: Props) {
       noValidate
       className="bg-white/95 rounded-2xl p-5 shadow-xl border-2 border-black space-y-3"
     >
-      <h2 className="text-lg font-extrabold uppercase tracking-wide">Basic details</h2>
+      {/* TITLE */}
+      <h2 className="text-lg font-extrabold uppercase tracking-wide">
+        {t("cart.basicDetailsTitle")}
+      </h2>
 
+      {/* NAME */}
       <FieldRow
         id="name"
-        label="Name"
+        label={t("cart.name")}
         value={value.name}
         onChange={(e) => update("name", e.target.value)}
         error={errors.name}
         autoComplete="name"
       />
+
+      {/* EMAIL */}
       <FieldRow
         id="email"
-        label="Email"
+        label={t("cart.email")}
         type="email"
         value={value.email}
         onChange={(e) => update("email", e.target.value)}
         error={errors.email}
         autoComplete="email"
       />
+
+      {/* PHONE */}
       <FieldRow
         id="phone"
-        label="Phone number"
+        label={t("cart.phone")}
         inputMode="numeric"
         value={value.phone}
-        onChange={(e) => update("phone", e.target.value.replace(/\D/g, ""))}
+        onChange={(e) =>
+          update("phone", e.target.value.replace(/\D/g, ""))
+        }
         error={errors.phone}
         autoComplete="tel"
         maxLength={15}
       />
 
+      {/* COUNTRY */}
       <div className="space-y-1.5">
-        <Label>Country</Label>
-        <Select value={value.country} onValueChange={(v) => update("country", v)}>
+        <Label>{t("cart.country")}</Label>
+
+        <Select
+          value={value.country}
+          onValueChange={(v) => update("country", v)}
+        >
           <SelectTrigger
             aria-invalid={!!errors.country}
-            className={errors.country ? "border-destructive ring-1 ring-destructive" : ""}
+            className={
+              errors.country ? "border-destructive ring-1 ring-destructive" : ""
+            }
           >
-            <SelectValue placeholder="Select country" />
+            <SelectValue placeholder={t("cart.selectCountry")} />
           </SelectTrigger>
+
           <SelectContent>
             {COUNTRIES.map((c) => (
               <SelectItem key={c} value={c}>
@@ -98,6 +126,7 @@ export function StepBasicDetails({ value, onChange, onNext }: Props) {
             ))}
           </SelectContent>
         </Select>
+
         {errors.country && (
           <p role="alert" className="text-xs font-medium text-destructive">
             {errors.country}
@@ -105,13 +134,14 @@ export function StepBasicDetails({ value, onChange, onNext }: Props) {
         )}
       </div>
 
+      {/* BUTTON */}
       <Button
         type="submit"
         size="lg"
         disabled={!isValid}
         className="w-full text-base font-bold uppercase mt-2"
       >
-        Continue
+        {t("cart.continue")}
       </Button>
     </form>
   );

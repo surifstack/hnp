@@ -1,4 +1,3 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo } from "react";
 import { SiteLayout } from "@/components/SiteLayout";
 import { Stepper } from "@/components/cart/Stepper";
@@ -9,14 +8,17 @@ import { StepCheckout } from "@/components/cart/StepCheckout";
 import { useCartStore } from "@/hooks/useCartStore";
 import { useCheckoutFlowStore } from "@/hooks/useCheckoutFlowStore";
 import { Button } from "@/components/ui/button";
-
+import { Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 
 export function Cart({ orderId }: { orderId: string | undefined }) {
+  const { t } = useTranslation();
 
   const items = useCartStore((s) => s.items);
   const activeOrderId = useCartStore((s) => s.activeOrderId);
   const setActive = useCartStore((s) => s.setActive);
   const loading = useCartStore((s) => s.loading);
+
   const step = useCheckoutFlowStore((s) => s.step);
   const form = useCheckoutFlowStore((s) => s.form);
   const setStep = useCheckoutFlowStore((s) => s.setStep);
@@ -27,7 +29,11 @@ export function Cart({ orderId }: { orderId: string | undefined }) {
   /* ---------------- INIT ORDER ---------------- */
 
   const effectiveActiveOrderId = useMemo(() => {
-    const matchingOrderId = orderId && items.some((item) => item.orderId === orderId) ? orderId : null;
+    const matchingOrderId =
+      orderId && items.some((item) => item.orderId === orderId)
+        ? orderId
+        : null;
+
     return matchingOrderId ?? activeOrderId ?? items[0]?.orderId ?? null;
   }, [orderId, activeOrderId, items]);
 
@@ -42,8 +48,6 @@ export function Cart({ orderId }: { orderId: string | undefined }) {
   const isCartEmpty = items.length === 0 && !loading;
   const canCheckout = items.length > 0 || !!effectiveActiveOrderId;
 
-  /* ---------------- UI ---------------- */
-
   return (
     <SiteLayout>
       <div className="mx-auto w-full max-w-xl space-y-6">
@@ -52,15 +56,17 @@ export function Cart({ orderId }: { orderId: string | undefined }) {
         {isCartEmpty && (
           <section className="bg-white rounded-2xl p-6 shadow-md border text-center space-y-3">
             <h1 className="text-xl font-extrabold uppercase tracking-wide">
-              Cart is empty
+              {t("cart.emptyTitle")}
             </h1>
 
             <p className="text-sm text-gray-500">
-              Add products to your cart to continue checkout.
+              {t("cart.emptySubtitle")}
             </p>
 
             <Button asChild className="font-bold uppercase">
-              <Link to="/products">Browse products</Link>
+              <Link to="/products">
+                {t("cart.browseProducts")}
+              </Link>
             </Button>
           </section>
         )}
@@ -70,7 +76,6 @@ export function Cart({ orderId }: { orderId: string | undefined }) {
           <>
             <Stepper current={step} verified={form.otpVerified} />
 
-            {/* STEP 1 */}
             {step === 1 && (
               <StepBasicDetails
                 value={form.basic}
@@ -79,7 +84,6 @@ export function Cart({ orderId }: { orderId: string | undefined }) {
               />
             )}
 
-            {/* STEP 2 */}
             {step === 2 && (
               <StepOtp
                 email={form.basic.email}
@@ -90,7 +94,6 @@ export function Cart({ orderId }: { orderId: string | undefined }) {
               />
             )}
 
-            {/* STEP 3 */}
             {step === 3 && (
               <StepAddress
                 country={form.basic.country}
@@ -101,7 +104,6 @@ export function Cart({ orderId }: { orderId: string | undefined }) {
               />
             )}
 
-            {/* STEP 4 */}
             {step === 4 && (
               <StepCheckout
                 state={form}

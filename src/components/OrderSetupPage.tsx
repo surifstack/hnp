@@ -12,15 +12,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useOrderFlowStore } from "@/hooks/useOrderFlowStore";
-import type { PmsColor } from "@/lib/api.types";
+import type { PmsColor, Product } from "@/lib/api.types";
 import { skuForSelection } from "@/lib/sku";
 
 const QUANTITIES = Array.from({ length: 10 }, (_, i) => (i + 1) * 40);
 
 const COLORS: Array<{ pms: PmsColor; label: string; swatch: string }> = [
-  { pms: "802", label: "PMS 802", swatch: "var(--neon-green)" }, // ✅ FIRST
+  { pms: "802", label: "PMS 802", swatch: "var(--neon-green)" },
   { pms: "803", label: "PMS 803", swatch: "var(--neon-yellow)" },
-  { pms: "806", label: "PMS 806", swatch: "var(--neon-pink)" },  // ✅ LAST
+  { pms: "806", label: "PMS 806", swatch: "var(--neon-pink)" },
 ];
 
 export function OrderSetupPage({ slug }: { slug: string }) {
@@ -44,14 +44,13 @@ export function OrderSetupPage({ slug }: { slug: string }) {
 
   useEffect(() => {
     if (!order || order.productSlug !== slug) {
-      void startOrder(slug);
+      void startOrder(slug  as Product["slug"]);
     }
   }, [order, slug, startOrder]);
 
-  /* ✅ SAFE DEFAULT STATE */
   const safeSetup = setupDraft ?? {
     quantity: 40,
-    colorPms: "802", // ✅ default GREEN
+    colorPms: "802",
     languageCode: "en",
   };
 
@@ -65,17 +64,22 @@ export function OrderSetupPage({ slug }: { slug: string }) {
   return (
     <SiteLayout>
       <div className="mx-auto max-w-4xl space-y-6">
+
         {/* HEADER */}
         <div className="bg-white rounded-2xl p-6 shadow-md border">
           <h1 className="text-2xl font-bold mb-2">
-            {t("order.setupTitle", { name: product?.name ?? "Order" })}
+            {t("order.setupTitle", {
+              name: product?.name ?? "Order",
+            })}
           </h1>
+
           <p className="text-sm text-gray-500">
-            Configure your order details
+            {t("order.configureOrder")}
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
+
           {/* LEFT PANEL */}
           <div className="bg-white rounded-2xl p-6 border shadow-sm space-y-5">
 
@@ -91,9 +95,10 @@ export function OrderSetupPage({ slug }: { slug: string }) {
                   })
                 }
               >
-                <SelectTrigger className="hover:border-black transition">
+                <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
+
                 <SelectContent>
                   {QUANTITIES.map((q) => (
                     <SelectItem key={q} value={String(q)}>
@@ -116,9 +121,10 @@ export function OrderSetupPage({ slug }: { slug: string }) {
                   })
                 }
               >
-                <SelectTrigger className="hover:border-black transition">
+                <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
+
                 <SelectContent>
                   {languages.map((l) => (
                     <SelectItem key={l.code} value={l.code}>
@@ -132,11 +138,13 @@ export function OrderSetupPage({ slug }: { slug: string }) {
 
           {/* RIGHT PANEL */}
           <div className="bg-white rounded-2xl p-6 border shadow-sm space-y-5">
+
             <div className="flex justify-between items-center">
               <Label>{t("order.color")}</Label>
+
               {selectedSku && (
                 <span className="text-xs text-gray-500">
-                  SKU:{" "}
+                  {t("order.sku")}:{" "}
                   <span className="font-mono text-black">
                     {selectedSku}
                   </span>
@@ -188,7 +196,7 @@ export function OrderSetupPage({ slug }: { slug: string }) {
                 });
               }}
             >
-              {t("common.continue")}
+              {t("order.continue")}
             </Button>
           </div>
         </div>
@@ -209,10 +217,8 @@ function Skeleton() {
             <div key={i} className="bg-white p-6 rounded-2xl border space-y-4">
               <div className="h-4 w-1/3 bg-gray-200 rounded" />
               <div className="h-10 bg-gray-200 rounded" />
-              <div className="h-4 w-1/3 bg-gray-200 rounded" />
               <div className="h-10 bg-gray-200 rounded" />
-
-              <div className="grid grid-cols-3 gap-3 mt-4">
+              <div className="grid grid-cols-3 gap-3">
                 <div className="h-16 bg-gray-200 rounded" />
                 <div className="h-16 bg-gray-200 rounded" />
                 <div className="h-16 bg-gray-200 rounded" />

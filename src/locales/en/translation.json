@@ -11,10 +11,30 @@
     "info": "Info",
     "orderId": "Order ID",
     "makeChanges": "Make changes",
-    "enterAnotherOrder": "Enter another order"
+    "enterAnotherOrder": "Enter another order",
+    "orderNow": "Order now",
+    "replay": "Replay",
+    "backToDashboard": "Back to dashboard",
+    "products": "Products",
+    "createAccount": "Create Account",
+    "createAccountSubtitle": "You need an account to place an order or see your proof.",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email address",
+    "password": "Password (min 8 characters)",
+    "mobileNumber": "Mobile number",
+    "phonePlaceholder": "Phone number",
+    "save": "Save",
+    "alreadyHaveAccount": "Already have an account?",
+    "back": "Back"
   },
   "order": {
     "setupTitle": "{{name}} setup",
+     "total": "Total",
+     "secondary":"Secondary",
+     "label": "Label",
+     "title": "Title",
+     "done": "Done",
     "quantity": "Quantity (40 to 400)",
     "color": "Color",
     "language": "Language",
@@ -32,13 +52,159 @@
     "approveAllContinue": "Approve all & continue",
     "editAny": "Edit any section",
     "needApproveAll": "Approve Title, Secondary, and Label before continuing.",
-    "previewTitle": "Preview"
+    "previewTitle": "Preview",
+    "continue": "Continue",
+    "configureOrder": "Configure your order details",
+    "sku": "SKU",
+    "noActiveOrder": "No active order",
+    "goToSetup": "Go to setup",
+    "locked": "Locked",
+    "typeYourText": "Type your text…"
+
+   
   },
   "proof": {
     "title": "Your Proof",
     "almostThere": "Almost there!",
     "createAccountToView": "Please create an account to view your proof",
     "createAccount": "Create account",
-    "approveAndOrder": "Approve & order"
+    "approveAndOrder": "Approve & order",
+    "noActiveOrderTitle": "No active order",
+    "backToProduct": "Back to product",
+    "generatingPreview": "Generating preview…",
+    "makeChanges": "Make changes",
+    "enterAnotherOrder": "Enter another order",
+     "noActiveOrder": "No active order"
+    
+  },
+  "contact": {
+    "title": "Contact Us",
+    "description": "Have questions or need assistance? We're here to help! Reach out to us through any of the following methods:",
+    "email": "Email Address",
+    "phone": "Phone:",
+    "address": "Address:",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "existsOrder": "This is about an existing order",
+    "sendMessage": "Send Message",
+    "orderNumber": "Order Number",
+    "message": "Your Message"
+
+  },
+  "defaultError":{
+    "somethingWentWrong": "Something went wrong. Please try again later.",
+    "anErrorOccurred": "An error occurred. Please try again later.",
+    "tryAgain": "Try again",
+    "goHome": "Go home"
+  },
+  "product": {
+      "fallbackTitle": "Product",
+      "noDescription": "No description available",
+      "howItWorks": "How it works",
+      "skus": "SKUs",
+      "green": "Green",
+      "pink": "Pink",
+      "yellow": "Yellow",
+      "documentation": "Documentation",
+      "noOverview": "No overview available",
+      "specs": "Specs",
+      "title": "Products",
+      "subtitle": "Explore our neon print products with full specs, pricing, and customization options.",
+      "pricing": "Pricing",
+      "shipping": "Shipping",
+      "cta": "View full details →"
+    },
+     "cart": {
+      "emptyTitle": "Cart is empty",
+      "basicDetailsTitle": "Basic details", 
+      "name": "Name", 
+      "continue": "Continue",
+      "emptySubtitle": "Add products to your cart to continue checkout.",
+      "browseProducts": "Browse products",
+      "yourCart": "Your cart",
+      "itemCount": "{{count}} item(s)",
+      "loading": "Loading cart…",
+      "quantity": "Qty",
+      "increase": "+",
+      "decrease": "-",
+      "remove": "Remove",
+      "subtotal": "Subtotal",
+      "shipping": "Shipping",
+      "total": "Total",
+      "title": "Cart",
+      "color": "Color",
+      "taxes": "Taxes",
+      "checkout": "Checkout",
+      "clear": "Clear",
+
+    
+      "selectedProducts": "Selected products",
+      "orderSummary": "Order summary",
+      "customer": "Customer",
+      "email": "Email",
+      "phone": "Phone",
+      "country": "Country",
+      "shippingAddress": "Shipping address",
+
+      "promoCode": "Promo Code",
+      "enterPromo": "Enter promo code",
+      "apply": "Apply",
+      "applied": "Applied: {{code}}",
+
+      "checkoutSubmission": "Checkout submission",
+      "backendPreview": "Backend checkout payload preview",
+      "savedOrders": "Saved orders",
+      "totalAmount": "Total",
+
+      "back": "Back",
+      "submitOrder": "Submit order",
+      "working": "Working…",
+
+      "cannotCheckout": "Cannot place order yet",
+
+      "cannotPlaceOrder": "Cannot place order yet",
+  
+    "appliedPromo": "Applied: {{code}}",
+
+
+    "signInRequired": "Please sign in to submit your order",
+    "promoRequired": "Enter a promo code",
+    "promoAppliedSuccess": "Promo code applied",
+    "checkoutSuccess": "Order submitted successfully",
+    "checkoutFailed": "Checkout failed",
+    "sentTo": "We sent a 4-digit code to",
+    "demoTitle": "Demo OTP",
+    "demoUse": "Use code",
+    "fieldLabel": "Enter OTP",
+    "invalid": "Invalid OTP. Please try again.",
+    "verifiedTitle": "Email verified",
+    "verifiedDesc": "You can continue to the next step.",
+    "verify": "Verify",
+    "itemsCount": "{{count}} item(s)",
+    "address": {
+      "title": "Shipping address",
+      "subtitle": "Address format for"
+    },
+    "checkoutSubmittion":"Submit the full persisted cart to the backend in one validated request."
+  
+  },
+    "checkout": {
+    "steps": {
+      "details": "Details",
+      "verify": "Verify",
+      "address": "Address",
+      "pay": "Pay"
+    }
+  },
+  "otp" :{
+    "title": "OTP",
+    "sentTo": "We sent a 4-digit code to",
+    "fieldLabel": "Enter OTP",
+    "invalid": "Invalid OTP. Please try again.",
+    "demoTitle": "Demo OTP",
+    "verifiedTitle": "Email verified",
+    "verifiedDesc": "You can continue to the next step.",
+    "verify": "Verify",
+    "demoUse": "Use code"
   }
 }

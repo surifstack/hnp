@@ -5,6 +5,7 @@ import { FieldRow } from "./FieldRow";
 import type { FieldErrors } from "./types";
 import { COUNTRY_ADDRESS_FIELDS } from "./types";
 import { buildAddressSchema, zodErrorsToMap } from "./validation";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   country: string;
@@ -15,6 +16,8 @@ interface Props {
 }
 
 export function StepAddress({ country, value, onChange, onBack, onNext }: Props) {
+  const { t } = useTranslation();
+
   const fields = useMemo(() => COUNTRY_ADDRESS_FIELDS[country] ?? [], [country]);
   const schema = useMemo(() => buildAddressSchema(fields), [fields]);
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -23,6 +26,7 @@ export function StepAddress({ country, value, onChange, onBack, onNext }: Props)
 
   const update = (key: string, v: string) => {
     onChange({ ...value, [key]: v });
+
     if (errors[key]) {
       setErrors((prev) => {
         const { [key]: _, ...rest } = prev;
@@ -33,11 +37,13 @@ export function StepAddress({ country, value, onChange, onBack, onNext }: Props)
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
+
     const result = schema.safeParse(value);
     if (!result.success) {
       setErrors(zodErrorsToMap(result.error));
       return;
     }
+
     setErrors({});
     onNext();
   };
@@ -48,9 +54,13 @@ export function StepAddress({ country, value, onChange, onBack, onNext }: Props)
       noValidate
       className="bg-white/95 rounded-2xl p-5 shadow-xl border-2 border-black space-y-3"
     >
-      <h2 className="text-lg font-extrabold uppercase tracking-wide">Shipping address</h2>
+      <h2 className="text-lg font-extrabold uppercase tracking-wide">
+        {t("cart.address.title")}
+      </h2>
+
       <p className="text-xs text-muted-foreground">
-        Address format for <strong>{country}</strong>
+        {t("cart.address.subtitle")}{" "}
+        <strong>{country}</strong>
       </p>
 
       {fields.map((f) => (
@@ -65,16 +75,22 @@ export function StepAddress({ country, value, onChange, onBack, onNext }: Props)
       ))}
 
       <div className="flex gap-2 pt-2">
-        <Button type="button" variant="outline" onClick={onBack} className="flex-1">
-          <ChevronLeft className="h-4 w-4" /> Back
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onBack}
+          className="flex-1"
+        >
+          <ChevronLeft className="h-4 w-4" /> {t("common.back")}
         </Button>
+
         <Button
           type="submit"
           size="lg"
           disabled={!isValid}
           className="flex-1 text-base font-bold uppercase"
         >
-          Continue
+          {t("common.continue")}
         </Button>
       </div>
     </form>

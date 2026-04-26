@@ -239,7 +239,7 @@ function FlyerPreview({ order }: { order: Order }) {
             {Array.from({ length: 24 }).map((_, i) => (
               <div
                 key={i}
-                className="flex min-h-[58px] flex-col items-center justify-center border border-black bg-green-500 px-2 py-2 text-center text-black"
+                className="flex min-h-[58px] flex-col items-center justify-center border border-black bg-[var(--neon-green)] px-2 py-2 text-center text-black"
               >
                 <p className="text-[11px] font-semibold uppercase leading-tight">{labelText}</p>
                 <p className="text-[10px] leading-tight">{DUMMY_PHONE}</p>
@@ -266,12 +266,13 @@ export function ProofPage({ slug }: { slug: string }) {
   const loading = useOrderFlowStore((s) => s.loading);
   const error = useOrderFlowStore((s) => s.error);
 
-  /* ---------------- NO ORDER ---------------- */
   if (!order) {
     return (
       <SiteLayout>
         <div className="mx-auto w-full max-w-xl bg-white rounded-xl p-6 shadow border text-center space-y-3">
-          <h1 className="text-xl font-semibold">No active order</h1>
+          <h1 className="text-xl font-semibold">
+            {t("proof.noActiveOrder")}
+          </h1>
           <Button
             onClick={() =>
               router.navigate({
@@ -280,37 +281,28 @@ export function ProofPage({ slug }: { slug: string }) {
               })
             }
           >
-            Back to product
+            {t("proof.backToProduct")}
           </Button>
         </div>
       </SiteLayout>
     );
   }
 
-  /* ---------------- NOT LOGGED IN ---------------- */
   return (
     <SiteLayout>
       <div className="mx-auto w-full max-w-5xl space-y-4 pb-28 md:pb-6">
-
-       
-
-        {/* ONLY PREVIEW */}
-        <section >
-        
-
+        <section>
           {loading ? (
             <div className="text-sm text-gray-500 text-center py-10">
-              Generating preview…
+              {t("proof.generatingPreview")}
             </div>
           ) : (
             <FlyerPreview order={order} />
           )}
-
-         
         </section>
 
-        {/* ACTIONS */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4
+        <div
+          className="fixed bottom-0 left-0 right-0 bg-white border-t p-4
           grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2
           md:static md:border md:rounded-xl md:shadow md:p-4"
         >
@@ -321,18 +313,9 @@ export function ProofPage({ slug }: { slug: string }) {
                 addOrder(order, product);
               }}
             >
-              {t("proof.approveAndOrder") || "Approve & Order"}
+              {t("proof.approveAndOrder")}
             </Link>
           </Button>
-
-          {/* <Button
-            size="lg"
-            variant="outline"
-            className="w-full"
-            onClick={() => exportProofPdf(order)}
-          >
-            Export PDF
-          </Button> */}
 
           <Button
             size="lg"
@@ -345,7 +328,7 @@ export function ProofPage({ slug }: { slug: string }) {
               })
             }
           >
-            {t("common.makeChanges")}
+            {t("proof.makeChanges")}
           </Button>
 
           <Button
@@ -360,7 +343,7 @@ export function ProofPage({ slug }: { slug: string }) {
               });
             }}
           >
-            {t("common.enterAnotherOrder")}
+            {t("proof.enterAnotherOrder")}
           </Button>
         </div>
       </div>

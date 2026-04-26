@@ -9,29 +9,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { LANGUAGE_OPTIONS } from "@/config/languages";
 
-const LANGUAGE_OPTIONS: Array<{
-  value: string;
-  name: string;
-  flag: string;
-}> = [
-  { value: "en", name: "English", flag: "🇺🇸" },
-  { value: "es", name: "Spanish", flag: "🇪🇸" },
-  { value: "fr", name: "French", flag: "🇫🇷" },
-  { value: "pt", name: "Portuguese", flag: "🇵🇹" },
-  { value: "id", name: "Indonesian", flag: "🇮🇩" },
-  { value: "de", name: "German", flag: "🇩🇪" },
-  { value: "sw", name: "Swahili", flag: "🇰🇪" },
-  { value: "tr", name: "Turkish", flag: "🇹🇷" },
-  { value: "vi", name: "Vietnamese", flag: "🇻🇳" },
-  { value: "it", name: "Italian", flag: "🇮🇹" },
-  { value: "pl", name: "Polish", flag: "🇵🇱" },
-  { value: "ro", name: "Romanian", flag: "🇷🇴" },
-  { value: "nl", name: "Dutch", flag: "🇳🇱" },
-  { value: "hu", name: "Hungarian", flag: "🇭🇺" },
-  { value: "cs", name: "Czech", flag: "🇨🇿" },
-  { value: "sv", name: "Swedish", flag: "🇸🇪" },
-];
+
 
 export function LanguageSwitcher() {
   const { i18n } = useTranslation();
@@ -60,7 +40,8 @@ export function LanguageSwitcher() {
         {LANGUAGE_OPTIONS.map((o) => (
           <DropdownMenuItem
             key={o.value}
-            onSelect={() => void i18n.changeLanguage(o.value)}
+            onSelect={() => {void i18n.changeLanguage(o.value)
+              }}
             className={o.value === current.value ? "bg-accent" : undefined}
           >
             <span className="text-base leading-none">{o.flag}</span>
