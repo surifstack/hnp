@@ -5,7 +5,7 @@ import { SiteLayout } from "@/components/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { useCatalogStore } from "@/hooks/useCatalogStore";
 import { useTranslation } from "react-i18next";
-import videoPoster from "@/assets/video-poster.jpg";
+import videoPoster from "@/assets/video-poster.webp";
 
 export const Route = createFileRoute("/qr")({
   head: () => ({
