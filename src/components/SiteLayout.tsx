@@ -76,6 +76,7 @@ export function SiteLayout({
           <Link to="/" className="block mx-auto text-center">
             <img
               src={logo}
+  loading="lazy"
               alt="Hot Neon Posters"
 className="w-52 sm:w-64 md:w-80 lg:w-[420px] xl:w-[520px] mx-auto h-auto"            />
           </Link>
