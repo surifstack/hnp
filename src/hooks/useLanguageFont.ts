@@ -68,17 +68,20 @@ export function useLanguageFont(options?: UseLanguageFontOptions): UseLanguageFo
     const applyFont = (languageCode?: string): void => {
       const rawLang = languageCode ?? i18n.resolvedLanguage ?? i18n.language ?? "en";
       const supportedLang = getSupportedLanguageCode(rawLang);
-      if (!supportedLang) return;
+      const normalizedLang = supportedLang ?? rawLang.split("-")[0] ?? rawLang;
 
-      const option = getLanguageOption(supportedLang);
-      const config = getFontConfig(rawLang);
+      const option = supportedLang ? getLanguageOption(supportedLang) : undefined;
+      const config = getFontConfig(normalizedLang);
 
       const direction: TextDirection = option?.rtl ? "rtl" : config.direction;
       const fontFamily = pickEffectiveFontFamily(config, mergedOptions.enableFontCheck);
+      console.log(fontFamily , 'fontFamily');
 
       if (mergedOptions.useCssVariables) {
         document.documentElement.style.setProperty("--app-font-family", fontFamily);
-        document.documentElement.style.setProperty("--app-font-size", config.fontSize);
+        // Keeping the variable for now, but intentionally not applying it.
+        // The client reported issues when fontSize is changed at runtime.
+        // document.documentElement.style.setProperty("--app-font-size", config.fontSize);
         document.documentElement.style.setProperty("--app-direction", direction);
 
         document.documentElement.style.fontFamily = "var(--app-font-family)";
@@ -86,7 +89,7 @@ export function useLanguageFont(options?: UseLanguageFontOptions): UseLanguageFo
         document.documentElement.style.direction = "var(--app-direction)";
 
         document.body.style.fontFamily = "var(--app-font-family)";
-        document.body.style.fontSize = "var(--app-font-size)";
+        // document.body.style.fontSize = "var(--app-font-size)";
         document.body.style.direction = "var(--app-direction)";
       } else {
         document.documentElement.style.fontFamily = fontFamily;
@@ -94,13 +97,13 @@ export function useLanguageFont(options?: UseLanguageFontOptions): UseLanguageFo
         document.documentElement.style.direction = direction;
 
         document.body.style.fontFamily = fontFamily;
-        document.body.style.fontSize = config.fontSize;
+        // document.body.style.fontSize = config.fontSize;
         document.body.style.direction = direction;
       }
 
       document.documentElement.setAttribute("dir", direction);
-      document.documentElement.setAttribute("data-language", supportedLang);
-      document.documentElement.lang = supportedLang;
+      document.documentElement.setAttribute("data-language", supportedLang ?? normalizedLang);
+      document.documentElement.lang = supportedLang ?? normalizedLang;
     };
 
     applyFont();
@@ -113,7 +116,10 @@ export function useLanguageFont(options?: UseLanguageFontOptions): UseLanguageFo
   }, [i18n, mergedOptions.enableFontCheck, mergedOptions.useCssVariables]);
 
   const getCurrentFont = (): FontConfigItem => {
-    return getFontConfig(i18n.resolvedLanguage ?? i18n.language);
+    const rawLang = i18n.resolvedLanguage ?? i18n.language ?? "en";
+    const supportedLang = getSupportedLanguageCode(rawLang);
+    const normalizedLang = supportedLang ?? rawLang.split("-")[0] ?? rawLang;
+    return getFontConfig(normalizedLang);
   };
 
   return { getCurrentFont };

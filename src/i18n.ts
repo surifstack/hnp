@@ -1,5 +1,6 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
+import { LANGUAGE_OPTIONS } from "@/config/languages";
 
 // 🌍 translations
 import en from "@/locales/en/translation.json";
@@ -12,24 +13,7 @@ const STORAGE_KEY = "hnp-lang";
  * 🌍 Supported languages
  */
 export const SUPPORTED_LANGUAGES = [
-  "en",
-  "zh",
-  "hi",
-  "es",
-  "fr",
-  "pt",
-  "id",
-  "de",
-  "sw",
-  "tr",
-  "vi",
-  "it",
-  "pl",
-  "ro",
-  "nl",
-  "hu",
-  "cs",
-  "sv",
+  ...LANGUAGE_OPTIONS.map((o) => o.value),
 ] as const;
 
 /**
