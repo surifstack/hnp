@@ -10,6 +10,7 @@ export interface Product {
   processSteps: string[];
   // Optional: enriched client-side catalog fields (not required from the API).
   skus?: { G: string; P: string; Y: string };
+  productInfo?: Array<{ label: string; value: string }>;
   documentation?: {
     overview: string;
     specs: Array<{ label: string; value: string }>;
