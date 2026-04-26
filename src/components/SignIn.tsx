@@ -14,9 +14,9 @@ export function SignIn({ search }: { search: { redirect: string | undefined } })
   return (
     <SiteLayout>
       <div className="mx-auto w-full max-w-xl bg-white/95 rounded-2xl p-6 shadow-xl border-2 border-black">
-        <h1 className="text-2xl font-extrabold uppercase tracking-wide mb-1">Sign In</h1>
+        <h1 className="text-2xl font-extrabold uppercase tracking-wide mb-1">{t("common.signIn")}</h1>
         <p className="text-sm text-muted-foreground mb-5">
-          A verification code will be sent to your email.
+          {t("common.otpMessage")}.
         </p>
         <form
           className="space-y-4"
@@ -34,11 +34,11 @@ export function SignIn({ search }: { search: { redirect: string | undefined } })
           }}
         >
           <div className="space-y-1.5">
-            <Label htmlFor="email">Email address</Label>
+            <Label htmlFor="email">{t("common.email")}.</Label>
             <Input id="email" name="email" type="email" required autoComplete="email" />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{t("common.password")}.</Label>
             <Input
               id="password"
               name="password"
@@ -48,11 +48,11 @@ export function SignIn({ search }: { search: { redirect: string | undefined } })
             />
           </div>
           <Button type="submit" className="w-full" size="lg">
-            Send code & sign in
+            {t("common.sendCodeAndLogin")}
           </Button>
         </form>
         <p className="text-sm text-center mt-5">
-          No account yet?{" "}
+          {t("common.notAccount")}{" "}
           <Link to="/create-account" className="font-bold underline">
             {t("proof.createAccount")}
           </Link>

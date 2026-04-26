@@ -26,7 +26,12 @@
     "phonePlaceholder": "Phone number",
     "save": "Save",
     "alreadyHaveAccount": "Already have an account?",
-    "back": "Back"
+    "back": "Back",
+    "unMatchEmail" : "Emails do not match. Please re-enter your email.",
+    "reEnterEmail": "Please re-enter your email.",
+    "otpMessage":"A verification code will be sent to your email",
+    "sendCodeAndLogin": "Send code & sign in",
+    "notAccount": "Don't have an account?"
   },
   "order": {
     "setupTitle": "{{name}} setup",

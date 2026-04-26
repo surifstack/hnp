@@ -26,7 +26,15 @@
     "phonePlaceholder": "电话号码",
     "save": "保存",
     "alreadyHaveAccount": "已有账户？",
-    "back": "返回"
+    "back": "返回",
+    "unMatchEmail" : "电子邮件不匹配。请重新输入您的电子邮件",
+    "reEnterEmail": "请重新输入您的电子邮件",
+    "otpMessage":"验证码将发送到您的电子邮箱",
+     "sendCodeAndLogin": "发送验证码并登录",
+    "notAccount": "没有账户？"
+
+
+
   },
   "order": {
     "setupTitle": "{{name}} 设置",

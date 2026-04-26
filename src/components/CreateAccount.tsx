@@ -13,11 +13,14 @@ import {
 import { useSessionStore } from "@/hooks/useSessionStore";
 import { useTranslation } from "react-i18next";
 import { LANGUAGE_OPTIONS } from "@/config/languages";
+import { useRef, useState } from "react";
 
 export function CreateAccount({ search }: { search: { redirect: string | undefined } }) {
   const router = useRouter();
   const { t } = useTranslation();
   const setUserId = useSessionStore((s) => s.setUserId);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const confirmEmailRef = useRef<HTMLInputElement | null>(null);
 
   return (
     <SiteLayout>
@@ -41,6 +44,13 @@ export function CreateAccount({ search }: { search: { redirect: string | undefin
 
             const fd = new FormData(e.currentTarget);
             const email = (fd.get("email")?.toString() ?? "").trim();
+            const confirmEmail = (fd.get("confirmEmail")?.toString() ?? "").trim();
+
+            if (email.toLowerCase() !== confirmEmail.toLowerCase()) {
+              setEmailError(t("common.unMatchEmail"));
+              confirmEmailRef.current?.focus();
+              return;
+            }
 
             const id = email || `user_${Date.now()}`;
             setUserId(id);
@@ -69,7 +79,30 @@ export function CreateAccount({ search }: { search: { redirect: string | undefin
           {/* EMAIL */}
           <div className="space-y-1.5">
             <Label htmlFor="email">{t("common.email")}</Label>
-            <Input id="email" name="email" type="email" required />
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              required
+              onChange={() => setEmailError(null)}
+            />
+          </div>
+
+          {/* RE-ENTER EMAIL */}
+          <div className="space-y-1.5">
+            <Label htmlFor="confirmEmail">{t("common.reEnterEmail")}</Label>
+            <Input
+              ref={confirmEmailRef}
+              id="confirmEmail"
+              name="confirmEmail"
+              type="email"
+              required
+              aria-invalid={emailError ? "true" : "false"}
+              onChange={() => setEmailError(null)}
+            />
+            {emailError ? (
+              <p className="text-sm font-medium text-red-600">{emailError}</p>
+            ) : null}
           </div>
 
           {/* PASSWORD */}
