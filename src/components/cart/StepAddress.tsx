@@ -3,26 +3,41 @@ import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FieldRow } from "./FieldRow";
 import type { FieldErrors } from "./types";
-import { COUNTRY_ADDRESS_FIELDS } from "./types";
 import { buildAddressSchema, zodErrorsToMap } from "./validation";
 import { useTranslation } from "react-i18next";
+import { LANGUAGE_OPTIONS } from "@/config/languages";
 
 interface Props {
-  country: string;
+  country: string; // ✅ this is language, not country
   value: Record<string, string>;
   onChange: (next: Record<string, string>) => void;
   onBack: () => void;
   onNext: () => void;
 }
 
-export function StepAddress({ country, value, onChange, onBack, onNext }: Props) {
+export function StepAddress({
+  country,
+  value,
+  onChange,
+  onBack,
+  onNext,
+}: Props) {
   const { t } = useTranslation();
 
-  const fields = useMemo(() => COUNTRY_ADDRESS_FIELDS[country] ?? [], [country]);
+  const selectedLanguage = useMemo(() => {
+    return LANGUAGE_OPTIONS.find((l) => l.value === country);
+  }, [country]);
+
+  // ✅ get fields from language option
+  const fields = selectedLanguage?.addressFields ?? [];
+
   const schema = useMemo(() => buildAddressSchema(fields), [fields]);
   const [errors, setErrors] = useState<FieldErrors>({});
 
-  const isValid = useMemo(() => schema.safeParse(value).success, [schema, value]);
+  const isValid = useMemo(
+    () => schema.safeParse(value).success,
+    [schema, value]
+  );
 
   const update = (key: string, v: string) => {
     onChange({ ...value, [key]: v });
@@ -39,6 +54,7 @@ export function StepAddress({ country, value, onChange, onBack, onNext }: Props)
     e.preventDefault();
 
     const result = schema.safeParse(value);
+
     if (!result.success) {
       setErrors(zodErrorsToMap(result.error));
       return;
@@ -60,27 +76,23 @@ export function StepAddress({ country, value, onChange, onBack, onNext }: Props)
 
       <p className="text-xs text-muted-foreground">
         {t("cart.address.subtitle")}{" "}
-        <strong>{country}</strong>
+        <strong>{selectedLanguage?.name}</strong>
       </p>
 
+      {/* ✅ dynamic fields from language */}
       {fields.map((f) => (
         <FieldRow
-          key={f}
-          id={f}
-          label={f}
-          value={value[f] ?? ""}
-          onChange={(e) => update(f, e.target.value)}
-          error={errors[f]}
+          key={f.key}
+          id={f.key}
+          label={f.label}
+          value={value[f.key] ?? ""}
+          onChange={(e) => update(f.key, e.target.value)}
+          error={errors[f.key]}
         />
       ))}
 
       <div className="flex gap-2 pt-2">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onBack}
-          className="flex-1"
-        >
+        <Button type="button" variant="outline" onClick={onBack} className="flex-1">
           <ChevronLeft className="h-4 w-4" /> {t("common.back")}
         </Button>
 

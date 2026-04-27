@@ -15,10 +15,9 @@ import {
 import { useOrderFlowStore } from "@/hooks/useOrderFlowStore";
 import type {  Product } from "@/lib/api.types";
 import { skuForSelection } from "@/lib/sku";
+import { LANGUAGE_OPTIONS } from "@/config/languages";
 
 const QUANTITIES = Array.from({ length: 20 }, (_, i) => (i + 1) * 20);
-
-
 
 export function OrderSetupPage({ slug }: { slug: string }) {
   const router = useRouter();
@@ -31,7 +30,6 @@ export function OrderSetupPage({ slug }: { slug: string }) {
 
   const order = useOrderFlowStore((s) => s.order);
   const product = useOrderFlowStore((s) => s.product);
-  const languages = useOrderFlowStore((s) => s.languages);
   const setupDraft = useOrderFlowStore((s) => s.setupDraft);
   const loading = useOrderFlowStore((s) => s.loading);
 
@@ -123,8 +121,8 @@ export function OrderSetupPage({ slug }: { slug: string }) {
                 </SelectTrigger>
 
                 <SelectContent>
-                  {languages.map((l) => (
-                    <SelectItem key={l.code} value={l.code}>
+                  {LANGUAGE_OPTIONS.map((l) => (
+                    <SelectItem key={l.value} value={l.value}>
                       {l.name}
                     </SelectItem>
                   ))}

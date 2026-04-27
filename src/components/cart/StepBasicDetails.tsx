@@ -10,9 +10,9 @@ import {
 } from "@/components/ui/select";
 import { FieldRow } from "./FieldRow";
 import type { BasicDetails, FieldErrors } from "./types";
-import { COUNTRIES } from "./types";
 import { basicDetailsSchema, zodErrorsToMap } from "./validation";
 import { useTranslation } from "react-i18next";
+import { LANGUAGE_OPTIONS } from "@/config/languages";
 
 interface Props {
   value: BasicDetails;
@@ -119,9 +119,9 @@ export function StepBasicDetails({ value, onChange, onNext }: Props) {
           </SelectTrigger>
 
           <SelectContent>
-            {COUNTRIES.map((c) => (
-              <SelectItem key={c} value={c}>
-                {c}
+            {LANGUAGE_OPTIONS.map((c) => (
+              <SelectItem key={c.name} value={c.value}>
+                {c.name} {c.flag} 
               </SelectItem>
             ))}
           </SelectContent>

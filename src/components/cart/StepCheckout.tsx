@@ -9,12 +9,11 @@ import { useSessionStore } from "@/hooks/useSessionStore";
 import { useCartStore } from "@/hooks/useCartStore";
 import { useTranslation } from "react-i18next";
 import type { FormState } from "./types";
-import { COUNTRY_ADDRESS_FIELDS } from "./types";
 import { basicDetailsSchema, buildAddressSchema } from "./validation";
 import { CartItems } from "@/components/cart/CartItem";
 import type { CheckoutClientRequest, CheckoutResponse } from "@/lib/api.types";
 import { checkoutServerFn } from "@/server/checkout";
-
+import { getLanguageOption, LANGUAGE_OPTIONS } from "@/config/languages";
 interface Props {
   state: FormState;
   orderId?: string;
@@ -26,10 +25,17 @@ export function StepCheckout({ state, orderId, onBack }: Props) {
 
   const [submitted, setSubmitted] = useState(false);
   const [checkout, setCheckout] = useState<CheckoutResponse | null>(null);
+  const selectedLanguage = useMemo(() => {
+    return LANGUAGE_OPTIONS.find(
+      (l) => l.value === state.basic.country
+    );
+  }, [state.basic.country]);
+
+  const addressFields = selectedLanguage?.addressFields ?? [];
+
 
   const [promo, setPromo] = useState("");
   const [promoApplied, setPromoApplied] = useState<string | null>(null);
-
   const checkoutFn = useServerFn(checkoutServerFn);
 
   const userId = useSessionStore((s) => s.userId);
@@ -60,13 +66,14 @@ export function StepCheckout({ state, orderId, onBack }: Props) {
       issues.push("Email is not verified");
     }
 
-    const fields = COUNTRY_ADDRESS_FIELDS[state.basic.country] ?? [];
-    if (
-      fields.length === 0 ||
-      !buildAddressSchema(fields).safeParse(state.address).success
-    ) {
-      issues.push("Shipping address is incomplete");
-    }
+  const fields = selectedLanguage?.addressFields ?? [];
+
+  if (
+    fields.length === 0 ||
+    !buildAddressSchema(fields).safeParse(state.address).success
+  ) {
+    issues.push("Shipping address is incomplete");
+  }
 
     return issues;
   }, [items, state, t]);
@@ -151,8 +158,9 @@ export function StepCheckout({ state, orderId, onBack }: Props) {
       </section>
     );
   }
+   const countryName = getLanguageOption(state.basic.country) || null; 
 
-  return (
+   return (
     <div className="space-y-4">
 
       {missing.length > 0 && (
@@ -184,15 +192,18 @@ export function StepCheckout({ state, orderId, onBack }: Props) {
         <Row label={t("cart.customer")} value={state.basic.name} />
         <Row label={t("cart.email")} value={state.basic.email} />
         <Row label={t("cart.phone")} value={state.basic.phone} />
-        <Row label={t("cart.country")} value={state.basic.country} />
-
+        <Row label={t("cart.country")} value={countryName ? countryName.name : state.basic.country} />
         <div className="border-t pt-2 mt-2">
           <p className="text-xs font-bold uppercase mb-1">
             {t("cart.shippingAddress")}
           </p>
 
-          {(COUNTRY_ADDRESS_FIELDS[state.basic.country] ?? []).map((f) => (
-            <Row key={f} label={f} value={state.address[f] ?? ""} />
+         {addressFields.map((f) => (
+            <Row
+              key={f.key}
+              label={f.label}
+              value={state.address[f.key] ?? ""}
+            />
           ))}
         </div>
       </section>
