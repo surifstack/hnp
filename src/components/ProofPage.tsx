@@ -53,8 +53,9 @@ function FlyerPreview({ order }: { order: Order }) {
     <div className="flex justify-center">
       <div className="w-full overflow-x-auto rounded-xl border bg-neutral-100 p-4">
         <div
-          className="mx-auto bg-white shadow-sm"
+          className="mx-auto  shadow-sm"
           style={{
+            backgroundColor: bgClass,
             width: `${PAGE_WIDTH_IN}in`,
             minHeight: "8in",
             paddingLeft: `${SAFE_MARGIN_IN}in`,
@@ -101,7 +102,7 @@ function FlyerPreview({ order }: { order: Order }) {
               <div
                 key={i}
                 style={{
-                  backgroundColor :bgClass
+                  backgroundColor : "transparent"
                 }}
 className={`flex min-h-[58px] flex-col items-center justify-center border border-black  px-2 py-2 text-center text-black`}              >
                 <p className="text-[11px] font-semibold uppercase leading-tight">{labelText}</p>
