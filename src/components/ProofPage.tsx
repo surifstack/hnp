@@ -76,7 +76,7 @@ function FlyerPreview({ order }: { order: Order }) {
             <div
               className="text-center font-extrabold uppercase text-gray"
               style={{
-                fontSize: "28pt",
+                fontSize: "26pt",
                 lineHeight: 1.05,
                 letterSpacing: "0.02em",
                 overflowWrap: "break-word",
