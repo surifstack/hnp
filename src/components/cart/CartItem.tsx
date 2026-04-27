@@ -72,7 +72,7 @@ export function CartItems({
                   </button>
 
                   <div className="text-xs text-gray-500">
-                    {t("cart.qty")}: {item.order.setup.quantity}
+                    {t("cart.quantity")}: {item.order.setup.quantity}
                   </div>
 
                   <div className="mt-2 flex items-center gap-2">
