@@ -102,7 +102,7 @@ export function CartSheet({ trigger }: { trigger: ReactNode }) {
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                updateQuantity(item.orderId, Math.max(40, qty - 40));
+                                updateQuantity(item.orderId, Math.max(20, qty - 20));
                               }}
                             >
                               {t("cart.decrease")}
@@ -115,7 +115,7 @@ export function CartSheet({ trigger }: { trigger: ReactNode }) {
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                updateQuantity(item.orderId, Math.min(400, qty + 40));
+                                updateQuantity(item.orderId, Math.min(400, qty + 20));
                               }}
                             >
                               {t("cart.increase")}
