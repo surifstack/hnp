@@ -4,8 +4,8 @@ import type { MoneyTotals } from "@/lib/api.types";
 export function estimateItemTotals(item: CartItem): MoneyTotals {
   const product = item.product;
   const currency = product?.pricing.currency ?? "usd";
-  const qty = item.order.setup.quantity ?? 20;
-  const sets = Math.max(1, Math.round(qty / 20));
+  const qty = item.order.setup.quantity ?? 40;
+  const sets = Math.max(1, Math.round(qty / 40));
 
   const pricePerSet = product?.pricing.pricePerSetCents ?? 0;
   const shipping = product?.pricing.shippingCents ?? 0;
@@ -20,7 +20,6 @@ export function estimateItemTotals(item: CartItem): MoneyTotals {
 
 export function sumCartTotals(items: CartItem[]): MoneyTotals {
   const currency = items[0]?.product?.pricing.currency ?? "usd";
-  console.log("Calculating totals for items:", items);
   const totals = items.reduce(
     (acc, item) => {
       const t = estimateItemTotals(item);

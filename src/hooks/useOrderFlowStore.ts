@@ -131,15 +131,30 @@ export const useOrderFlowStore = create<OrderFlowState>()(
         }
 
         const order = cloneOrder(item.order);
-        set({
-          order,
-          productSlug: order.productSlug,
-          product: item.product,
-          setupDraft: defaultSetup(order),
-          draft: draftFromOrder(order),
-          activeStep: order.approvals.final ? "review" : "title",
-          error: null,
-        });
+        set({ error: null });
+
+        try {
+          const product = item.product ?? (await apiJson<Product>(`/products/${order.productSlug}`));
+          set({
+            order,
+            productSlug: order.productSlug,
+            product,
+            setupDraft: defaultSetup(order),
+            draft: draftFromOrder(order),
+            activeStep: order.approvals.final ? "review" : "title",
+            error: null,
+          });
+        } catch (error) {
+          set({
+            order,
+            productSlug: order.productSlug,
+            product: null,
+            setupDraft: defaultSetup(order),
+            draft: draftFromOrder(order),
+            activeStep: order.approvals.final ? "review" : "title",
+            error: error instanceof Error ? error.message : "Failed to load product",
+          });
+        }
       },
 
       startOrder: async (slug) => {

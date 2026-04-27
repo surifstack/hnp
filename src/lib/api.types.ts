@@ -70,16 +70,22 @@ export interface Order {
   userId?: string;
 }
 
-export interface CheckoutProductSnapshot {
-  slug: ProductSlug;
-  name: string;
-  pricing: Product["pricing"];
-}
-
 export interface CheckoutItemInput {
   clientItemId: string;
   productSlug: ProductSlug;
-  product: CheckoutProductSnapshot;
+  quantity: number;
+  colorPms: PmsColor;
+  languageCode: string;
+  titleLines: string[];
+  secondaryLines: string[];
+  labelLines: string[];
+}
+
+// Client -> our server boundary.
+// Do NOT accept pricing data from the browser; the server must look up pricing.
+export interface CheckoutClientItemInput {
+  clientItemId: string;
+  productSlug: ProductSlug;
   quantity: number;
   colorPms: PmsColor;
   languageCode: string;
@@ -99,6 +105,15 @@ export type CheckoutAddressInput = Record<string, string>;
 
 export interface CheckoutRequest {
   items: CheckoutItemInput[];
+  customer: CheckoutCustomerInput;
+  address: CheckoutAddressInput;
+  otpVerified: boolean;
+  promoCode?: string;
+}
+
+export interface CheckoutClientRequest {
+  userId: string;
+  items: CheckoutClientItemInput[];
   customer: CheckoutCustomerInput;
   address: CheckoutAddressInput;
   otpVerified: boolean;

@@ -83,7 +83,7 @@ export function CartItems({
                         e.stopPropagation();
                         updateQuantity(
                           item.orderId,
-                          Math.max(20, item.order.setup.quantity - 20)
+                          Math.max(40, item.order.setup.quantity - 40)
                         );
                       }}
                     >
@@ -97,7 +97,7 @@ export function CartItems({
                         e.stopPropagation();
                         updateQuantity(
                           item.orderId,
-                          Math.min(400, item.order.setup.quantity + 20)
+                          Math.min(400, item.order.setup.quantity + 40)
                         );
                       }}
                     >

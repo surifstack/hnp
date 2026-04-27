@@ -4,7 +4,7 @@ import { ChevronLeft, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { apiJson } from "@/lib/api";
+import { useServerFn } from "@tanstack/react-start";
 import { useSessionStore } from "@/hooks/useSessionStore";
 import { useCartStore } from "@/hooks/useCartStore";
 import { useTranslation } from "react-i18next";
@@ -12,7 +12,8 @@ import type { FormState } from "./types";
 import { COUNTRY_ADDRESS_FIELDS } from "./types";
 import { basicDetailsSchema, buildAddressSchema } from "./validation";
 import { CartItems } from "@/components/cart/CartItem";
-import type { CheckoutRequest, CheckoutResponse } from "@/lib/api.types";
+import type { CheckoutClientRequest, CheckoutResponse } from "@/lib/api.types";
+import { checkoutServerFn } from "@/server/checkout";
 
 interface Props {
   state: FormState;
@@ -28,6 +29,8 @@ export function StepCheckout({ state, orderId, onBack }: Props) {
 
   const [promo, setPromo] = useState("");
   const [promoApplied, setPromoApplied] = useState<string | null>(null);
+
+  const checkoutFn = useServerFn(checkoutServerFn);
 
   const userId = useSessionStore((s) => s.userId);
   const items = useCartStore((s) => s.items);
@@ -49,10 +52,6 @@ export function StepCheckout({ state, orderId, onBack }: Props) {
       issues.push(t("cart.cartEmptyTitle"));
     }
 
-    if (items.some((item) => !item.product)) {
-      issues.push("One or more cart items are missing product data");
-    }
-
     if (!basicDetailsSchema.safeParse(state.basic).success) {
       issues.push("Basic details are incomplete");
     }
@@ -72,20 +71,16 @@ export function StepCheckout({ state, orderId, onBack }: Props) {
     return issues;
   }, [items, state, t]);
 
-  const checkoutPayload = useMemo<CheckoutRequest | null>(() => {
+  const checkoutPayload = useMemo<CheckoutClientRequest | null>(() => {
+    if (!userId) return null;
     if (items.length === 0) return null;
 
     return {
+      userId,
       items: items
-        .filter((item) => item.product)
         .map((item) => ({
           clientItemId: item.orderId,
           productSlug: item.order.productSlug,
-          product: {
-            slug: item.product!.slug,
-            name: item.product!.name,
-            pricing: item.product!.pricing,
-          },
           quantity: item.order.setup.quantity,
           colorPms: item.order.setup.colorPms,
           languageCode: item.order.setup.languageCode,
@@ -103,25 +98,23 @@ export function StepCheckout({ state, orderId, onBack }: Props) {
       otpVerified: state.otpVerified,
       promoCode: promoApplied ?? undefined,
     };
-  }, [items, promoApplied, state]);
+  }, [items, promoApplied, state, userId]);
 
   const placeOrder = () => {
-    if (missing.length > 0 || !checkoutPayload) return;
+    if (missing.length > 0) return;
 
     if (!userId) {
       toast.error(t("cart.signInRequired"));
       return;
     }
 
+    if (!checkoutPayload) return;
+
     setSubmitted(true);
 
     void (async () => {
       try {
-        const resp = await apiJson<CheckoutResponse>("/orders/checkout", {
-          method: "POST",
-          headers: { "x-user-id": userId },
-          body: JSON.stringify(checkoutPayload),
-        });
+        const resp = await checkoutFn({ data: checkoutPayload });
 
         setCheckout(resp);
         toast.success(t("cart.checkoutSuccess"));
