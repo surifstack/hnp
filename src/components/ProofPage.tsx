@@ -151,7 +151,7 @@ export function ProofPage({ slug }: { slug: string }) {
           grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2
           md:static md:border md:rounded-xl md:shadow md:p-4"
         >
-          <Button asChild size="lg" className="w-full bg-black text-white">
+          <Button asChild size="lg" className="w-full bg-black text-white tracking-wide active:scale-95">
             <Link
               to="/cart"
               onClick={() => {
