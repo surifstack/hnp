@@ -170,7 +170,6 @@ export function CartSheet({ trigger }: { trigger: ReactNode }) {
                   </span>
                   <span>{formatCents(totals.taxes, totals.currency)}</span>
                 </div>
-
                 <div className="flex justify-between font-extrabold">
                   <span>{t("cart.total")}</span>
                   <span>{formatCents(totals.total, totals.currency)}</span>
