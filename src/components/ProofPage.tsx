@@ -10,7 +10,7 @@ import { getSwatchByPms } from "@/lib/data";
 
 /* ---------------- FLYER PREVIEW ---------------- */
 
-const PAGE_WIDTH_IN = 6;
+const PAGE_WIDTH_IN = 6.2;
 const USABLE_WIDTH_IN = 5.8;
 const SAFE_MARGIN_IN = 0.1;
 const TOP_SAFE_OFFSET_IN = 0.2;
@@ -74,7 +74,7 @@ function FlyerPreview({ order }: { order: Order }) {
             }}
           >
             <div
-              className="text-center font-extrabold uppercase text-black"
+              className="text-center font-extrabold uppercase text-gray-300"
               style={{
                 fontSize: "28pt",
                 lineHeight: 1.05,
@@ -97,15 +97,13 @@ function FlyerPreview({ order }: { order: Order }) {
             </div>
           </div>
 
-          <div className="mx-auto mt-8 grid grid-cols-4 gap-2" style={{ width: `${USABLE_WIDTH_IN}in` }}>
+          <div className="mx-auto mt-8 grid grid-cols-4 gap-2 gap-y-0" style={{ width: `${USABLE_WIDTH_IN}in` }}>
             {Array.from({ length: 52 }).map((_, i) => (
               <div
                 key={i}
-                style={{
-                  backgroundColor : "transparent"
-                }}
-className={`flex min-h-[58px] flex-col items-center justify-center border border-black  px-2 py-2 text-center text-black`}              >
-                <p className="text-[11px] font-semibold uppercase leading-tight">{labelText}</p>
+              
+className={`flex min-h-[58px] flex-col items-center justify-center border border-black  p-1 text-center text-black`}              >
+                <p className="text-[13px] text-gray-700  leading-tight">{labelText}</p>
               </div>
             ))}
           </div>
