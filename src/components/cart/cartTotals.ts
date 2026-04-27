@@ -20,6 +20,7 @@ export function estimateItemTotals(item: CartItem): MoneyTotals {
 
 export function sumCartTotals(items: CartItem[]): MoneyTotals {
   const currency = items[0]?.product?.pricing.currency ?? "usd";
+  console.log("Calculating totals for items:", items);
   const totals = items.reduce(
     (acc, item) => {
       const t = estimateItemTotals(item);
