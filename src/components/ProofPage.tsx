@@ -124,6 +124,7 @@ export function ProofPage({ slug }: { slug: string }) {
   const product = useOrderFlowStore((s) => s.product);
   const reset = useOrderFlowStore((s) => s.reset);
   const addOrder = useCartStore((s) => s.addOrder);
+  const resetApprovals = useOrderFlowStore((s) => s.resetApprovals);
 
   const loading = useOrderFlowStore((s) => s.loading);
 
@@ -166,11 +167,14 @@ export function ProofPage({ slug }: { slug: string }) {
             size="lg"
             variant="outline"
             className="w-full"
-            onClick={() =>
+            onClick={() =>{
+              resetApprovals();
               router.navigate({
                 to: "/products/$slug/order/text",
                 params: { slug },
               })
+
+            }
             }
           >
             {t("proof.makeChanges")}
