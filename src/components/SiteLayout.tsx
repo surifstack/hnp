@@ -117,6 +117,7 @@ className="w-52 sm:w-64 md:w-80 lg:w-[420px] xl:w-[520px] mx-auto h-auto"       
       </footer>
 
       {/* Language Switcher */}
+      
     {showLanguageSwitcher && (
   <div className="fixed bottom-16 right-4 z-50 sm:bottom-20 sm:right-6">
     <LanguageSwitcher />
