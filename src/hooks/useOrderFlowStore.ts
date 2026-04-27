@@ -46,7 +46,7 @@ interface OrderFlowState {
   startOrder: (slug: ProductSlug) => Promise<Order | null>;
   refreshOrder: () => Promise<void>;
   updateSetup: (setup: SetupDraft) => Promise<void>;
-
+  resetApprovals: () => void;
   approveTitle: () => Promise<void>;
   approveSecondary: () => Promise<void>;
   approveLabel: () => Promise<void>;
@@ -247,6 +247,24 @@ export const useOrderFlowStore = create<OrderFlowState>()(
           activeStep: "review",
         });
       },
+
+        resetApprovals: () => {
+      const order = get().order;
+      if (!order) return;
+
+      set({
+        order: {
+          ...order,
+          approvals: {
+            ...order.approvals, // ✅ keep label + final
+            title: false,
+            secondary: false,
+            label : false,
+          },
+        },
+        activeStep: "title",
+      });
+     },
 
       fetchProofSvg: async () => {
         set({ proofSvg: null, error: null });

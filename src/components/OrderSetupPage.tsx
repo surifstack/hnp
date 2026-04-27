@@ -4,6 +4,7 @@ import { SiteLayout } from "@/components/SiteLayout";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
+import {COLORS} from "@/lib/data";
 import {
   Select,
   SelectContent,
@@ -12,16 +13,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useOrderFlowStore } from "@/hooks/useOrderFlowStore";
-import type { PmsColor, Product } from "@/lib/api.types";
+import type {  Product } from "@/lib/api.types";
 import { skuForSelection } from "@/lib/sku";
 
-const QUANTITIES = Array.from({ length: 10 }, (_, i) => (i + 1) * 40);
+const QUANTITIES = Array.from({ length: 20 }, (_, i) => (i + 1) * 20);
 
-const COLORS: Array<{ pms: PmsColor; label: string; swatch: string }> = [
-  { pms: "802", label: "PMS 802", swatch: "var(--neon-green)" },
-  { pms: "803", label: "PMS 803", swatch: "var(--neon-yellow)" },
-  { pms: "806", label: "PMS 806", swatch: "var(--neon-pink)" },
-];
+
 
 export function OrderSetupPage({ slug }: { slug: string }) {
   const router = useRouter();
@@ -49,7 +46,7 @@ export function OrderSetupPage({ slug }: { slug: string }) {
   }, [order, slug, startOrder]);
 
   const safeSetup = setupDraft ?? {
-    quantity: 40,
+    quantity: 20,
     colorPms: "802",
     languageCode: "en",
   };

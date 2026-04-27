@@ -43,7 +43,7 @@
     "label": "लेबल",
     "title": "शीर्षक",
     "done": "पूर्ण",
-    "quantity": "मात्रा (40 से 400)",
+    "quantity": "मात्रा (20 से 400)",
     "color": "रंग",
     "language": "भाषा",
     "textLockedTitle": "टेक्स्ट इनपुट (लॉक किया गया)",
@@ -67,7 +67,9 @@
     "noActiveOrder": "कोई सक्रिय ऑर्डर नहीं",
     "goToSetup": "सेटअप पर जाएँ",
     "locked": "लॉक किया गया",
-    "typeYourText": "अपना टेक्स्ट लिखें…"
+    "typeYourText": "अपना टेक्स्ट लिखें…",
+        "backToProduct" : "उत्पाद पर वापस जाएँ"
+
   },
   "proof": {
     "title": "आपका प्रूफ",
@@ -146,6 +148,8 @@
     "email": "ईमेल",
     "phone": "फोन",
     "country": "देश",
+          "selectCountry": "देश चुनें",
+
     "shippingAddress": "शिपिंग पता",
     "promoCode": "प्रोमो कोड",
     "enterPromo": "प्रोमो कोड दर्ज करें",

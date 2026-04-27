@@ -40,7 +40,7 @@
      "label": "Label",
      "title": "Title",
      "done": "Done",
-    "quantity": "Quantity (40 to 400)",
+    "quantity": "Quantity (20 to 400)",
     "color": "Color",
     "language": "Language",
     "textLockedTitle": "Text input (locked)",
@@ -64,7 +64,8 @@
     "noActiveOrder": "No active order",
     "goToSetup": "Go to setup",
     "locked": "Locked",
-    "typeYourText": "Type your text…"
+    "typeYourText": "Type your text…",
+    "backToProduct" : "Back to product"
 
    
   },
@@ -141,8 +142,6 @@
       "taxes": "Taxes",
       "checkout": "Checkout",
       "clear": "Clear",
-
-    
       "selectedProducts": "Selected products",
       "orderSummary": "Order summary",
       "customer": "Customer",
@@ -150,7 +149,7 @@
       "phone": "Phone",
       "country": "Country",
       "shippingAddress": "Shipping address",
-
+      "selectCountry": "Select country",
       "promoCode": "Promo Code",
       "enterPromo": "Enter promo code",
       "apply": "Apply",

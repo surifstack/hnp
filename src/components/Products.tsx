@@ -21,7 +21,7 @@ export function Products() {
       <div className="space-y-6">
 
         {/* HEADER */}
-        <header className="bg-white rounded-2xl p-6 shadow-lg border">
+        <header className="bg-white  p-6 shadow-lg border">
           <h1 className="text-3xl font-extrabold">
             {t("product.title")}
           </h1>
@@ -48,7 +48,7 @@ export function Products() {
               params={{ slug: p.slug }}
               className="block group"
             >
-              <div className="flex flex-col lg:flex-row gap-6 bg-white rounded-2xl p-6 shadow-md border hover:shadow-xl transition">
+              <div className="flex flex-col lg:flex-row gap-6 bg-white p-6 shadow-md border hover:shadow-xl transition">
 
                 {/* LEFT */}
                 <div className="flex-1">
@@ -85,11 +85,7 @@ export function Products() {
 
                   {/* PRICING */}
 
-
-
-
-
-                  <div className="bg-gray-50 rounded-xl p-4 border">
+                  <div className="bg-gray-50  p-4 border">
                     <div className="text-xs uppercase text-gray-400 font-semibold">
                       {t("product.pricing")}
                     </div>
@@ -105,7 +101,7 @@ export function Products() {
                   </div>
 
                   {/* SKUS */}
-                  <div className="bg-gray-50 rounded-xl p-4 border">
+                  <div className="bg-gray-50  p-4 border">
                     <div className="text-xs uppercase text-gray-400 font-semibold mb-2">
                       {t("products.skus")}
                     </div>
@@ -136,31 +132,31 @@ function SkeletonList() {
   return (
     <div className="space-y-5 animate-pulse">
       {[1,2,3,4].map((i) => (
-        <div key={i} className="flex flex-col lg:flex-row gap-6 bg-white rounded-2xl p-6 shadow-md border">
+        <div key={i} className="flex flex-col lg:flex-row gap-6 bg-white  p-6 shadow-md border">
           <div className="flex-1 space-y-3">
-            <div className="h-5 w-1/3 bg-gray-200 rounded" />
-            <div className="h-4 w-2/3 bg-gray-200 rounded" />
-            <div className="h-4 w-1/2 bg-gray-200 rounded" />
+            <div className="h-5 w-1/3 bg-gray-200 " />
+            <div className="h-4 w-2/3 bg-gray-200 " />
+            <div className="h-4 w-1/2 bg-gray-200 " />
             <div className="space-y-2 mt-4">
-              <div className="h-3 w-24 bg-gray-200 rounded" />
-              <div className="h-3 w-3/4 bg-gray-200 rounded" />
-              <div className="h-3 w-2/3 bg-gray-200 rounded" />
+              <div className="h-3 w-24 bg-gray-200 " />
+              <div className="h-3 w-3/4 bg-gray-200 " />
+              <div className="h-3 w-2/3 bg-gray-200 " />
             </div>
           </div>
 
           <div className="w-full lg:w-64 space-y-4">
-            <div className="bg-gray-50 rounded-xl p-4 border space-y-2">
-              <div className="h-3 w-16 bg-gray-200 rounded" />
-              <div className="h-5 w-20 bg-gray-200 rounded" />
-              <div className="h-3 w-24 bg-gray-200 rounded" />
+            <div className="bg-gray-50  p-4 border space-y-2">
+              <div className="h-3 w-16 bg-gray-200 " />
+              <div className="h-5 w-20 bg-gray-200 " />
+              <div className="h-3 w-24 bg-gray-200 " />
             </div>
 
-            <div className="bg-gray-50 rounded-xl p-4 border space-y-2">
-              <div className="h-3 w-16 bg-gray-200 rounded" />
+            <div className="bg-gray-50  p-4 border space-y-2">
+              <div className="h-3 w-16 bg-gray-200" />
               <div className="grid grid-cols-3 gap-2 mt-2">
-                <div className="h-6 bg-gray-200 rounded" />
-                <div className="h-6 bg-gray-200 rounded" />
-                <div className="h-6 bg-gray-200 rounded" />
+                <div className="h-6 bg-gray-200 " />
+                <div className="h-6 bg-gray-200 " />
+                <div className="h-6 bg-gray-200 " />
               </div>
             </div>
           </div>
@@ -172,7 +168,7 @@ function SkeletonList() {
 
 function SkuPill({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border px-2 py-1 text-center bg-white">
+    <div className=" border px-2 py-1 text-center bg-white">
       <span className="font-mono text-xs">
         {label}:{value}
       </span>

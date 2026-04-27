@@ -43,7 +43,7 @@
     "label": "标签",
     "title": "标题",
     "done": "完成",
-    "quantity": "数量（40到400）",
+    "quantity": "数量（20到400）",
     "color": "颜色",
     "language": "语言",
     "textLockedTitle": "文本输入（已锁定）",
@@ -67,7 +67,9 @@
     "noActiveOrder": "没有活跃订单",
     "goToSetup": "前往设置",
     "locked": "已锁定",
-    "typeYourText": "输入您的文本…"
+    "typeYourText": "输入您的文本…",
+            "backToProduct" : "返回产品"
+
   },
   "proof": {
     "title": "您的校样",
@@ -146,6 +148,7 @@
     "email": "邮箱",
     "phone": "电话",
     "country": "国家",
+    "selectCountry": "选择国家",
     "shippingAddress": "收货地址",
     "promoCode": "优惠码",
     "enterPromo": "输入优惠码",

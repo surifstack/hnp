@@ -9,7 +9,7 @@ export function VideoBlock() {
   const { t } = useTranslation();
 
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
   const [showOrderNow, setShowOrderNow] = useState(false);
   const [progress, setProgress] = useState(0);
 
