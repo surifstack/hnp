@@ -74,7 +74,7 @@ function FlyerPreview({ order }: { order: Order }) {
             }}
           >
             <div
-              className="text-center font-extrabold uppercase text-gray-300"
+              className="text-center font-extrabold uppercase text-gray"
               style={{
                 fontSize: "28pt",
                 lineHeight: 1.05,
@@ -103,7 +103,7 @@ function FlyerPreview({ order }: { order: Order }) {
                 key={i}
               
 className={`flex min-h-[58px] flex-col items-center justify-center border border-black  p-1 text-center text-black`}              >
-                <p className="text-[13px] text-gray-700  leading-tight">{labelText}</p>
+                <p className="text-[11px] text-gray-700  leading-tight">{labelText}</p>
               </div>
             ))}
           </div>
