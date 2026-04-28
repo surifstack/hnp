@@ -10,7 +10,7 @@ import { getSwatchByPms } from "@/lib/data";
 
 /* ---------------- FLYER PREVIEW ---------------- */
 
-const PAGE_WIDTH_IN = 6.2;
+const PAGE_WIDTH_IN = 6;
 const USABLE_WIDTH_IN = 5.8;
 const SAFE_MARGIN_IN = 0.1;
 const TOP_SAFE_OFFSET_IN = 0.2;
