@@ -23,7 +23,6 @@ interface CartState {
   activeOrderId: string | null;
   loading: boolean;
   error: string | null;
-
   setActive: (orderId: string) => void;
   remove: (orderId: string) => void;
   clear: () => void;

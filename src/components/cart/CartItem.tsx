@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/hooks/useCartStore";
 import { useTranslation } from "react-i18next";
 import { estimateItemTotals, formatCents, sumCartTotals } from "./cartTotals";
+import { buildQuantityConfig } from "@/lib/data";
 
 export function CartItems({
   effectiveActiveOrderId,
@@ -15,6 +16,7 @@ export function CartItems({
   const remove = useCartStore((s) => s.remove);
   const updateQuantity = useCartStore((s) => s.updateQuantity);
   const loading = useCartStore((s) => s.loading);
+
 
   const totals = sumCartTotals(items);
 
@@ -55,7 +57,7 @@ export function CartItems({
             const isActive = item.orderId === effectiveActiveOrderId;
             const name = item.product?.name ?? item.order.productSlug;
             const tItem = estimateItemTotals(item);
-
+            const {orderQty , maxQty} = buildQuantityConfig(item.product?.documentation?.specs ?? []);
             return (
               <div
                 key={item.orderId}
@@ -83,7 +85,7 @@ export function CartItems({
                         e.stopPropagation();
                         updateQuantity(
                           item.orderId,
-                          Math.max(20, item.order.setup.quantity - 20)
+                          Math.max(orderQty, item.order.setup.quantity - orderQty)
                         );
                       }}
                     >
@@ -97,7 +99,7 @@ export function CartItems({
                         e.stopPropagation();
                         updateQuantity(
                           item.orderId,
-                          Math.min(400, item.order.setup.quantity + 20)
+                          Math.min(maxQty, item.order.setup.quantity + orderQty)
                         );
                       }}
                     >

@@ -1,11 +1,15 @@
 import type { CartItem } from "@/hooks/useCartStore";
 import type { MoneyTotals } from "@/lib/api.types";
+import { buildQuantityConfig } from "@/lib/data";
 
 export function estimateItemTotals(item: CartItem): MoneyTotals {
   const product = item.product;
+  const {orderQty} = buildQuantityConfig(product?.documentation?.specs ?? []);
+
+  
   const currency = product?.pricing.currency ?? "usd";
-  const qty = item.order.setup.quantity ?? 20;
-  const sets = Math.max(1, Math.round(qty / 20));
+  const qty = item.order.setup.quantity ?? orderQty;
+  const sets = Math.max(1, Math.round(qty / orderQty));
 
   const pricePerSet = product?.pricing.pricePerSetCents ?? 0;
   const shipping = product?.pricing.shippingCents ?? 0;

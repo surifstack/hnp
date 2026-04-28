@@ -1,35 +1,59 @@
-export type ProductSlug = "mininote" | "peelnpost" | "flyer-small" | "flyer-large";
 
 export type PmsColor = "802" | "803" | "806";
 
+export type QuantityConfig = {
+  orderQty: number;
+  maxQty: number;
+  steps: number;
+  quantities: number[];
+};
+export interface ProductField {
+  key: string; // 👈 IMPORTANT for frontend access
+  label: string;
+  value: string | number | boolean | string[];
+}
+
+export type StepCardProps = {
+  title: string;
+  subtitle: string;
+  label: string;
+  value: string;
+  rows: number;
+  disabled: boolean;
+  approved: boolean;
+  isActive: boolean;
+  anchorId?: string;
+  canEdit: boolean;
+  onActivate: () => void;
+  onChange: (next: string) => void;
+  onApprove: () => void;
+};
+
 export interface Product {
   id: string;
-  slug: ProductSlug;
+  slug: string;
   name: string;
   description: string;
+
   processSteps: string[];
-  // Optional: enriched client-side catalog fields (not required from the API).
-  skus?: { G: string; P: string; Y: string };
-  productInfo?: Array<{ label: string; value: string }>;
+
+  // flexible (not locked to G/P/Y)
+  skus?: Record<string, string>;
+
+  productInfo?: ProductField[];
+
   documentation?: {
     overview: string;
-    specs: Array<{ label: string; value: string }>;
+    specs: ProductField[];
     codes: string[];
   };
+
   pricing: {
-    currency: "usd";
+    currency: 'usd';
     pricePerSetCents: number;
     shippingCents: number;
     taxRate?: number;
   };
-}
-
-export interface Language {
-  id: string;
-  code: string;
-  name: string;
-  active: boolean;
-  sortOrder: number;
 }
 
 export type OrderStatus =
@@ -47,7 +71,7 @@ export type OrderStatus =
 
 export interface Order {
   id: string;
-  productSlug: ProductSlug;
+  productSlug: string;
   status: OrderStatus;
   createdAt: string;
   updatedAt: string;
@@ -65,14 +89,16 @@ export interface Order {
     title: boolean;
     secondary: boolean;
     label: boolean;
+    allApproved:boolean;
     final: boolean;
+
   };
   userId?: string;
 }
 
 export interface CheckoutItemInput {
   clientItemId: string;
-  productSlug: ProductSlug;
+  productSlug: string;
   quantity: number;
   colorPms: PmsColor;
   languageCode: string;
@@ -85,7 +111,7 @@ export interface CheckoutItemInput {
 // Do NOT accept pricing data from the browser; the server must look up pricing.
 export interface CheckoutClientItemInput {
   clientItemId: string;
-  productSlug: ProductSlug;
+  productSlug: string;
   quantity: number;
   colorPms: PmsColor;
   languageCode: string;

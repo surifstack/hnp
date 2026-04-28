@@ -1,4 +1,4 @@
-import type { Order, PmsColor, ProductSlug } from "@/lib/api.types";
+import type { Order, PmsColor } from "@/lib/api.types";
 
 function nowIso() {
   return new Date().toISOString();
@@ -16,7 +16,7 @@ export function splitDraftLines(text: string, maxLines: number) {
     .slice(0, maxLines);
 }
 
-export function createClientOrderDraft(productSlug: ProductSlug): Order {
+export function createClientOrderDraft(productSlug: string): Order {
   const timestamp = nowIso();
   return {
     id: newClientId("draft"),
@@ -39,6 +39,7 @@ export function createClientOrderDraft(productSlug: ProductSlug): Order {
       secondary: false,
       label: false,
       final: false,
+      allApproved:false
     },
   };
 }
@@ -83,6 +84,7 @@ export function applyTextStep(
     next.approvals.secondary = false;
     next.approvals.label = false;
     next.approvals.final = false;
+    next.approvals.allApproved = false;    
     return next;
   }
 
@@ -90,13 +92,13 @@ export function applyTextStep(
     next.text.secondaryLines = lines;
     next.approvals.secondary = true;
     next.approvals.label = false;
-    next.approvals.final = false;
+    next.approvals.allApproved = false;
     return next;
   }
 
   next.text.labelLines = lines;
   next.approvals.label = true;
-  next.approvals.final = false;
+  next.approvals.allApproved = false;
   return next;
 }
 
@@ -105,5 +107,6 @@ export function finalizeOrderDraft(order: Order) {
   next.updatedAt = nowIso();
   next.status = "Proof Generated";
   next.approvals.final = true;
+  next.approvals.allApproved = true;
   return next;
 }

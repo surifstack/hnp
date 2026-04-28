@@ -3,31 +3,46 @@ import { AddressField , LANGUAGE_OPTIONS } from "@/config/languages";
 
 const SUPPORTED_LANGUAGE_CODES = LANGUAGE_OPTIONS.map((l) => l.value);
 
-export const basicDetailsSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(2, { message: "Name must be at least 2 characters" })
-    .max(100, { message: "Name must be less than 100 characters" }),
+export const basicDetailsSchema = z
+  .object({
+    first_name: z
+      .string()
+      .trim()
+      .min(2, { message: "First name must be at least 2 characters" })
+      .max(100, { message: "First name must be less than 100 characters" }),
 
-  email: z
-    .string()
-    .trim()
-    .email({ message: "Enter a valid email address" })
-    .max(255, { message: "Email must be less than 255 characters" }),
+    last_name: z
+      .string()
+      .trim()
+      .min(2, { message: "Last name must be at least 2 characters" })
+      .max(100, { message: "Last name must be less than 100 characters" }),
 
-  phone: z
-    .string()
-    .trim()
-    .regex(/^[0-9]{7,15}$/, {
-      message: "Phone must be 7–15 digits, numbers only",
+    email: z
+      .string()
+      .trim()
+      .email({ message: "Enter a valid email address" })
+      .max(255, { message: "Email must be less than 255 characters" }),
+
+    confirm_email: z
+      .string()
+      .trim()
+      .email({ message: "Enter a valid email address" }),
+
+    phone: z
+      .string()
+      .trim()
+      .regex(/^[0-9]{7,15}$/, {
+        message: "Phone must be 7–15 digits, numbers only",
+      }),
+
+    country: z.string().refine((v) => SUPPORTED_LANGUAGE_CODES.includes(v), {
+      message: "Please select a valid language",
     }),
-
-  // ✅ FIXED: use language system instead of country list
-  country: z.string().refine((v) => SUPPORTED_LANGUAGE_CODES.includes(v), {
-    message: "Please select a valid language",
-  }),
-});
+  })
+  .refine((data) => data.email === data.confirm_email, {
+    message: "Email addresses must match",
+    path: ["confirm_email"], // 👈 error shown here
+  });
 
 export type BasicDetailsInput = z.infer<typeof basicDetailsSchema>;
 

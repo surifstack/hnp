@@ -12,6 +12,7 @@ import {
 import { useCartStore } from "@/hooks/useCartStore";
 import { estimateItemTotals, formatCents, sumCartTotals } from "./cartTotals";
 import { useTranslation } from "react-i18next";
+import { buildQuantityConfig } from "@/lib/data";
 
 export function CartSheet({ trigger }: { trigger: ReactNode }) {
   const { t } = useTranslation();
@@ -69,7 +70,7 @@ export function CartSheet({ trigger }: { trigger: ReactNode }) {
                   const name = item.product?.name ?? item.order.productSlug;
                   const qty = item.order.setup.quantity;
                   const color = item.order.setup.colorPms;
-
+                  const {orderQty , maxQty} = buildQuantityConfig(item.product?.documentation?.specs ?? []);
                   return (
                     <button
                       key={item.orderId}
@@ -102,7 +103,7 @@ export function CartSheet({ trigger }: { trigger: ReactNode }) {
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                updateQuantity(item.orderId, Math.max(20, qty - 20));
+                                updateQuantity(item.orderId, Math.max(orderQty, qty - orderQty));
                               }}
                             >
                               {t("cart.decrease")}
@@ -115,7 +116,7 @@ export function CartSheet({ trigger }: { trigger: ReactNode }) {
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                updateQuantity(item.orderId, Math.min(400, qty + 20));
+                                updateQuantity(item.orderId, Math.min(maxQty, qty + orderQty));
                               }}
                             >
                               {t("cart.increase")}

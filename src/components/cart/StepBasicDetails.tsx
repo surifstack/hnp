@@ -69,11 +69,21 @@ export function StepBasicDetails({ value, onChange, onNext }: Props) {
       {/* NAME */}
       <FieldRow
         id="name"
-        label={t("cart.name")}
-        value={value.name}
-        onChange={(e) => update("name", e.target.value)}
-        error={errors.name}
-        autoComplete="name"
+        label={t("common.firstName")}
+        value={value.first_name}
+        onChange={(e) => update("first_name", e.target.value)}
+        error={errors.first_name}
+        autoComplete="first_name"
+      />
+
+
+         <FieldRow
+        id="name"
+        label={t("common.lastName")}
+        value={value.last_name}
+        onChange={(e) => update("last_name", e.target.value)}
+        error={errors.last_name}
+        autoComplete="last_name"
       />
 
       {/* EMAIL */}
@@ -86,6 +96,18 @@ export function StepBasicDetails({ value, onChange, onNext }: Props) {
         error={errors.email}
         autoComplete="email"
       />
+
+        {/* CONFIRM EMAIL */}
+
+      <FieldRow
+        id="confirm_email"
+        label={t("common.reEnterEmail")}
+        type="email"
+        value={value.confirm_email}
+        onChange={(e) => update("confirm_email", e.target.value)}
+        error={errors.confirm_email}
+        autoComplete="email"
+      />  
 
       {/* PHONE */}
       <FieldRow

@@ -4,7 +4,7 @@ import { SiteLayout } from "@/components/SiteLayout";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
-import {COLORS} from "@/lib/data";
+import {buildQuantityConfig, COLORS, getFieldValue} from "@/lib/data";
 import {
   Select,
   SelectContent,
@@ -17,7 +17,6 @@ import type {  Product } from "@/lib/api.types";
 import { skuForSelection } from "@/lib/sku";
 import { LANGUAGE_OPTIONS } from "@/config/languages";
 
-const QUANTITIES = Array.from({ length: 20 }, (_, i) => (i + 1) * 20);
 
 export function OrderSetupPage({ slug }: { slug: string }) {
   const router = useRouter();
@@ -36,15 +35,16 @@ export function OrderSetupPage({ slug }: { slug: string }) {
   useEffect(() => {
     void loadProduct(slug);
   }, [loadProduct, slug]);
-
-  useEffect(() => {
+  
+const {orderQty , maxQty,quantities} = buildQuantityConfig(product?.documentation?.specs ?? []);
+useEffect(() => {
     if (!order || order.productSlug !== slug) {
       void startOrder(slug  as Product["slug"]);
     }
   }, [order, slug, startOrder]);
 
   const safeSetup = setupDraft ?? {
-    quantity: 20,
+    quantity: orderQty,
     colorPms: "802",
     languageCode: "en",
   };
@@ -80,7 +80,11 @@ export function OrderSetupPage({ slug }: { slug: string }) {
 
             {/* QUANTITY */}
             <div className="space-y-2">
-              <Label>{t("order.quantity")}</Label>
+             <Label>
+            {t("order.quantity", {
+              qty: `(${orderQty}-${maxQty})`,
+            })}
+          </Label>
               <Select
                 value={String(safeSetup.quantity)}
                 onValueChange={(v) =>
@@ -95,7 +99,7 @@ export function OrderSetupPage({ slug }: { slug: string }) {
                 </SelectTrigger>
 
                 <SelectContent>
-                  {QUANTITIES.map((q) => (
+                  {quantities.map((q) => (
                     <SelectItem key={q} value={String(q)}>
                       {q}
                     </SelectItem>

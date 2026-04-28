@@ -12,15 +12,17 @@ export interface AddressField {
 }
 
 export interface BasicDetails {
-  name: string;
+  first_name: string;
+  last_name: string;
   email: string;
+  confirm_email: string;
   phone: string;
   country:string; // ✅ ADDED: full language option for later use
 
 }
 
 export const initialFormState: FormState = {
-  basic: { name: "", email: "", phone: "", country: "" },
+  basic: { first_name: "",last_name:"",confirm_email:"", email: "", phone: "", country: "" },
   otpVerified: false,
   address: {},
 };

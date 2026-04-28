@@ -6,12 +6,10 @@ import { useTranslation } from "react-i18next";
 import { useCartStore } from "@/hooks/useCartStore";
 import type { Order } from "@/lib/api.types";
 import { NoActiveOrder } from "./NoActiveOrder";
-import { getSwatchByPms } from "@/lib/data";
+import { getFieldValue, getSwatchByPms } from "@/lib/data";
 
 /* ---------------- FLYER PREVIEW ---------------- */
 
-const PAGE_WIDTH_IN = 6;
-const USABLE_WIDTH_IN = 5.8;
 const SAFE_MARGIN_IN = 0.1;
 const TOP_SAFE_OFFSET_IN = 0.2;
 const BOX_GAP_IN = 0.18;
@@ -25,7 +23,6 @@ function clampText(value: string, maxChars: number, fallback: string) {
   return normalized.slice(0, maxChars).trim();
 }
 
-
 function getProofValues(order: Order) {
   return {
     box1Text: clampText(
@@ -38,26 +35,37 @@ function getProofValues(order: Order) {
       BOX2_MAX_CHARS,
       "Your supporting text stays centered inside the print-safe area.",
     ),
-    labelText: clampText(order.text.labelLines.join(" "), LABEL_MAX_CHARS, "YOUR TEXT"),
-
+    labelText: clampText(
+      order.text.labelLines.join(" "),
+      LABEL_MAX_CHARS,
+      "YOUR TEXT"
+    ),
   };
 }
 
-
-
-function FlyerPreview({ order }: { order: Order }) {
-
-  const { box1Text, box2Text , labelText } = getProofValues(order);
+function FlyerPreview({
+  order,
+  pageWidth,
+  pageHeight,
+}: {
+  order: Order;
+  pageWidth: number;
+  pageHeight: number;
+}) {
+  const { box1Text, box2Text, labelText } = getProofValues(order);
   const bgClass = getSwatchByPms(order.setup.colorPms).swatch;
+
+  const USABLE_WIDTH_IN = Math.max(pageWidth - 0.2, 0);
+
   return (
     <div className="flex justify-center">
       <div className="w-full overflow-x-auto rounded-xl border bg-neutral-100 p-4">
         <div
-          className="mx-auto  shadow-sm"
+          className="mx-auto shadow-sm"
           style={{
             backgroundColor: bgClass,
-            width: `${PAGE_WIDTH_IN}in`,
-            minHeight: "8in",
+            width: `${pageWidth}in`,
+            minHeight: `${pageHeight}in`,
             paddingLeft: `${SAFE_MARGIN_IN}in`,
             paddingRight: `${SAFE_MARGIN_IN}in`,
             paddingTop: `${TOP_SAFE_OFFSET_IN}in`,
@@ -97,13 +105,18 @@ function FlyerPreview({ order }: { order: Order }) {
             </div>
           </div>
 
-          <div className="mx-auto mt-8 grid grid-cols-4 gap-2 gap-y-0" style={{ width: `${USABLE_WIDTH_IN}in` }}>
+          <div
+            className="mx-auto mt-8 grid grid-cols-4 gap-2 gap-y-0"
+            style={{ width: `${USABLE_WIDTH_IN}in` }}
+          >
             {Array.from({ length: 52 }).map((_, i) => (
               <div
                 key={i}
-              
-className={`flex min-h-[58px] flex-col items-center justify-center border border-black  p-1 text-center text-black`}              >
-                <p className="text-[11px] text-gray-700  leading-tight">{labelText}</p>
+                className="flex min-h-[58px] flex-col items-center justify-center border border-black p-1 text-center text-black"
+              >
+                <p className="text-[11px] text-gray-700 leading-tight">
+                  {labelText}
+                </p>
               </div>
             ))}
           </div>
@@ -125,12 +138,16 @@ export function ProofPage({ slug }: { slug: string }) {
   const addOrder = useCartStore((s) => s.addOrder);
   const resetApprovals = useOrderFlowStore((s) => s.resetApprovals);
 
+  const documentation = product?.documentation;
+  const specs = documentation?.specs ?? [];
+
+  const PAGE_HEIGHT_IN = getFieldValue(specs, "height_in", 8.5) as number;
+  const PAGE_WIDTH_IN = getFieldValue(specs, "width_in", 6) as number;
+
   const loading = useOrderFlowStore((s) => s.loading);
 
   if (!order) {
-    return (
-      <NoActiveOrder />
-    )
+    return <NoActiveOrder />;
   }
 
   return (
@@ -142,7 +159,11 @@ export function ProofPage({ slug }: { slug: string }) {
               {t("proof.generatingPreview")}
             </div>
           ) : (
-            <FlyerPreview order={order} />
+            <FlyerPreview
+              order={order}
+              pageWidth={PAGE_WIDTH_IN}
+              pageHeight={PAGE_HEIGHT_IN}
+            />
           )}
         </section>
 
@@ -151,7 +172,11 @@ export function ProofPage({ slug }: { slug: string }) {
           grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2
           md:static md:border md:rounded-xl md:shadow md:p-4"
         >
-          <Button asChild size="lg" className="w-full bg-black text-white tracking-wide active:scale-95">
+          <Button
+            asChild
+            size="lg"
+            className="w-full bg-black text-white tracking-wide active:scale-95"
+          >
             <Link
               to="/cart"
               onClick={() => {
@@ -166,15 +191,13 @@ export function ProofPage({ slug }: { slug: string }) {
             size="lg"
             variant="outline"
             className="w-full"
-            onClick={() =>{
+            onClick={() => {
               resetApprovals();
               router.navigate({
                 to: "/products/$slug/order/text",
                 params: { slug },
-              })
-
-            }
-            }
+              });
+            }}
           >
             {t("proof.makeChanges")}
           </Button>

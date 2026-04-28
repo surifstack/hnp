@@ -9,7 +9,7 @@ import {
   finalizeOrderDraft,
   splitDraftLines,
 } from "@/lib/order-draft";
-import type { Language, Order, PmsColor, Product, ProductSlug } from "@/lib/api.types";
+import type {  Order, PmsColor, Product } from "@/lib/api.types";
 import { useCartStore } from "@/hooks/useCartStore";
 
 type TextStep = "title" | "secondary" | "label" | "review";
@@ -23,7 +23,6 @@ interface SetupDraft {
 interface OrderFlowState {
   productSlug: string | null;
   product: Product | null;
-  languages: Language[];
   order: Order | null;
   setupDraft: SetupDraft | null;
   activeStep: TextStep;
@@ -43,13 +42,14 @@ interface OrderFlowState {
 
   loadProduct: (slug: string) => Promise<void>;
   loadOrder: (id: string) => Promise<void>;
-  startOrder: (slug: ProductSlug) => Promise<Order | null>;
+  startOrder: (slug: string) => Promise<Order | null>;
   refreshOrder: () => Promise<void>;
   updateSetup: (setup: SetupDraft) => Promise<void>;
   resetApprovals: () => void;
   approveTitle: () => Promise<void>;
   approveSecondary: () => Promise<void>;
   approveLabel: () => Promise<void>;
+  textAllApproved: (val: boolean) => void;
   approveAll: () => Promise<void>;
   fetchProofSvg: (opts: { userId: string | null }) => Promise<"ok" | "need-account">;
 }
@@ -90,12 +90,23 @@ export const useOrderFlowStore = create<OrderFlowState>()(
 
       setDraft: (key, value) => set((state) => ({ draft: { ...state.draft, [key]: value } })),
       setActiveStep: (step) => set({ activeStep: step }),
-
+      textAllApproved: (status) =>
+        set((state) => {
+          if (!state.order) return {};
+          return {
+            order: {
+              ...state.order,
+              approvals: {
+                ...state.order.approvals,
+                allApproved: status,
+              },
+            },
+          };
+        }),
       reset: () =>
         set({
           productSlug: null,
           product: null,
-          languages: [],
           order: null,
           setupDraft: null,
           activeStep: "title",
@@ -108,21 +119,19 @@ export const useOrderFlowStore = create<OrderFlowState>()(
       loadProduct: async (slug) => {
         set({ loading: true, error: null, productSlug: slug });
         try {
-          const [product, languages] = await Promise.all([
+          const [product] = await Promise.all([
             apiJson<Product>(`/products/${slug}`),
-            apiJson<Language[]>(`/products/${slug}/languages`),
           ]);
-          set({ product, languages, loading: false });
+          set({ product, loading: false });
         } catch (error) {
           set({
             loading: false,
             error: error instanceof Error ? error.message : "Failed to load product",
             product: null,
-            languages: [],
           });
         }
       },
-
+    
       loadOrder: async (id) => {
         const item = useCartStore.getState().items.find((entry) => entry.orderId === id);
         if (!item) {
@@ -275,6 +284,7 @@ export const useOrderFlowStore = create<OrderFlowState>()(
             title: false,
             secondary: false,
             label : false,
+            allApproved:false
           },
         },
         activeStep: "title",
@@ -292,7 +302,6 @@ export const useOrderFlowStore = create<OrderFlowState>()(
       partialize: (state) => ({
         productSlug: state.productSlug,
         product: state.product,
-        languages: state.languages,
         order: state.order,
         setupDraft: state.setupDraft,
         activeStep: state.activeStep,

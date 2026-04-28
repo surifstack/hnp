@@ -96,7 +96,7 @@ export function StepCheckout({ state, orderId, onBack }: Props) {
           labelLines: item.order.text.labelLines,
         })),
       customer: {
-        name: state.basic.name,
+        name: state.basic.first_name + " "+state.basic.last_name,
         email: state.basic.email,
         phone: state.basic.phone,
         country: state.basic.country,
@@ -189,7 +189,7 @@ export function StepCheckout({ state, orderId, onBack }: Props) {
           {t("cart.orderSummary")}
         </h2>
 
-        <Row label={t("cart.customer")} value={state.basic.name} />
+        <Row label={t("cart.customer")} value={state.basic.first_name +" "+ state.basic.last_name} />
         <Row label={t("cart.email")} value={state.basic.email} />
         <Row label={t("cart.phone")} value={state.basic.phone} />
         <Row label={t("cart.country")} value={countryName ? countryName.name : state.basic.country} />

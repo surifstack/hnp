@@ -4,15 +4,18 @@ import { SiteLayout } from "@/components/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { useOrderFlowStore } from "@/hooks/useOrderFlowStore";
 import { useTranslation } from "react-i18next";
+import { ProductField } from "@/lib/api.types";
+import { formatProductFieldValue } from "@/lib/data";
 
 export function ProductInfoPage({ slug }: { slug: string }) {
   const router = useRouter();
   const { t } = useTranslation();
-
   const loadProduct = useOrderFlowStore((s) => s.loadProduct);
   const product = useOrderFlowStore((s) => s.product);
   const loading = useOrderFlowStore((s) => s.loading);
   const error = useOrderFlowStore((s) => s.error);
+
+
 
   useEffect(() => {
     void loadProduct(slug);
@@ -152,16 +155,20 @@ function SkuCard({ label, value }: { label: string; value: string }) {
   );
 }
 
-function SpecsList({ rows }: { rows: Array<{ label: string; value: string }> }) {
+export function SpecsList({ rows }: { rows: ProductField[] }) {
   return (
     <dl className="space-y-2">
       {rows.map((row) => (
         <div
-          key={row.label}
+          key={row.key} // ✅ FIXED (stable key)
           className="flex justify-between items-center rounded-lg border px-3 py-2 transition hover:border-black hover:bg-gray-50"
         >
           <dt className="font-medium text-sm">{row.label}</dt>
-          <dd className="text-sm text-gray-500">{row.value}</dd>
+          <dd className="text-sm text-gray-500">
+
+           {row.key === 'order_qty' ? "Multiples of " : ""}
+           {formatProductFieldValue(row.value)} {/* ✅ handles all types */}
+          </dd>
         </div>
       ))}
     </dl>
