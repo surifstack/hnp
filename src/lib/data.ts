@@ -35,6 +35,7 @@ export function buildQuantityConfig(
 ): QuantityConfig {
   const orderQty = getFieldValue(specs, "order_qty", 40) as number;
   const maxQty = getFieldValue(specs, "max_order_qty", 400) as number;
+  const labelsQty = getFieldValue(specs, "labels_per_sheet", 52) as number;
 
   const steps = orderQty > 0 ? Math.floor(maxQty / orderQty) : 0;
 
@@ -48,5 +49,6 @@ export function buildQuantityConfig(
     maxQty,
     steps,
     quantities,
+    labelsQty
   };
 }

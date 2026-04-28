@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useCartStore } from "@/hooks/useCartStore";
 import type { Order } from "@/lib/api.types";
 import { NoActiveOrder } from "./NoActiveOrder";
-import { getFieldValue, getSwatchByPms } from "@/lib/data";
+import { buildQuantityConfig, getFieldValue, getSwatchByPms } from "@/lib/data";
 
 /* ---------------- FLYER PREVIEW ---------------- */
 
@@ -47,10 +47,12 @@ function FlyerPreview({
   order,
   pageWidth,
   pageHeight,
+  labelQty,
 }: {
   order: Order;
   pageWidth: number;
   pageHeight: number;
+  labelQty: number;
 }) {
   const { box1Text, box2Text, labelText } = getProofValues(order);
   const bgClass = getSwatchByPms(order.setup.colorPms).swatch;
@@ -109,7 +111,7 @@ function FlyerPreview({
             className="mx-auto mt-8 grid grid-cols-4 gap-2 gap-y-0"
             style={{ width: `${USABLE_WIDTH_IN}in` }}
           >
-            {Array.from({ length: 52 }).map((_, i) => (
+            {Array.from({ length: labelQty }).map((_, i) => (
               <div
                 key={i}
                 className="flex min-h-[58px] flex-col items-center justify-center border border-black p-1 text-center text-black"
@@ -141,6 +143,9 @@ export function ProofPage({ slug }: { slug: string }) {
   const documentation = product?.documentation;
   const specs = documentation?.specs ?? [];
 
+  const {labelsQty} = buildQuantityConfig(specs ?? []);
+  
+
   const PAGE_HEIGHT_IN = getFieldValue(specs, "height_in", 8.5) as number;
   const PAGE_WIDTH_IN = getFieldValue(specs, "width_in", 6) as number;
 
@@ -163,6 +168,7 @@ export function ProofPage({ slug }: { slug: string }) {
               order={order}
               pageWidth={PAGE_WIDTH_IN}
               pageHeight={PAGE_HEIGHT_IN}
+              labelQty={labelsQty}
             />
           )}
         </section>

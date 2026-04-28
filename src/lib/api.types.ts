@@ -5,6 +5,7 @@ export type QuantityConfig = {
   orderQty: number;
   maxQty: number;
   steps: number;
+  labelsQty:number;
   quantities: number[];
 };
 export interface ProductField {
