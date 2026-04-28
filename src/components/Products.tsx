@@ -72,7 +72,7 @@ export function Products() {
                       </div>
 
                       <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
-                        {p.processSteps.slice(0, 2).map((step, i) => (
+                        {p.processSteps.map((step, i) => (
                           <li key={i}>{step}</li>
                         ))}
                       </ul>
