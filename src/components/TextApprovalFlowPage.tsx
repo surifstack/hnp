@@ -41,9 +41,7 @@ export function TextApprovalFlowPage({ slug }: { slug: string }) {
     setHydrated(true);
   }, [order, hydrated]);
 
-  useEffect(()=>{
-  toast.success("test")
-  },[])
+ 
 
   if (!order) {
     return (
