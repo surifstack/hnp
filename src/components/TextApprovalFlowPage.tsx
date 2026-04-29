@@ -100,6 +100,7 @@ const finalApproved = order.approvals.allApproved;
 	              title={t("order.step1Title")}
 	              subtitle={t("order.step1Subtitle")}
                 label={t("order.label")}
+                name="title"
 	              value={draft.title}
 	              rows={2}
 	              disabled={loading}
@@ -119,6 +120,7 @@ const finalApproved = order.approvals.allApproved;
 	              title={t("order.step2Title")}
 	              subtitle={t("order.step2Subtitle")}
                                 label={t("order.label")}
+                name="secondary"
 
 	              value={draft.secondary}
 	              rows={3}
@@ -140,6 +142,7 @@ const finalApproved = order.approvals.allApproved;
               title={t("order.step3Title")}
               subtitle={t("order.step3Subtitle")}
               label={t("order.label")}
+                name="label"
 
               value={draft.label}
               rows={2}

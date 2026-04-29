@@ -86,7 +86,7 @@ export function ProductInfoPage({ slug }: { slug: string }) {
             {productInfo.length > 0 ? (
               <div className="mt-6 border-t pt-4">
                 <h2 className="text-xs font-semibold text-gray-400 uppercase mb-3">
-                  Product info
+                  {t("product.productInfo")}
                 </h2>
 
                 <dl className="space-y-2">

@@ -11,7 +11,7 @@ export function NoActiveOrder() {
   return (
     <SiteLayout>
       <div className="mx-auto max-w-xl bg-white rounded-xl p-6 shadow border text-center space-y-3">
-        <h1 className="text-xl font-semibold">No active order</h1>
+        <h1 className="text-xl font-semibold">{t("order.noActiveOrder")}</h1>
         <Button
           onClick={() => router.navigate({ to: "/products" })}
         >

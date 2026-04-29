@@ -4,8 +4,14 @@ import { LANGUAGE_OPTIONS } from "@/config/languages";
 
 // 🌍 translations
 import en from "@/locales/en/translation.json";
-import hi from "@/locales/hi/translation.json";
-import zh from "@/locales/zh/translation.json";
+import de from "@/locales/de/translation.json";
+import id from "@/locales/id/translation.json";
+import fr from "@/locales/fr/translation.json";
+import es from "@/locales/es/translation.json";
+import pt from "@/locales/pt/translation.json";
+import vi from "@/locales/vi/translation.json";
+import sw from "@/locales/sw/translation.json";
+
 
 const STORAGE_KEY = "hnp-lang";
 
@@ -21,8 +27,13 @@ export const SUPPORTED_LANGUAGES = [
  */
 const resources = {
   en: { translation: en },
-  hi: { translation: hi },
-  zh: { translation: zh }
+  de: { translation: de },
+  id: { translation: id },
+  fr: { translation: fr },
+  es: { translation: es },
+  pt: { translation: pt },
+  vi: { translation: vi },
+  sw: { translation: sw },
 
 } as const;
 

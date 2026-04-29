@@ -16,6 +16,7 @@ export interface ProductField {
 
 export type StepCardProps = {
   title: string;
+  name:string;
   subtitle: string;
   label: string;
   value: string;

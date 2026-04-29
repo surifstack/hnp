@@ -110,3 +110,20 @@ export function finalizeOrderDraft(order: Order) {
   next.approvals.allApproved = true;
   return next;
 }
+
+
+
+export function stripApprovals(order: Order | null): Order | null {
+  if (!order) return null;
+
+  return {
+    ...order,
+    approvals: {
+      title: false,
+      secondary: false,
+      label: false,
+      allApproved: false,
+      final: false,
+    },
+  };
+}

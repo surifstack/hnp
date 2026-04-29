@@ -1,4 +1,22 @@
 export type TextDirection = "ltr" | "rtl";
+export type ScriptType =
+  | "Latin"
+  | "Arabic"
+  | "Devanagari"
+  | "Han"
+  | "Cyrillic"
+  | "Thai"
+  | "Hangul"
+  | "Bengali"
+  | "Tamil"
+  | "Telugu"
+  | "Gujarati"
+  | "Kannada"
+  | "Malayalam"
+  | "Gurmukhi"
+  | "Greek"
+  | "Hebrew"
+  | "Other";
 
 export interface AddressField {
   label: string;
@@ -9,11 +27,107 @@ export interface LanguageOption {
   value: string;
   name: string;
   flag: string;
-  script: string;
+  script: ScriptType;
   rtl: boolean;
   dialCode?: string;
   addressFields: AddressField[];
 }
+
+
+
+export const SCRIPT_FONT_MAP: Record<
+  ScriptType,
+  { fontFamily: string; fontSize: string; direction: TextDirection }
+> = {
+  Latin: {
+    fontFamily: "DIN Condensed, Liberation Sans Narrow, sans-serif",
+    fontSize: "9pt",
+    direction: "ltr",
+  },
+  Arabic: {
+    fontFamily: "Noto Naskh Arabic, sans-serif",
+    fontSize: "10pt",
+    direction: "rtl",
+  },
+  Devanagari: {
+    fontFamily: "Noto Sans Devanagari, sans-serif",
+    fontSize: "10pt",
+    direction: "ltr",
+  },
+  Han: {
+    fontFamily: "Noto Sans CJK, sans-serif",
+    fontSize: "10.5pt",
+    direction: "ltr",
+  },
+  Cyrillic: {
+    fontFamily: "Noto Sans, sans-serif",
+    fontSize: "10pt",
+    direction: "ltr",
+  },
+  Thai: {
+    fontFamily: "Noto Sans Thai, sans-serif",
+    fontSize: "10pt",
+    direction: "ltr",
+  },
+  Hangul: {
+    fontFamily: "Noto Sans KR, sans-serif",
+    fontSize: "10pt",
+    direction: "ltr",
+  },
+  Bengali: {
+    fontFamily: "Noto Sans Bengali, sans-serif",
+    fontSize: "10pt",
+    direction: "ltr",
+  },
+  Tamil: {
+    fontFamily: "Noto Sans Tamil, sans-serif",
+    fontSize: "10pt",
+    direction: "ltr",
+  },
+  Telugu: {
+    fontFamily: "Noto Sans Telugu, sans-serif",
+    fontSize: "10pt",
+    direction: "ltr",
+  },
+  Gujarati: {
+    fontFamily: "Noto Sans Gujarati, sans-serif",
+    fontSize: "10pt",
+    direction: "ltr",
+  },
+  Kannada: {
+    fontFamily: "Noto Sans Kannada, sans-serif",
+    fontSize: "10pt",
+    direction: "ltr",
+  },
+  Malayalam: {
+    fontFamily: "Noto Sans Malayalam, sans-serif",
+    fontSize: "10pt",
+    direction: "ltr",
+  },
+  Gurmukhi: {
+    fontFamily: "Noto Sans Gurmukhi, sans-serif",
+    fontSize: "10pt",
+    direction: "ltr",
+  },
+  Greek: {
+    fontFamily: "Noto Sans, sans-serif",
+    fontSize: "9pt",
+    direction: "ltr",
+  },
+  Hebrew: {
+    fontFamily: "Noto Sans Hebrew, sans-serif",
+    fontSize: "10pt",
+    direction: "rtl",
+  },
+  Other: {
+    fontFamily: "Noto Sans, sans-serif",
+    fontSize: "10pt",
+    direction: "ltr",
+  },
+};
+
+
+
 
 // Client-provided languages only
 export const LANGUAGE_OPTIONS: readonly LanguageOption[] = [
@@ -290,4 +404,11 @@ export function getSupportedLanguageCode(
   }
 
   return null;
+}
+
+
+
+
+export function getTypography(language: LanguageOption) {
+  return SCRIPT_FONT_MAP[language.script] || SCRIPT_FONT_MAP.Other;
 }

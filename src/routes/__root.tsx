@@ -1,6 +1,5 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import "@/i18n";
-import { useLanguageFont } from "@/hooks/useLanguageFont";
 
 import appCss from "../styles.css?url";
 
@@ -67,6 +66,5 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
-  useLanguageFont();
   return <Outlet />;
 }

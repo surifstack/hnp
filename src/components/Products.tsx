@@ -21,7 +21,7 @@ export function Products() {
       <div className="space-y-6">
 
         {/* HEADER */}
-        <header className="bg-white  p-6 shadow-lg border">
+        <header className="bg-white p-6 shadow-lg border">
           <h1 className="text-3xl font-extrabold">
             {t("product.title")}
           </h1>
@@ -41,19 +41,27 @@ export function Products() {
 
         {/* LIST */}
         <div className="space-y-5">
-          {(products ?? []).map((p) => (
-            <Link
-              key={p.slug}
-              to="/products/$slug"
-              params={{ slug: p.slug }}
-              className="block group"
-            >
-              <div className="flex flex-col lg:flex-row gap-6 bg-white p-6 shadow-md border hover:shadow-xl transition">
+          {(products ?? []).map((p, index) => {
+            const isAvailable = index === 0;
 
+            const CardContent = (
+              <div
+                className={`flex flex-col lg:flex-row gap-6 bg-white p-6 shadow-md border transition
+                  ${isAvailable ? "hover:shadow-xl" : "opacity-60 cursor-not-allowed"}
+                `}
+              >
                 {/* LEFT */}
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-bold">{p.name}</h2>
+                    <h2 className="text-xl font-bold flex items-center gap-2">
+                      {p.name}
+
+                      {!isAvailable && (
+                        <span className="text-xs bg-gray-200 px-2 py-1">
+                          Coming Soon
+                        </span>
+                      )}
+                    </h2>
 
                     <span className="text-xs uppercase text-gray-400">
                       {p.id}
@@ -84,8 +92,7 @@ export function Products() {
                 <div className="w-full lg:w-64 space-y-4">
 
                   {/* PRICING */}
-
-                  <div className="bg-gray-50  p-4 border">
+                  <div className="bg-gray-50 p-4 border">
                     <div className="text-xs uppercase text-gray-400 font-semibold">
                       {t("product.pricing")}
                     </div>
@@ -101,7 +108,7 @@ export function Products() {
                   </div>
 
                   {/* SKUS */}
-                  <div className="bg-gray-50  p-4 border">
+                  <div className="bg-gray-50 p-4 border">
                     <div className="text-xs uppercase text-gray-400 font-semibold mb-2">
                       {t("products.skus")}
                     </div>
@@ -114,14 +121,35 @@ export function Products() {
                   </div>
 
                   {/* CTA */}
-                  <div className="text-sm font-semibold text-[var(--neon-green)] group-hover:underline">
-                    {t("product.cta")}
+                  <div
+                    className={`text-sm font-semibold ${
+                      isAvailable
+                        ? "text-[var(--neon-green)] group-hover:underline"
+                        : "text-gray-400"
+                    }`}
+                  >
+                    {isAvailable ? t("product.cta") : "Coming Soon"}
                   </div>
 
                 </div>
               </div>
-            </Link>
-          ))}
+            );
+
+            return isAvailable ? (
+              <Link
+                key={p.slug}
+                to="/products/$slug"
+                params={{ slug: p.slug }}
+                className="block group"
+              >
+                {CardContent}
+              </Link>
+            ) : (
+              <div key={p.slug} className="block group">
+                {CardContent}
+              </div>
+            );
+          })}
         </div>
       </div>
     </SiteLayout>
@@ -131,32 +159,36 @@ export function Products() {
 function SkeletonList() {
   return (
     <div className="space-y-5 animate-pulse">
-      {[1,2,3,4].map((i) => (
-        <div key={i} className="flex flex-col lg:flex-row gap-6 bg-white  p-6 shadow-md border">
+      {[1, 2, 3, 4].map((i) => (
+        <div
+          key={i}
+          className="flex flex-col lg:flex-row gap-6 bg-white p-6 shadow-md border"
+        >
           <div className="flex-1 space-y-3">
-            <div className="h-5 w-1/3 bg-gray-200 " />
-            <div className="h-4 w-2/3 bg-gray-200 " />
-            <div className="h-4 w-1/2 bg-gray-200 " />
+            <div className="h-5 w-1/3 bg-gray-200" />
+            <div className="h-4 w-2/3 bg-gray-200" />
+            <div className="h-4 w-1/2 bg-gray-200" />
+
             <div className="space-y-2 mt-4">
-              <div className="h-3 w-24 bg-gray-200 " />
-              <div className="h-3 w-3/4 bg-gray-200 " />
-              <div className="h-3 w-2/3 bg-gray-200 " />
+              <div className="h-3 w-24 bg-gray-200" />
+              <div className="h-3 w-3/4 bg-gray-200" />
+              <div className="h-3 w-2/3 bg-gray-200" />
             </div>
           </div>
 
           <div className="w-full lg:w-64 space-y-4">
-            <div className="bg-gray-50  p-4 border space-y-2">
-              <div className="h-3 w-16 bg-gray-200 " />
-              <div className="h-5 w-20 bg-gray-200 " />
-              <div className="h-3 w-24 bg-gray-200 " />
+            <div className="bg-gray-50 p-4 border space-y-2">
+              <div className="h-3 w-16 bg-gray-200" />
+              <div className="h-5 w-20 bg-gray-200" />
+              <div className="h-3 w-24 bg-gray-200" />
             </div>
 
-            <div className="bg-gray-50  p-4 border space-y-2">
+            <div className="bg-gray-50 p-4 border space-y-2">
               <div className="h-3 w-16 bg-gray-200" />
               <div className="grid grid-cols-3 gap-2 mt-2">
-                <div className="h-6 bg-gray-200 " />
-                <div className="h-6 bg-gray-200 " />
-                <div className="h-6 bg-gray-200 " />
+                <div className="h-6 bg-gray-200" />
+                <div className="h-6 bg-gray-200" />
+                <div className="h-6 bg-gray-200" />
               </div>
             </div>
           </div>
@@ -168,7 +200,7 @@ function SkeletonList() {
 
 function SkuPill({ label, value }: { label: string; value: string }) {
   return (
-    <div className=" border px-2 py-1 text-center bg-white">
+    <div className="border px-2 py-1 text-center bg-white">
       <span className="font-mono text-xs">
         {label}:{value}
       </span>

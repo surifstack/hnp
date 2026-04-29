@@ -39,10 +39,11 @@ interface OrderFlowState {
   setDraft: (key: "title" | "secondary" | "label", value: string) => void;
   setActiveStep: (step: TextStep) => void;
   reset: () => void;
-
+  clearOrderFlow : () => void;
   loadProduct: (slug: string) => Promise<void>;
   loadOrder: (id: string) => Promise<void>;
   startOrder: (slug: string) => Promise<Order | null>;
+  setApproval: (key: keyof Order["approvals"], value: boolean) => void;
   refreshOrder: () => Promise<void>;
   updateSetup: (setup: SetupDraft) => Promise<void>;
   resetApprovals: () => void;
@@ -166,6 +167,24 @@ export const useOrderFlowStore = create<OrderFlowState>()(
         }
       },
 
+
+      clearOrderFlow: () => {
+  // 👇 zustand persist storage clear
+        localStorage.removeItem("hnp-order-flow");
+
+        set({
+          productSlug: null,
+          product: null,
+          order: null,
+          setupDraft: null,
+          activeStep: "title",
+          draft: { title: "", secondary: "", label: "" },
+          proofSvg: null,
+          loading: false,
+          error: null,
+        });
+      },
+
       startOrder: async (slug) => {
         const current = get().order;
         if (current?.productSlug === slug) {
@@ -272,11 +291,26 @@ export const useOrderFlowStore = create<OrderFlowState>()(
         });
       },
 
-        resetApprovals: () => {
-      const order = get().order;
+      setApproval: (key, value) => {
+        const order = get().order;
+        if (!order) return;
+
+        set({
+          order: {
+            ...order,
+            approvals: {
+              ...order.approvals,
+              [key]: value,
+            },
+          },
+        });
+      },
+
+      resetApprovals: () => {
+       const order = get().order;
       if (!order) return;
 
-      set({
+       set({
         order: {
           ...order,
           approvals: {

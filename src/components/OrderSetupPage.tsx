@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { useRouter } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/SiteLayout";
 import { Label } from "@/components/ui/label";
@@ -26,15 +26,18 @@ export function OrderSetupPage({ slug }: { slug: string }) {
   const startOrder = useOrderFlowStore((s) => s.startOrder);
   const updateSetup = useOrderFlowStore((s) => s.updateSetup);
   const setSetupDraft = useOrderFlowStore((s) => s.setSetupDraft);
+  const clearOrderFlow = useOrderFlowStore((s) => s.clearOrderFlow);
 
   const order = useOrderFlowStore((s) => s.order);
   const product = useOrderFlowStore((s) => s.product);
   const setupDraft = useOrderFlowStore((s) => s.setupDraft);
   const loading = useOrderFlowStore((s) => s.loading);
 
-  useEffect(() => {
-    void loadProduct(slug);
-  }, [loadProduct, slug]);
+useEffect(() => {
+  clearOrderFlow();     // 👈 pehle clean
+  startOrder(slug);     // 👈 fresh order
+  void loadProduct(slug); // 👈 product load
+}, [slug]);
   
 const {orderQty , maxQty,quantities} = buildQuantityConfig(product?.documentation?.specs ?? []);
 useEffect(() => {
