@@ -3,6 +3,10 @@ import "@/i18n";
 
 import appCss from "../styles.css?url";
 
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+
+
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -58,7 +62,9 @@ function RootShell({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {children}
+        <TooltipProvider><Sonner   theme="dark"
+  position="top-right"
+  richColors  />{children}</TooltipProvider>
         <Scripts />
       </body>
     </html>

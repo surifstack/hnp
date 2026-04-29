@@ -25,21 +25,9 @@ function clampText(value: string, maxChars: number, fallback: string) {
 
 function getProofValues(order: Order) {
   return {
-    box1Text: clampText(
-      order.text.titleLines.join(" "),
-      BOX1_MAX_CHARS,
-      "YOUR TEXT HEADLINE HERE",
-    ),
-    box2Text: clampText(
-      order.text.secondaryLines.join(" "),
-      BOX2_MAX_CHARS,
-      "Your supporting text stays centered inside the print-safe area.",
-    ),
-    labelText: clampText(
-      order.text.labelLines.join(" "),
-      LABEL_MAX_CHARS,
-      "YOUR TEXT"
-    ),
+    box1Text: order.text.titleLines,
+    box2Text: order.text.secondaryLines,
+    labelText: order.text.labelLines
   };
 }
 

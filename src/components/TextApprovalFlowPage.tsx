@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Check, Pencil } from "lucide-react";
 import { NoActiveOrder } from "./NoActiveOrder";
 import { StepCard } from "./StepCard";
-
+import {toast} from "sonner"
 /* ---------------- Main Page ---------------- */
 
 export function TextApprovalFlowPage({ slug }: { slug: string }) {
@@ -28,7 +28,7 @@ export function TextApprovalFlowPage({ slug }: { slug: string }) {
   const approveAll = useOrderFlowStore((s) => s.approveAll);
   const approveLabel = useOrderFlowStore((s) => s.approveLabel);
   const textAllApproved = useOrderFlowStore((s) => s.textAllApproved);
-
+   
   const loading = useOrderFlowStore((s) => s.loading);
   const error = useOrderFlowStore((s) => s.error);
 
@@ -40,6 +40,10 @@ export function TextApprovalFlowPage({ slug }: { slug: string }) {
 
     setHydrated(true);
   }, [order, hydrated]);
+
+  useEffect(()=>{
+  toast.success("test")
+  },[])
 
   if (!order) {
     return (
@@ -169,17 +173,17 @@ const finalApproved = order.approvals.allApproved;
             <div className="space-y-4 text-sm">
               <div className="p-3 rounded-lg bg-gray-50">
                 <p className="text-gray-400 text-xs">{t("order.title")}</p>
-                <p className="font-semibold">{draft.title || "—"}</p>
+                <p className="font-semibold break-all whitespace-pre-wrap min-w-0">{draft.title || "—"}</p>
               </div>
 
               <div className="p-3 rounded-lg bg-gray-50">
                 <p className="text-gray-400 text-xs">{t("order.secondary")}</p>
-                <p>{draft.secondary || "—"}</p>
+                <p className="break-all whitespace-pre-wrap min-w-0">{draft.secondary || "—"}</p>
               </div>
 
                 <div className="p-3 rounded-lg bg-gray-50">
                 <p className="text-gray-400 text-xs">{t("order.label")}</p>
-                <p>{draft.label || "—"}</p>
+                <p className="break-all whitespace-pre-wrap min-w-0">{draft.label || "—"}</p>
               </div>
             </div>
           </section>

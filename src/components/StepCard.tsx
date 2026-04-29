@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useTranslation } from "react-i18next";
 import { useOrderFlowStore } from "@/hooks/useOrderFlowStore";
+import { toast } from "sonner";
+import { getVisualLines } from "@/helpers";
 
 export function StepCard({
   title,
@@ -43,17 +45,26 @@ export function StepCard({
       </div>
 
      
-        <Textarea
-          rows={rows}
-          value={value}
-          onChange={(e) => { 
-            setApproval(name as keyof Order["approvals"], false);
-            onChange(e.target.value)
+       <Textarea
+  rows={rows}
+  value={value}
+  onChange={(e) => {
+    const v = e.target.value;
 
-          } }
-          className="rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--neon-green)] focus:border-black transition text-sm"
-          placeholder="Type your text…"
-        />
+  const lines = getVisualLines(v, e.target);
+
+
+  if (lines > rows) {
+    toast.error(`Only ${rows} lines allowed`);
+    return;
+  }
+
+
+    setApproval(name as keyof Order["approvals"], false);
+    onChange(v);
+  }}
+  className="rounded-lg border-gray-300 focus:ring-2 focus:ring-[var(--neon-green)] resize-none overflow-hidden break-words whitespace-pre-wrap focus:border-black transition text-sm"
+/>
       
 
       <div className="flex gap-2">

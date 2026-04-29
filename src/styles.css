@@ -169,6 +169,25 @@
 }
 
 
+[data-sonner-toast][data-type="success"] {
+  background: var(--neon-green) !important; /* green */
+  color: #000000 !important;
+  border: 1px solid var(--neon-green);
+}
+
+[data-sonner-toast][data-type="error"] {
+  background: var(--neon-red) !important; /* red */
+  color: #fff !important ;
+  border: 1px solid var(--neon-red);
+}
+
+[data-sonner-toast][data-type="warning"] {
+  background: var(--neon-yellow) !important; /* yellow */
+  color: #111 !important;
+  border: 1px solid var(--neon-yellow) ;
+}
+
+
 @font-face {
     font-family: 'Liberation Sans Narrow';
     src: url('/fonts/LiberationSansNarrow-Regular.ttf') format('truetype');

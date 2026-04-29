@@ -20,28 +20,17 @@ export function LanguageSwitcher() {
   const currentValue = i18n.resolvedLanguage || i18n.language || "en";
   useEffect(()=>{
   const lang = getLanguageOption(currentValue);
-if (lang) {
-  const { fontFamily, fontSize, direction } = getTypography(lang);
-
-
-        document.documentElement.style.setProperty("--app-font-family", fontFamily);
-        // Keeping the variable for now, but intentionally not applying it.
-        // The client reported issues when fontSize is changed at runtime.
-        // document.documentElement.style.setProperty("--app-font-size", config.fontSize);
-        document.documentElement.style.setProperty("--app-direction", direction);
-
-        document.documentElement.style.fontFamily = "var(--app-font-family)";
-        // document.documentElement.style.fontSize = "var(--app-font-size)";
-        document.documentElement.style.direction = "var(--app-direction)";
-
-        document.body.style.fontFamily = "var(--app-font-family)";
-        // document.body.style.fontSize = "var(--app-font-size)";
-        document.body.style.direction = "var(--app-direction)";
-  
-        document.documentElement.setAttribute("dir", direction);
-    };
-
-  },[currentValue]);
+  if (lang) {
+    const { fontFamily, fontSize, direction } = getTypography(lang);
+          document.documentElement.style.setProperty("--app-font-family", fontFamily);
+          document.documentElement.style.setProperty("--app-direction", direction);
+          document.documentElement.style.fontFamily = "var(--app-font-family)";
+          document.documentElement.style.direction = "var(--app-direction)";
+          document.body.style.fontFamily = "var(--app-font-family)";
+          document.body.style.direction = "var(--app-direction)";
+          document.documentElement.setAttribute("dir", direction);
+      };
+    },[currentValue]);
 
   const current =
     LANGUAGE_OPTIONS.find((o) => o.value === currentValue) ??
