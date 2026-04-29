@@ -13,15 +13,7 @@ import { buildQuantityConfig, getFieldValue, getSwatchByPms } from "@/lib/data";
 const SAFE_MARGIN_IN = 0.1;
 const TOP_SAFE_OFFSET_IN = 0.2;
 const BOX_GAP_IN = 0.18;
-const BOX1_MAX_CHARS = 59;
-const BOX2_MAX_CHARS = 158;
-const LABEL_MAX_CHARS = 52;
 
-function clampText(value: string, maxChars: number, fallback: string) {
-  const normalized = value.replace(/\s+/g, " ").trim();
-  if (!normalized) return fallback;
-  return normalized.slice(0, maxChars).trim();
-}
 
 function getProofValues(order: Order) {
   return {
@@ -78,6 +70,8 @@ function FlyerPreview({
                 lineHeight: 1.05,
                 letterSpacing: "0.02em",
                 overflowWrap: "break-word",
+                width: "70%", // 👈 IMPORTANT: 70% screen width rule
+                margin: "0 auto",
               }}
             >
               {box1Text}
@@ -86,6 +80,7 @@ function FlyerPreview({
             <div
               className="text-center text-black"
               style={{
+                fontFamily: "Arial, sans-serif",
                 fontSize: "16pt",
                 lineHeight: 1.25,
                 overflowWrap: "break-word",
@@ -173,6 +168,7 @@ export function ProofPage({ slug }: { slug: string }) {
           >
             <Link
               to="/cart"
+              search={{orderId : ""}}
               onClick={() => {
                 addOrder(order, product);
               }}
