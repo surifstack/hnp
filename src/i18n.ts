@@ -19,6 +19,7 @@ import hu from "@/locales/hu/translation.json";
 import tr from "@/locales/tr/translation.json";
 import sw from "@/locales/sw/translation.json";
 import ro from "@/locales/ro/translation.json";
+import cs from "@/locales/cs/translation.json";
 
 
 
@@ -51,6 +52,7 @@ const resources = {
   it: { translation: it },
   tr: { translation: tr },
   ro: { translation: ro },
+  cs: { translation: cs },
 
 } as const;
 
