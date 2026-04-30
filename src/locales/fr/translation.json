@@ -115,7 +115,9 @@
     "subtitle": "Découvrez nos produits d'impression néon avec toutes les spécifications, les prix et les options de personnalisation.",
     "pricing": "Tarification",
     "shipping": "Livraison",
-    "cta": "Voir tous les détails →"
+    "cta": "Voir tous les détails →",
+            "commingSoon": "Bientôt disponible"
+
   },
   "cart": {
     "emptyTitle": "Le panier est vide",

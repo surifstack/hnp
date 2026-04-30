@@ -115,7 +115,9 @@
     "subtitle": "Khám phá các sản phẩm in neon của chúng tôi với thông số đầy đủ, giá cả và tùy chọn tùy chỉnh.",
     "pricing": "Giá",
     "shipping": "Vận chuyển",
-    "cta": "Xem chi tiết đầy đủ →"
+    "cta": "Xem chi tiết đầy đủ →",
+        "comingSoon": "Sắp ra mắt"
+
   },
   "cart": {
     "emptyTitle": "Giỏ hàng trống",

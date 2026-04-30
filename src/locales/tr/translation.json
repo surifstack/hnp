@@ -115,7 +115,9 @@
     "subtitle": "Tam özellikler, fiyatlandırma ve özelleştirme seçenekleriyle neon baskı ürünlerimizi keşfedin.",
     "pricing": "Fiyatlandırma",
     "shipping": "Kargo",
-    "cta": "Tüm detayları gör →"
+    "cta": "Tüm detayları gör →",
+        "comingSoon": "Çok yakında"
+
   },
   "cart": {
     "emptyTitle": "Sepet boş",

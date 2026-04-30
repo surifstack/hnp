@@ -115,7 +115,9 @@
     "subtitle": "Chunguza bidhaa zetu za uchapishaji wa neon zenye vipimo kamili, bei na chaguo za kubinafsisha.",
     "pricing": "Bei",
     "shipping": "Usafirishaji",
-    "cta": "Angalia maelezo kamili →"
+    "cta": "Angalia maelezo kamili →",
+        "comingSoon": "Inakuja hivi karibuni"
+
   },
   "cart": {
     "emptyTitle": "Kikapu kipo tupu",

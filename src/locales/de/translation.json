@@ -115,7 +115,8 @@
     "subtitle": "Entdecke unsere Neon-Druckprodukte mit vollständigen Spezifikationen, Preisen und Anpassungsoptionen.",
     "pricing": "Preise",
     "shipping": "Versand",
-    "cta": "Alle Details anzeigen →"
+    "cta": "Alle Details anzeigen →",
+    "commingSoon": "emnächst verfügbar"
   },
   "cart": {
     "emptyTitle": "Warenkorb ist leer",

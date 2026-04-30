@@ -1,6 +1,4 @@
-import { useRef, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/SiteLayout";
 import { VideoBlock } from "@/components/VideoBlock";
 

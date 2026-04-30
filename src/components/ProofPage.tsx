@@ -76,7 +76,6 @@ function FlyerPreview({
             >
               {box1Text}
             </div>
-
             <div
               className="text-center text-black"
               style={{

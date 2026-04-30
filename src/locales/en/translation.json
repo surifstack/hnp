@@ -119,7 +119,8 @@
       "subtitle": "Explore our neon print products with full specs, pricing, and customization options.",
       "pricing": "Pricing",
       "shipping": "Shipping",
-      "cta": "View full details →"
+      "cta": "View full details →",
+      "commingSoon" :"Coming Soon"
     },
      "cart": {
       "emptyTitle": "Cart is empty",

@@ -57,8 +57,9 @@ export function Products() {
                       {p.name}
 
                       {!isAvailable && (
-                        <span className="text-xs bg-gray-200 px-2 py-1">
-                          Coming Soon
+                       <span className="text-xs px-3 py-1 font-semibold text-black bg-[var(--neon-green)] rounded 
+                        shadow-[0_0_6px_var(--neon-green)]">
+                          {t('product.commingSoon')}
                         </span>
                       )}
                     </h2>

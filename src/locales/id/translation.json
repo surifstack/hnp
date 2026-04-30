@@ -115,7 +115,9 @@
     "subtitle": "Jelajahi produk cetak neon kami dengan spesifikasi lengkap, harga, dan opsi kustomisasi.",
     "pricing": "Harga",
     "shipping": "Pengiriman",
-    "cta": "Lihat detail lengkap →"
+    "cta": "Lihat detail lengkap →",
+    "comingSoon": "Segera hadir"
+
   },
   "cart": {
     "emptyTitle": "Keranjang kosong",
