@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/SiteLayout";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -41,6 +41,21 @@ function Dashboard() {
             Send code & continue
           </Button>
         </form>
+
+        <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <Link
+            to="/employee"
+            className="rounded-xl border-2 border-black bg-[var(--neon-green)] px-4 py-3 text-center text-sm font-extrabold uppercase tracking-widest text-black shadow-md hover:opacity-90"
+          >
+            Employee Console
+          </Link>
+          <Link
+            to="/admin"
+            className="rounded-xl border-2 border-black bg-black px-4 py-3 text-center text-sm font-extrabold uppercase tracking-widest text-white shadow-md hover:opacity-90"
+          >
+            Admin Console
+          </Link>
+        </div>
       </div>
     </SiteLayout>
   );

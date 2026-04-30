@@ -12,13 +12,23 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as QrRouteImport } from './routes/qr'
 import { Route as ProductsRouteImport } from './routes/products'
+import { Route as EmployeeRouteImport } from './routes/employee'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CreateAccountRouteImport } from './routes/create-account'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CartRouteImport } from './routes/cart'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductsIndexRouteImport } from './routes/products.index'
+import { Route as EmployeeIndexRouteImport } from './routes/employee.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductsSlugRouteImport } from './routes/products.$slug'
+import { Route as EmployeeUsersRouteImport } from './routes/employee.users'
+import { Route as EmployeeOrdersRouteImport } from './routes/employee.orders'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as AdminProductsRouteImport } from './routes/admin.products'
+import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
+import { Route as AdminEmployeesRouteImport } from './routes/admin.employees'
 import { Route as ProductsSlugIndexRouteImport } from './routes/products.$slug.index'
 import { Route as ProductsSlugProofRouteImport } from './routes/products.$slug.proof'
 import { Route as ProductsSlugOrderRouteImport } from './routes/products.$slug.order'
@@ -38,6 +48,11 @@ const QrRoute = QrRouteImport.update({
 const ProductsRoute = ProductsRouteImport.update({
   id: '/products',
   path: '/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmployeeRoute = EmployeeRouteImport.update({
+  id: '/employee',
+  path: '/employee',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -60,6 +75,11 @@ const CartRoute = CartRouteImport.update({
   path: '/cart',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -70,10 +90,50 @@ const ProductsIndexRoute = ProductsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => ProductsRoute,
 } as any)
+const EmployeeIndexRoute = EmployeeIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => EmployeeRoute,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const ProductsSlugRoute = ProductsSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => ProductsRoute,
+} as any)
+const EmployeeUsersRoute = EmployeeUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => EmployeeRoute,
+} as any)
+const EmployeeOrdersRoute = EmployeeOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => EmployeeRoute,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProductsRoute = AdminProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOrdersRoute = AdminOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminEmployeesRoute = AdminEmployeesRouteImport.update({
+  id: '/employees',
+  path: '/employees',
+  getParentRoute: () => AdminRoute,
 } as any)
 const ProductsSlugIndexRoute = ProductsSlugIndexRouteImport.update({
   id: '/',
@@ -103,14 +163,24 @@ const ProductsSlugOrderTextRoute = ProductsSlugOrderTextRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/cart': typeof CartRoute
   '/contact': typeof ContactRoute
   '/create-account': typeof CreateAccountRoute
   '/dashboard': typeof DashboardRoute
+  '/employee': typeof EmployeeRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
   '/qr': typeof QrRoute
   '/signin': typeof SigninRoute
+  '/admin/employees': typeof AdminEmployeesRoute
+  '/admin/orders': typeof AdminOrdersRoute
+  '/admin/products': typeof AdminProductsRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/employee/orders': typeof EmployeeOrdersRoute
+  '/employee/users': typeof EmployeeUsersRoute
   '/products/$slug': typeof ProductsSlugRouteWithChildren
+  '/admin/': typeof AdminIndexRoute
+  '/employee/': typeof EmployeeIndexRoute
   '/products/': typeof ProductsIndexRoute
   '/products/$slug/order': typeof ProductsSlugOrderRouteWithChildren
   '/products/$slug/proof': typeof ProductsSlugProofRoute
@@ -126,6 +196,14 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/qr': typeof QrRoute
   '/signin': typeof SigninRoute
+  '/admin/employees': typeof AdminEmployeesRoute
+  '/admin/orders': typeof AdminOrdersRoute
+  '/admin/products': typeof AdminProductsRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/employee/orders': typeof EmployeeOrdersRoute
+  '/employee/users': typeof EmployeeUsersRoute
+  '/admin': typeof AdminIndexRoute
+  '/employee': typeof EmployeeIndexRoute
   '/products': typeof ProductsIndexRoute
   '/products/$slug/proof': typeof ProductsSlugProofRoute
   '/products/$slug': typeof ProductsSlugIndexRoute
@@ -135,14 +213,24 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/cart': typeof CartRoute
   '/contact': typeof ContactRoute
   '/create-account': typeof CreateAccountRoute
   '/dashboard': typeof DashboardRoute
+  '/employee': typeof EmployeeRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
   '/qr': typeof QrRoute
   '/signin': typeof SigninRoute
+  '/admin/employees': typeof AdminEmployeesRoute
+  '/admin/orders': typeof AdminOrdersRoute
+  '/admin/products': typeof AdminProductsRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/employee/orders': typeof EmployeeOrdersRoute
+  '/employee/users': typeof EmployeeUsersRoute
   '/products/$slug': typeof ProductsSlugRouteWithChildren
+  '/admin/': typeof AdminIndexRoute
+  '/employee/': typeof EmployeeIndexRoute
   '/products/': typeof ProductsIndexRoute
   '/products/$slug/order': typeof ProductsSlugOrderRouteWithChildren
   '/products/$slug/proof': typeof ProductsSlugProofRoute
@@ -154,14 +242,24 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/cart'
     | '/contact'
     | '/create-account'
     | '/dashboard'
+    | '/employee'
     | '/products'
     | '/qr'
     | '/signin'
+    | '/admin/employees'
+    | '/admin/orders'
+    | '/admin/products'
+    | '/admin/users'
+    | '/employee/orders'
+    | '/employee/users'
     | '/products/$slug'
+    | '/admin/'
+    | '/employee/'
     | '/products/'
     | '/products/$slug/order'
     | '/products/$slug/proof'
@@ -177,6 +275,14 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/qr'
     | '/signin'
+    | '/admin/employees'
+    | '/admin/orders'
+    | '/admin/products'
+    | '/admin/users'
+    | '/employee/orders'
+    | '/employee/users'
+    | '/admin'
+    | '/employee'
     | '/products'
     | '/products/$slug/proof'
     | '/products/$slug'
@@ -185,14 +291,24 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/cart'
     | '/contact'
     | '/create-account'
     | '/dashboard'
+    | '/employee'
     | '/products'
     | '/qr'
     | '/signin'
+    | '/admin/employees'
+    | '/admin/orders'
+    | '/admin/products'
+    | '/admin/users'
+    | '/employee/orders'
+    | '/employee/users'
     | '/products/$slug'
+    | '/admin/'
+    | '/employee/'
     | '/products/'
     | '/products/$slug/order'
     | '/products/$slug/proof'
@@ -203,10 +319,12 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
   CartRoute: typeof CartRoute
   ContactRoute: typeof ContactRoute
   CreateAccountRoute: typeof CreateAccountRoute
   DashboardRoute: typeof DashboardRoute
+  EmployeeRoute: typeof EmployeeRouteWithChildren
   ProductsRoute: typeof ProductsRouteWithChildren
   QrRoute: typeof QrRoute
   SigninRoute: typeof SigninRoute
@@ -233,6 +351,13 @@ declare module '@tanstack/react-router' {
       path: '/products'
       fullPath: '/products'
       preLoaderRoute: typeof ProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/employee': {
+      id: '/employee'
+      path: '/employee'
+      fullPath: '/employee'
+      preLoaderRoute: typeof EmployeeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -263,6 +388,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CartRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -277,12 +409,68 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductsIndexRouteImport
       parentRoute: typeof ProductsRoute
     }
+    '/employee/': {
+      id: '/employee/'
+      path: '/'
+      fullPath: '/employee/'
+      preLoaderRoute: typeof EmployeeIndexRouteImport
+      parentRoute: typeof EmployeeRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/products/$slug': {
       id: '/products/$slug'
       path: '/$slug'
       fullPath: '/products/$slug'
       preLoaderRoute: typeof ProductsSlugRouteImport
       parentRoute: typeof ProductsRoute
+    }
+    '/employee/users': {
+      id: '/employee/users'
+      path: '/users'
+      fullPath: '/employee/users'
+      preLoaderRoute: typeof EmployeeUsersRouteImport
+      parentRoute: typeof EmployeeRoute
+    }
+    '/employee/orders': {
+      id: '/employee/orders'
+      path: '/orders'
+      fullPath: '/employee/orders'
+      preLoaderRoute: typeof EmployeeOrdersRouteImport
+      parentRoute: typeof EmployeeRoute
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/products': {
+      id: '/admin/products'
+      path: '/products'
+      fullPath: '/admin/products'
+      preLoaderRoute: typeof AdminProductsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/orders': {
+      id: '/admin/orders'
+      path: '/orders'
+      fullPath: '/admin/orders'
+      preLoaderRoute: typeof AdminOrdersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/employees': {
+      id: '/admin/employees'
+      path: '/employees'
+      fullPath: '/admin/employees'
+      preLoaderRoute: typeof AdminEmployeesRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/products/$slug/': {
       id: '/products/$slug/'
@@ -321,6 +509,40 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AdminRouteChildren {
+  AdminEmployeesRoute: typeof AdminEmployeesRoute
+  AdminOrdersRoute: typeof AdminOrdersRoute
+  AdminProductsRoute: typeof AdminProductsRoute
+  AdminUsersRoute: typeof AdminUsersRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminEmployeesRoute: AdminEmployeesRoute,
+  AdminOrdersRoute: AdminOrdersRoute,
+  AdminProductsRoute: AdminProductsRoute,
+  AdminUsersRoute: AdminUsersRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface EmployeeRouteChildren {
+  EmployeeOrdersRoute: typeof EmployeeOrdersRoute
+  EmployeeUsersRoute: typeof EmployeeUsersRoute
+  EmployeeIndexRoute: typeof EmployeeIndexRoute
+}
+
+const EmployeeRouteChildren: EmployeeRouteChildren = {
+  EmployeeOrdersRoute: EmployeeOrdersRoute,
+  EmployeeUsersRoute: EmployeeUsersRoute,
+  EmployeeIndexRoute: EmployeeIndexRoute,
+}
+
+const EmployeeRouteWithChildren = EmployeeRoute._addFileChildren(
+  EmployeeRouteChildren,
+)
 
 interface ProductsSlugOrderRouteChildren {
   ProductsSlugOrderTextRoute: typeof ProductsSlugOrderTextRoute
@@ -367,10 +589,12 @@ const ProductsRouteWithChildren = ProductsRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
   CartRoute: CartRoute,
   ContactRoute: ContactRoute,
   CreateAccountRoute: CreateAccountRoute,
   DashboardRoute: DashboardRoute,
+  EmployeeRoute: EmployeeRouteWithChildren,
   ProductsRoute: ProductsRouteWithChildren,
   QrRoute: QrRoute,
   SigninRoute: SigninRoute,

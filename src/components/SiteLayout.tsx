@@ -110,7 +110,7 @@ className="w-52 sm:w-64 md:w-80 lg:w-[420px] xl:w-[520px] mx-auto h-auto"       
           <Link to="/contact" className="text-black hover:underline">
             {t("common.contact")}
           </Link>
-          <Link to="/dashboard" className="text-black hover:underline">
+          <Link to="/employee" className="text-black hover:underline">
             {t("common.dashboard")}
           </Link>
         </div>
