@@ -18,6 +18,7 @@ import it from "@/locales/it/translation.json";
 import hu from "@/locales/hu/translation.json";
 import tr from "@/locales/tr/translation.json";
 import sw from "@/locales/sw/translation.json";
+import ro from "@/locales/ro/translation.json";
 
 
 
@@ -48,7 +49,8 @@ const resources = {
   pl: { translation: pl },
   nl: { translation: nl },
   it: { translation: it },
-  tr: { translation: tr }
+  tr: { translation: tr },
+  ro: { translation: ro },
 
 } as const;
 
