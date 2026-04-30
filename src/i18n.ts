@@ -10,7 +10,14 @@ import fr from "@/locales/fr/translation.json";
 import es from "@/locales/es/translation.json";
 import pt from "@/locales/pt/translation.json";
 import vi from "@/locales/vi/translation.json";
+import hi from "@/locales/hi/translation.json";
+import sv from "@/locales/sv/translation.json";
+import pl from "@/locales/pl/translation.json";
+import nl from "@/locales/nl/translation.json";
+import it from "@/locales/it/translation.json";
+import hu from "@/locales/hu/translation.json";
 import sw from "@/locales/sw/translation.json";
+
 
 
 const STORAGE_KEY = "hnp-lang";
@@ -34,6 +41,12 @@ const resources = {
   pt: { translation: pt },
   vi: { translation: vi },
   sw: { translation: sw },
+  hi: { translation: hi },
+  hu: { translation: hu },
+  sv: { translation: sv },
+  pl: { translation: pl },
+  nl: { translation: nl },
+  it: { translation: it }
 
 } as const;
 

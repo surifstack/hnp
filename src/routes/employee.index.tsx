@@ -25,7 +25,7 @@ function EmployeeOverviewPage() {
       <div className="rounded-2xl border-2 border-black bg-white p-5 shadow-md">
         <h1 className="text-2xl font-extrabold uppercase tracking-wide">Employee Overview</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Orders + users only (dummy). Uses neon green for emphasis.
+          Orders + users only (dummy)
         </p>
       </div>
 
