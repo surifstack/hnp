@@ -180,7 +180,7 @@
     "address": {
       "title": "Địa chỉ giao hàng",
       "subtitle": "Định dạng địa chỉ cho",
-      "attentionOf": "Attention Of (optional)",
+      "attentionOf": "Attention Of",
       "attentionPlaceholder": "ví dụ: John Smith / Phòng thư"
     },
     "checkoutSubmittion": "Gửi toàn bộ giỏ hàng đã lưu lên backend trong một yêu cầu hợp lệ."

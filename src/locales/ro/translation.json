@@ -179,7 +179,7 @@
     "address": {
       "title": "Adresă de livrare",
       "subtitle": "Format adresă pentru",
-      "attentionOf": "Attention Of (optional)",
+      "attentionOf": "Attention Of",
       "attentionPlaceholder": "ex. John Smith / Camera poștală"
     },
     "checkoutSubmittion": "Trimite întregul coș salvat către backend într-o singură cerere validată."

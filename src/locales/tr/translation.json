@@ -180,7 +180,7 @@
     "address": {
       "title": "Teslimat adresi",
       "subtitle": "Adres formatı:",
-      "attentionOf": "Attention Of (optional)",
+      "attentionOf": "Attention Of",
       "attentionPlaceholder": "örn. John Smith / Posta odası"
     },
     "checkoutSubmittion": "Tüm sepeti tek doğrulanmış istekle backend'e gönder."

@@ -180,7 +180,7 @@
     "address": {
       "title": "Dirección de envío",
       "subtitle": "Formato de dirección para",
-      "attentionOf": "Attention Of (optional)",
+      "attentionOf": "Attention Of",
       "attentionPlaceholder": "p. ej. John Smith / Recepción"
     },
     "checkoutSubmittion": "Enviar todo el carrito persistido al backend en una sola solicitud validada."

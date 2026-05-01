@@ -179,7 +179,7 @@
     "address": {
       "title": "Indirizzo di spedizione",
       "subtitle": "Formato indirizzo per",
-      "attentionOf": "Attention Of (optional)",
+      "attentionOf": "Attention Of",
       "attentionPlaceholder": "es. John Smith / Ufficio posta"
     },
     "checkoutSubmittion": "Invia l'intero carrello persistente al backend in una richiesta validata."

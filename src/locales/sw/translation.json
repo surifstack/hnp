@@ -180,7 +180,7 @@
     "address": {
       "title": "Anwani ya usafirishaji",
       "subtitle": "Mfumo wa anwani kwa",
-      "attentionOf": "Attention Of (optional)",
+      "attentionOf": "Attention Of",
       "attentionPlaceholder": "mf. John Smith / Chumba cha barua"
     },
     "checkoutSubmittion": "Wasilisha kikapu chote kilichohifadhiwa kwa backend kwa ombi moja lililothibitishwa."

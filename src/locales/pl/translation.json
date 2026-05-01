@@ -179,7 +179,7 @@
     "address": {
       "title": "Adres wysyłki",
       "subtitle": "Format adresu dla",
-      "attentionOf": "Attention Of (optional)",
+      "attentionOf": "Attention Of",
       "attentionPlaceholder": "np. John Smith / Pokój pocztowy"
     },
     "checkoutSubmittion": "Prześlij cały zapisany koszyk do backendu w jednym zweryfikowanym żądaniu."

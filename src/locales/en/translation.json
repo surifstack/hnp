@@ -190,7 +190,7 @@
     "address": {
       "title": "Shipping address",
       "subtitle": "Address format for",
-      "attentionOf": "Attention Of (optional)",
+      "attentionOf": "Attention Of",
       "attentionPlaceholder": "e.g. John Smith / Mailroom"
     },
     "checkoutSubmittion":"Submit the full persisted cart to the backend in one validated request."

@@ -177,7 +177,7 @@ export function StepAddress({
         <div className="grid gap-3">
           <FieldRow
             id={attentionKey}
-            label={t("cart.address.attentionOf", { defaultValue: "Attention Of (optional)" })}
+            label={t("cart.address.attentionOf", { defaultValue: "Attention Of" })}
             value={value[attentionKey] ?? ""}
             onChange={(e) => update(attentionKey, e.target.value)}
             error={errors[attentionKey]}

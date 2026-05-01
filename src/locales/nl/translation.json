@@ -179,7 +179,7 @@
     "address": {
       "title": "Verzendadres",
       "subtitle": "Adresformaat voor",
-      "attentionOf": "Attention Of (optional)",
+      "attentionOf": "Attention Of",
       "attentionPlaceholder": "bijv. John Smith / Postkamer"
     },
     "checkoutSubmittion": "Verzend de volledige opgeslagen winkelwagen naar de backend in één gevalideerd verzoek."

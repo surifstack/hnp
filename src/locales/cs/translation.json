@@ -179,7 +179,7 @@
     "address": {
       "title": "Dodací adresa",
       "subtitle": "Formát adresy pro",
-      "attentionOf": "Attention Of (optional)",
+      "attentionOf": "Attention Of",
       "attentionPlaceholder": "e.g. John Smith / Mailroom"
     },
     "checkoutSubmittion": "Odešlete celý uložený košík na backend v jednom ověřeném požadavku."

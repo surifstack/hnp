@@ -180,7 +180,7 @@
     "address": {
       "title": "Adresse de livraison",
       "subtitle": "Format d’adresse pour",
-      "attentionOf": "Attention Of (optional)",
+      "attentionOf": "Attention Of",
       "attentionPlaceholder": "ex. John Smith / Service courrier"
     },
     "checkoutSubmittion": "Soumettre le panier complet au backend dans une seule requête validée."

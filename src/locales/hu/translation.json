@@ -179,7 +179,7 @@
     "address": {
       "title": "Szállítási cím",
       "subtitle": "Címformátum ehhez:",
-      "attentionOf": "Attention Of (optional)",
+      "attentionOf": "Attention Of",
       "attentionPlaceholder": "pl. John Smith / Postázó"
     },
     "checkoutSubmittion": "Küldje el a teljes mentett kosarat a backendnek egyetlen ellenőrzött kérésben."

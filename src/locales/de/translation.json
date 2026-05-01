@@ -179,7 +179,7 @@
     "address": {
       "title": "Lieferadresse",
       "subtitle": "Adressformat für",
-      "attentionOf": "Attention Of (optional)",
+      "attentionOf": "Attention Of",
       "attentionPlaceholder": "z. B. John Smith / Poststelle"
     },
     "checkoutSubmittion": "Gesamten gespeicherten Warenkorb in einer validierten Anfrage an das Backend senden."
