@@ -21,10 +21,13 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductsIndexRouteImport } from './routes/products.index'
 import { Route as EmployeeIndexRouteImport } from './routes/employee.index'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductsSlugRouteImport } from './routes/products.$slug'
 import { Route as EmployeeUsersRouteImport } from './routes/employee.users'
 import { Route as EmployeeOrdersRouteImport } from './routes/employee.orders'
+import { Route as DashboardProfileRouteImport } from './routes/dashboard.profile'
+import { Route as DashboardOrdersRouteImport } from './routes/dashboard.orders'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
@@ -95,6 +98,11 @@ const EmployeeIndexRoute = EmployeeIndexRouteImport.update({
   path: '/',
   getParentRoute: () => EmployeeRoute,
 } as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -114,6 +122,16 @@ const EmployeeOrdersRoute = EmployeeOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
   getParentRoute: () => EmployeeRoute,
+} as any)
+const DashboardProfileRoute = DashboardProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardOrdersRoute = DashboardOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => DashboardRoute,
 } as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
@@ -167,7 +185,7 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/contact': typeof ContactRoute
   '/create-account': typeof CreateAccountRoute
-  '/dashboard': typeof DashboardRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/employee': typeof EmployeeRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
   '/qr': typeof QrRoute
@@ -176,10 +194,13 @@ export interface FileRoutesByFullPath {
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/users': typeof AdminUsersRoute
+  '/dashboard/orders': typeof DashboardOrdersRoute
+  '/dashboard/profile': typeof DashboardProfileRoute
   '/employee/orders': typeof EmployeeOrdersRoute
   '/employee/users': typeof EmployeeUsersRoute
   '/products/$slug': typeof ProductsSlugRouteWithChildren
   '/admin/': typeof AdminIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
   '/employee/': typeof EmployeeIndexRoute
   '/products/': typeof ProductsIndexRoute
   '/products/$slug/order': typeof ProductsSlugOrderRouteWithChildren
@@ -193,16 +214,18 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/contact': typeof ContactRoute
   '/create-account': typeof CreateAccountRoute
-  '/dashboard': typeof DashboardRoute
   '/qr': typeof QrRoute
   '/signin': typeof SigninRoute
   '/admin/employees': typeof AdminEmployeesRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/users': typeof AdminUsersRoute
+  '/dashboard/orders': typeof DashboardOrdersRoute
+  '/dashboard/profile': typeof DashboardProfileRoute
   '/employee/orders': typeof EmployeeOrdersRoute
   '/employee/users': typeof EmployeeUsersRoute
   '/admin': typeof AdminIndexRoute
+  '/dashboard': typeof DashboardIndexRoute
   '/employee': typeof EmployeeIndexRoute
   '/products': typeof ProductsIndexRoute
   '/products/$slug/proof': typeof ProductsSlugProofRoute
@@ -217,7 +240,7 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/contact': typeof ContactRoute
   '/create-account': typeof CreateAccountRoute
-  '/dashboard': typeof DashboardRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/employee': typeof EmployeeRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
   '/qr': typeof QrRoute
@@ -226,10 +249,13 @@ export interface FileRoutesById {
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/users': typeof AdminUsersRoute
+  '/dashboard/orders': typeof DashboardOrdersRoute
+  '/dashboard/profile': typeof DashboardProfileRoute
   '/employee/orders': typeof EmployeeOrdersRoute
   '/employee/users': typeof EmployeeUsersRoute
   '/products/$slug': typeof ProductsSlugRouteWithChildren
   '/admin/': typeof AdminIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
   '/employee/': typeof EmployeeIndexRoute
   '/products/': typeof ProductsIndexRoute
   '/products/$slug/order': typeof ProductsSlugOrderRouteWithChildren
@@ -255,10 +281,13 @@ export interface FileRouteTypes {
     | '/admin/orders'
     | '/admin/products'
     | '/admin/users'
+    | '/dashboard/orders'
+    | '/dashboard/profile'
     | '/employee/orders'
     | '/employee/users'
     | '/products/$slug'
     | '/admin/'
+    | '/dashboard/'
     | '/employee/'
     | '/products/'
     | '/products/$slug/order'
@@ -272,16 +301,18 @@ export interface FileRouteTypes {
     | '/cart'
     | '/contact'
     | '/create-account'
-    | '/dashboard'
     | '/qr'
     | '/signin'
     | '/admin/employees'
     | '/admin/orders'
     | '/admin/products'
     | '/admin/users'
+    | '/dashboard/orders'
+    | '/dashboard/profile'
     | '/employee/orders'
     | '/employee/users'
     | '/admin'
+    | '/dashboard'
     | '/employee'
     | '/products'
     | '/products/$slug/proof'
@@ -304,10 +335,13 @@ export interface FileRouteTypes {
     | '/admin/orders'
     | '/admin/products'
     | '/admin/users'
+    | '/dashboard/orders'
+    | '/dashboard/profile'
     | '/employee/orders'
     | '/employee/users'
     | '/products/$slug'
     | '/admin/'
+    | '/dashboard/'
     | '/employee/'
     | '/products/'
     | '/products/$slug/order'
@@ -323,7 +357,7 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   ContactRoute: typeof ContactRoute
   CreateAccountRoute: typeof CreateAccountRoute
-  DashboardRoute: typeof DashboardRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
   EmployeeRoute: typeof EmployeeRouteWithChildren
   ProductsRoute: typeof ProductsRouteWithChildren
   QrRoute: typeof QrRoute
@@ -416,6 +450,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EmployeeIndexRouteImport
       parentRoute: typeof EmployeeRoute
     }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/admin/': {
       id: '/admin/'
       path: '/'
@@ -443,6 +484,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/employee/orders'
       preLoaderRoute: typeof EmployeeOrdersRouteImport
       parentRoute: typeof EmployeeRoute
+    }
+    '/dashboard/profile': {
+      id: '/dashboard/profile'
+      path: '/profile'
+      fullPath: '/dashboard/profile'
+      preLoaderRoute: typeof DashboardProfileRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/orders': {
+      id: '/dashboard/orders'
+      path: '/orders'
+      fullPath: '/dashboard/orders'
+      preLoaderRoute: typeof DashboardOrdersRouteImport
+      parentRoute: typeof DashboardRoute
     }
     '/admin/users': {
       id: '/admin/users'
@@ -528,6 +583,22 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface DashboardRouteChildren {
+  DashboardOrdersRoute: typeof DashboardOrdersRoute
+  DashboardProfileRoute: typeof DashboardProfileRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardOrdersRoute: DashboardOrdersRoute,
+  DashboardProfileRoute: DashboardProfileRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
+)
+
 interface EmployeeRouteChildren {
   EmployeeOrdersRoute: typeof EmployeeOrdersRoute
   EmployeeUsersRoute: typeof EmployeeUsersRoute
@@ -593,7 +664,7 @@ const rootRouteChildren: RootRouteChildren = {
   CartRoute: CartRoute,
   ContactRoute: ContactRoute,
   CreateAccountRoute: CreateAccountRoute,
-  DashboardRoute: DashboardRoute,
+  DashboardRoute: DashboardRouteWithChildren,
   EmployeeRoute: EmployeeRouteWithChildren,
   ProductsRoute: ProductsRouteWithChildren,
   QrRoute: QrRoute,
@@ -602,12 +673,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

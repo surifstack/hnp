@@ -179,7 +179,9 @@
     "itemsCount": "{{count}} ürün",
     "address": {
       "title": "Teslimat adresi",
-      "subtitle": "Adres formatı:"
+      "subtitle": "Adres formatı:",
+      "attentionOf": "Attention Of (optional)",
+      "attentionPlaceholder": "örn. John Smith / Posta odası"
     },
     "checkoutSubmittion": "Tüm sepeti tek doğrulanmış istekle backend'e gönder."
   },

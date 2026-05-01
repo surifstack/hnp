@@ -178,7 +178,9 @@
     "itemsCount": "{{count}} položka(y)",
     "address": {
       "title": "Dodací adresa",
-      "subtitle": "Formát adresy pro"
+      "subtitle": "Formát adresy pro",
+      "attentionOf": "Attention Of (optional)",
+      "attentionPlaceholder": "e.g. John Smith / Mailroom"
     },
     "checkoutSubmittion": "Odešlete celý uložený košík na backend v jednom ověřeném požadavku."
   },

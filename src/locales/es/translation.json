@@ -179,7 +179,9 @@
     "itemsCount": "{{count}} artículo(s)",
     "address": {
       "title": "Dirección de envío",
-      "subtitle": "Formato de dirección para"
+      "subtitle": "Formato de dirección para",
+      "attentionOf": "Attention Of (optional)",
+      "attentionPlaceholder": "p. ej. John Smith / Recepción"
     },
     "checkoutSubmittion": "Enviar todo el carrito persistido al backend en una sola solicitud validada."
   },

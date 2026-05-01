@@ -178,7 +178,9 @@
     "itemsCount": "{{count}} Artikel",
     "address": {
       "title": "Lieferadresse",
-      "subtitle": "Adressformat für"
+      "subtitle": "Adressformat für",
+      "attentionOf": "Attention Of (optional)",
+      "attentionPlaceholder": "z. B. John Smith / Poststelle"
     },
     "checkoutSubmittion": "Gesamten gespeicherten Warenkorb in einer validierten Anfrage an das Backend senden."
   },

@@ -178,7 +178,9 @@
     "itemsCount": "{{count}} produkt(y)",
     "address": {
       "title": "Adres wysyłki",
-      "subtitle": "Format adresu dla"
+      "subtitle": "Format adresu dla",
+      "attentionOf": "Attention Of (optional)",
+      "attentionPlaceholder": "np. John Smith / Pokój pocztowy"
     },
     "checkoutSubmittion": "Prześlij cały zapisany koszyk do backendu w jednym zweryfikowanym żądaniu."
   },

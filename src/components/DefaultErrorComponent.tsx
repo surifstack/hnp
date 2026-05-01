@@ -1,5 +1,6 @@
 import { useRouter } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { AlertTriangle, RefreshCcw, Home } from "lucide-react";
 
 export function DefaultErrorComponent({
   error,
@@ -12,58 +13,63 @@ export function DefaultErrorComponent({
   const { t } = useTranslation();
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-8 w-8 text-destructive"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
-            />
-          </svg>
+    <div className="min-h-screen bg-neutral-100 flex items-center justify-center px-4">
+      <div className="w-full max-w-lg bg-white rounded-3xl border shadow-2xl p-8 text-center">
+
+        {/* ICON */}
+        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full border-4 border-red-100 bg-red-50">
+          <AlertTriangle className="h-10 w-10 text-red-500" />
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          
-                                            {t("defaultError.somethingWentWrong", { defaultValue: "Something went wrong" })}
 
+        {/* TITLE */}
+        <h1 className="text-3xl font-extrabold uppercase tracking-wide text-black">
+          {t("defaultError.somethingWentWrong", {
+            defaultValue: "Something went wrong",
+          })}
         </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-                                                      {t("defaultError.anErrorOccurred", { defaultValue: "An unexpected error occurred. Please try again." })}
 
+        {/* SUBTITLE */}
+        <p className="mt-3 text-sm leading-relaxed text-gray-500">
+          {t("defaultError.anErrorOccurred", {
+            defaultValue:
+              "An unexpected error occurred. Please try again.",
+          })}
         </p>
+
+        {/* DEV ERROR */}
         {import.meta.env.DEV && error.message && (
-          <pre className="mt-4 max-h-40 overflow-auto rounded-md bg-muted p-3 text-left font-mono text-xs text-destructive">
+          <pre className="mt-6 max-h-48 overflow-auto rounded-2xl border bg-black p-4 text-left text-xs text-red-400">
             {error.message}
           </pre>
         )}
-        <div className="mt-6 flex items-center justify-center gap-3">
+
+        {/* ACTIONS */}
+        <div className="mt-8 flex flex-col sm:flex-row gap-3">
+
           <button
             onClick={() => {
               router.invalidate();
               reset();
             }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-black px-5 py-3 text-sm font-bold uppercase tracking-wide text-white transition active:scale-95 hover:opacity-90"
           >
-            {t("defaultError.tryAgain", { defaultValue: "Try Again" })}
+            <RefreshCcw className="h-4 w-4" />
+            {t("defaultError.tryAgain", {
+              defaultValue: "Try Again",
+            })}
           </button>
+
           <a
             href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+            className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl border bg-white px-5 py-3 text-sm font-bold uppercase tracking-wide text-black transition hover:bg-gray-50"
           >
-                        {t("defaultError.goHome", { defaultValue: "Go Home" })}
-
+            <Home className="h-4 w-4" />
+            {t("defaultError.goHome", {
+              defaultValue: "Go Home",
+            })}
           </a>
         </div>
       </div>
     </div>
   );
 }
-

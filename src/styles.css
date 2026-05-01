@@ -187,6 +187,112 @@
   border: 1px solid var(--neon-yellow) ;
 }
 
+.userdash-surface {
+  /* Material-like "Paper" */
+  background: oklch(1 0 0 / 0.96);
+  border: 1px solid color-mix(in oklab, #000000, transparent 88%);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 4px 10px rgba(0, 0, 0, 0.06);
+}
+
+.userdash-neon-btn {
+  /* Material-like contained primary button */
+  background: var(--neon-green) !important;
+  color: #000000 !important;
+  border: 0 !important;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.14),
+    0 2px 6px rgba(0, 0, 0, 0.12);
+}
+.userdash-neon-btn:hover {
+  background: color-mix(in oklab, var(--neon-green), #000000 10%) !important;
+}
+.userdash-neon-btn:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--neon-green), white 35%);
+  outline-offset: 2px;
+}
+
+.userdash-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, #000000, transparent 86%);
+  background: oklch(0.98 0 0);
+  color: oklch(0.2 0 0);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+.userdash-chip:hover {
+  background: oklch(0.96 0 0);
+}
+.userdash-chip:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--neon-green), white 35%);
+  outline-offset: 2px;
+}
+.userdash-chip--neon {
+  background: color-mix(in oklab, var(--neon-green), white 72%);
+  border-color: color-mix(in oklab, var(--neon-green), transparent 55%);
+  color: #000000;
+}
+
+.userdash-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, #000000, transparent 85%);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background: oklch(1 0 0);
+}
+.userdash-pill[data-status="CURRENT"] {
+  background: color-mix(in oklab, var(--neon-green), white 72%);
+  border-color: color-mix(in oklab, var(--neon-green), transparent 55%);
+  color: #000000;
+}
+.userdash-pill[data-status="HISTORY"] {
+  background: oklch(0.96 0 0);
+  color: oklch(0.25 0 0);
+}
+.userdash-pill[data-status="CANCELLED"] {
+  background: color-mix(in oklab, #d32f2f, white 86%);
+  border-color: color-mix(in oklab, #d32f2f, transparent 55%);
+  color: color-mix(in oklab, #d32f2f, black 20%);
+}
+
+.userdash-icon-badge {
+  height: 44px;
+  width: 44px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--neon-green), transparent 55%);
+  background: color-mix(in oklab, var(--neon-green), white 72%);
+  color: #000000;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+.userdash-icon-badge--muted {
+  background: oklch(0.96 0 0);
+  border-color: color-mix(in oklab, #000000, transparent 85%);
+  color: oklch(0.35 0 0);
+  box-shadow: none;
+}
+.userdash-icon-badge--danger {
+  background: color-mix(in oklab, #d32f2f, white 88%);
+  border-color: color-mix(in oklab, #d32f2f, transparent 55%);
+  color: #c62828;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
 
 @font-face {
     font-family: 'Liberation Sans Narrow';

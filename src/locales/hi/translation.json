@@ -178,7 +178,9 @@
     "itemsCount": "{{count}} आइटम",
     "address": {
       "title": "शिपिंग पता",
-      "subtitle": "पते का प्रारूप"
+      "subtitle": "पते का प्रारूप",
+      "attentionOf": "Attention Of (optional)",
+      "attentionPlaceholder": "e.g. John Smith / Mailroom"
     },
     "checkoutSubmittion": "पूरे सहेजे गए कार्ट को एक सत्यापित अनुरोध में बैकएंड पर सबमिट करें।"
   },

@@ -178,7 +178,9 @@
     "itemsCount": "{{count}} articolo/i",
     "address": {
       "title": "Indirizzo di spedizione",
-      "subtitle": "Formato indirizzo per"
+      "subtitle": "Formato indirizzo per",
+      "attentionOf": "Attention Of (optional)",
+      "attentionPlaceholder": "es. John Smith / Ufficio posta"
     },
     "checkoutSubmittion": "Invia l'intero carrello persistente al backend in una richiesta validata."
   },

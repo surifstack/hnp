@@ -179,7 +179,9 @@
     "itemsCount": "{{count}} artigo(s)",
     "address": {
       "title": "Morada de envio",
-      "subtitle": "Formato de morada para"
+      "subtitle": "Formato de morada para",
+      "attentionOf": "Attention Of (optional)",
+      "attentionPlaceholder": "ex.: John Smith / Sala de correio"
     },
     "checkoutSubmittion": "Submeter todo o carrinho persistido ao backend numa única requisição validada."
   },

@@ -8,6 +8,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useCatalogStore } from "@/hooks/useCatalogStore";
 import { useCartStore } from "@/hooks/useCartStore";
 import { CartSheet } from "@/components/cart/CartSheet";
+import { useSessionStore } from "@/hooks/useSessionStore";
 
 interface SiteLayoutProps {
   children: React.ReactNode;
@@ -23,6 +24,7 @@ export function SiteLayout({
   const { t } = useTranslation();
   const fetchProducts = useCatalogStore((s) => s.fetchProducts);
   const cartCount = useCartStore((s) => s.items.length);
+  const userId = useSessionStore((s) => s.userId);
 
   useEffect(() => {
     if (showTabs) {
@@ -46,13 +48,23 @@ export function SiteLayout({
         <div className="mx-auto w-full max-w-6xl">
           {/* Top Bar */}
           <div className="flex items-center justify-between gap-3 mb-4">
-            <Link
-              to="/signin"
-              className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide bg-black text-white px-4 py-2 rounded-full whitespace-nowrap"
-            >
-              <User className="h-4 w-4" />
-              {t("common.signIn")}
-            </Link>
+            {userId ? (
+              <Link
+                to="/dashboard"
+                className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide bg-black text-white px-4 py-2 rounded-full whitespace-nowrap"
+              >
+                <User className="h-4 w-4" />
+                {t("common.dashboard")}
+              </Link>
+            ) : (
+              <Link
+                to="/signin"
+                className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide bg-black text-white px-4 py-2 rounded-full whitespace-nowrap"
+              >
+                <User className="h-4 w-4" />
+                {t("common.signIn")}
+              </Link>
+            )}
 
             <CartSheet
               trigger={
@@ -76,9 +88,10 @@ export function SiteLayout({
           <Link to="/" className="block mx-auto text-center">
             <img
               src={logo}
-  loading="lazy"
+              loading="lazy"
               alt="Hot Neon Posters"
-className="w-52 sm:w-64 md:w-80 lg:w-[420px] xl:w-[520px] mx-auto h-auto"            />
+              className="mx-auto h-auto w-52 sm:w-64 md:w-80 lg:w-[420px] xl:w-[520px]"
+            />
           </Link>
 
           {/* Tabs */}
@@ -110,19 +123,20 @@ className="w-52 sm:w-64 md:w-80 lg:w-[420px] xl:w-[520px] mx-auto h-auto"       
           <Link to="/contact" className="text-black hover:underline">
             {t("common.contact")}
           </Link>
-          <Link to="/employee" className="text-black hover:underline">
+          <Link to="/dashboard" className="text-black hover:underline">
             {t("common.dashboard")}
           </Link>
+         
         </div>
       </footer>
 
       {/* Language Switcher */}
 
     {showLanguageSwitcher && (
-  <div className="fixed bottom-15 right-4 z-50 sm:bottom-15 sm:right-6">
-    <LanguageSwitcher />
-  </div>
-)}
+        <div className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
+          <LanguageSwitcher />
+        </div>
+      )}
     </div>
   );
 }

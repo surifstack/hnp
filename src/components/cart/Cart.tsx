@@ -54,16 +54,65 @@ export function Cart({ orderId }: { orderId: string | undefined }) {
 
         {/* EMPTY CART */}
         {isCartEmpty && (
-          <section className="bg-white rounded-2xl p-6 shadow-md border text-center space-y-3">
-            <h1 className="text-xl font-extrabold uppercase tracking-wide">
-              {t("cart.emptyTitle")}
-            </h1>
+        <section
+            className="
+              rounded-3xl
+              border-2 border-[var(--neon-green)]
+              bg-white
+              px-6 py-8
+              text-center
+              space-y-5
+              shadow-[0_0_25px_rgba(57,255,20,0.10)]
+            "
+          >
+            <div
+              className="
+                mx-auto
+                flex h-16 w-16 items-center justify-center
+                rounded-full
+                bg-[rgba(57,255,20,0.12)]
+                border border-[var(--neon-green)]
+              "
+            >
+              <span className="text-3xl">🛒</span>
+            </div>
 
-            <p className="text-sm text-gray-500">
-              {t("cart.emptySubtitle")}
-            </p>
+            <div className="space-y-2">
+              <h1
+                className="
+                  text-2xl
+                  font-black
+                  uppercase
+                  tracking-wide
+                  text-black
+                "
+              >
+                {t("cart.emptyTitle")}
+              </h1>
 
-            <Button asChild className="font-bold uppercase">
+              <p className="text-sm leading-relaxed text-gray-500 max-w-md mx-auto">
+                {t("cart.emptySubtitle")}
+              </p>
+            </div>
+
+            <Button
+              asChild
+              className="
+                h-12
+                rounded-2xl
+                bg-[var(--neon-green)]
+                px-6
+                text-sm
+                font-black
+                uppercase
+                tracking-wide
+                text-black
+                shadow-[0_0_15px_rgba(57,255,20,0.25)]
+                hover:scale-[1.02]
+                hover:opacity-90
+                transition
+              "
+            >
               <Link to="/products">
                 {t("cart.browseProducts")}
               </Link>

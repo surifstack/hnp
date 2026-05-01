@@ -178,7 +178,9 @@
     "itemsCount": "{{count}} tétel",
     "address": {
       "title": "Szállítási cím",
-      "subtitle": "Címformátum ehhez:"
+      "subtitle": "Címformátum ehhez:",
+      "attentionOf": "Attention Of (optional)",
+      "attentionPlaceholder": "pl. John Smith / Postázó"
     },
     "checkoutSubmittion": "Küldje el a teljes mentett kosarat a backendnek egyetlen ellenőrzött kérésben."
   },

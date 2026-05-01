@@ -178,7 +178,9 @@
     "itemsCount": "{{count}} artikel/artiklar",
     "address": {
       "title": "Leveransadress",
-      "subtitle": "Adressformat för"
+      "subtitle": "Adressformat för",
+      "attentionOf": "Attention Of (optional)",
+      "attentionPlaceholder": "t.ex. John Smith / Postrum"
     },
     "checkoutSubmittion": "Skicka hela den sparade varukorgen till backend i en validerad begäran."
   },

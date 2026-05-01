@@ -179,7 +179,9 @@
     "itemsCount": "{{count}} item",
     "address": {
       "title": "Alamat pengiriman",
-      "subtitle": "Format alamat untuk"
+      "subtitle": "Format alamat untuk",
+      "attentionOf": "Attention Of (optional)",
+      "attentionPlaceholder": "mis. John Smith / Mailroom"
     },
     "checkoutSubmittion": "Kirim seluruh keranjang tersimpan ke backend dalam satu permintaan tervalidasi."
   },

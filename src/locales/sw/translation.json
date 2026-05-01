@@ -179,7 +179,9 @@
     "itemsCount": "Bidhaa {{count}}",
     "address": {
       "title": "Anwani ya usafirishaji",
-      "subtitle": "Mfumo wa anwani kwa"
+      "subtitle": "Mfumo wa anwani kwa",
+      "attentionOf": "Attention Of (optional)",
+      "attentionPlaceholder": "mf. John Smith / Chumba cha barua"
     },
     "checkoutSubmittion": "Wasilisha kikapu chote kilichohifadhiwa kwa backend kwa ombi moja lililothibitishwa."
   },

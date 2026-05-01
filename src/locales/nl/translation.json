@@ -178,7 +178,9 @@
     "itemsCount": "{{count}} item(s)",
     "address": {
       "title": "Verzendadres",
-      "subtitle": "Adresformaat voor"
+      "subtitle": "Adresformaat voor",
+      "attentionOf": "Attention Of (optional)",
+      "attentionPlaceholder": "bijv. John Smith / Postkamer"
     },
     "checkoutSubmittion": "Verzend de volledige opgeslagen winkelwagen naar de backend in één gevalideerd verzoek."
   },

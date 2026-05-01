@@ -1,10 +1,10 @@
-import { useEffect, useLayoutEffect } from "react";
+import { useEffect } from "react";
 import { useRouter } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/SiteLayout";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
-import {buildQuantityConfig, COLORS, getFieldValue} from "@/lib/data";
+import { buildQuantityConfig, COLORS } from "@/lib/data";
 import {
   Select,
   SelectContent,
@@ -13,10 +13,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useOrderFlowStore } from "@/hooks/useOrderFlowStore";
-import type {  Product } from "@/lib/api.types";
+import type { Product } from "@/lib/api.types";
 import { skuForSelection } from "@/lib/sku";
 import { LANGUAGE_OPTIONS } from "@/config/languages";
-
+import {
+  BadgeCheck,
+  Globe2,
+  Hash,
+  Palette,
+  ShoppingCart,
+} from "lucide-react";
 
 export function OrderSetupPage({ slug }: { slug: string }) {
   const router = useRouter();
@@ -33,16 +39,19 @@ export function OrderSetupPage({ slug }: { slug: string }) {
   const setupDraft = useOrderFlowStore((s) => s.setupDraft);
   const loading = useOrderFlowStore((s) => s.loading);
 
-useEffect(() => {
-  clearOrderFlow();     // 👈 pehle clean
-  startOrder(slug);     // 👈 fresh order
-  void loadProduct(slug); // 👈 product load
-}, [slug]);
-  
-const {orderQty , maxQty,quantities} = buildQuantityConfig(product?.documentation?.specs ?? []);
-useEffect(() => {
+  useEffect(() => {
+    clearOrderFlow();
+    startOrder(slug);
+    void loadProduct(slug);
+  }, [slug]);
+
+  const { orderQty, maxQty, quantities } = buildQuantityConfig(
+    product?.documentation?.specs ?? []
+  );
+
+  useEffect(() => {
     if (!order || order.productSlug !== slug) {
-      void startOrder(slug  as Product["slug"]);
+      void startOrder(slug as Product["slug"]);
     }
   }, [order, slug, startOrder]);
 
@@ -61,33 +70,42 @@ useEffect(() => {
 
   return (
     <SiteLayout>
-      <div className="mx-auto max-w-4xl space-y-6">
-
+      <div className="mx-auto max-w-5xl px-4 py-4 space-y-4">
         {/* HEADER */}
-        <div className="bg-white rounded-2xl p-6 shadow-md border">
-          <h1 className="text-2xl font-bold mb-2">
+        <div className="rounded-3xl border border-lime-200 bg-white p-4 shadow-sm">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="inline-flex items-center gap-2 rounded-full bg-lime-100 px-3 py-1 text-xs font-bold text-lime-700">
+              <BadgeCheck className="h-4 w-4" />
+              Setup Order
+            </div>
+          </div>
+
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-black">
             {t("order.setupTitle", {
               name: product?.name ?? "Order",
             })}
           </h1>
 
-          <p className="text-sm text-gray-500">
+          <p className="mt-1 text-sm text-gray-500">
             {t("order.configureOrder")}
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-
+        <div className="grid gap-4 md:grid-cols-2">
           {/* LEFT PANEL */}
-          <div className="bg-white rounded-2xl p-6 border shadow-sm space-y-5">
-
+          <div className="space-y-4 rounded-3xl border border-lime-200 bg-white p-4 shadow-sm">
             {/* QUANTITY */}
             <div className="space-y-2">
-             <Label>
-            {t("order.quantity", {
-              qty: `(${orderQty}-${maxQty})`,
-            })}
-          </Label>
+              <div className="flex items-center gap-2">
+                <Hash className="h-4 w-4 text-lime-600" />
+
+                <Label className="text-xs font-bold uppercase tracking-wide text-gray-500">
+                  {t("order.quantity", {
+                    qty: `(${orderQty}-${maxQty})`,
+                  })}
+                </Label>
+              </div>
+
               <Select
                 value={String(safeSetup.quantity)}
                 onValueChange={(v) =>
@@ -97,7 +115,7 @@ useEffect(() => {
                   })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="h-11 rounded-2xl border-lime-200 focus:ring-lime-500">
                   <SelectValue />
                 </SelectTrigger>
 
@@ -113,7 +131,14 @@ useEffect(() => {
 
             {/* LANGUAGE */}
             <div className="space-y-2">
-              <Label>{t("order.language")}</Label>
+              <div className="flex items-center gap-2">
+                <Globe2 className="h-4 w-4 text-lime-600" />
+
+                <Label className="text-xs font-bold uppercase tracking-wide text-gray-500">
+                  {t("order.language")}
+                </Label>
+              </div>
+
               <Select
                 value={safeSetup.languageCode}
                 onValueChange={(v) =>
@@ -123,7 +148,7 @@ useEffect(() => {
                   })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="h-11 rounded-2xl border-lime-200 focus:ring-lime-500">
                   <SelectValue />
                 </SelectTrigger>
 
@@ -139,15 +164,21 @@ useEffect(() => {
           </div>
 
           {/* RIGHT PANEL */}
-          <div className="bg-white rounded-2xl p-6 border shadow-sm space-y-5">
+          <div className="space-y-4 rounded-3xl border border-lime-200 bg-white p-4 shadow-sm">
+            {/* COLOR HEADER */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Palette className="h-4 w-4 text-lime-600" />
 
-            <div className="flex justify-between items-center">
-              <Label>{t("order.color")}</Label>
+                <Label className="text-xs font-bold uppercase tracking-wide text-gray-500">
+                  {t("order.color")}
+                </Label>
+              </div>
 
               {selectedSku && (
-                <span className="text-xs text-gray-500">
-                  {t("order.sku")}:{" "}
-                  <span className="font-mono text-black">
+                <span className="rounded-full bg-gray-100 px-3 py-1 text-[11px] font-medium text-gray-600">
+                  SKU:
+                  <span className="ml-1 font-mono text-black">
                     {selectedSku}
                   </span>
                 </span>
@@ -168,17 +199,18 @@ useEffect(() => {
                         colorPms: c.pms,
                       })
                     }
-                    className={`p-4 rounded-xl border transition transform hover:-translate-y-1 hover:shadow-md ${
+                    className={`rounded-2xl border p-3 transition-all duration-200 hover:-translate-y-1 hover:shadow-md ${
                       selected
-                        ? "border-black ring-2 ring-black"
-                        : "border-gray-200"
+                        ? "border-lime-500 bg-lime-50 ring-2 ring-lime-500"
+                        : "border-gray-200 hover:border-lime-300"
                     }`}
                   >
                     <div
-                      className="h-12 w-12 mx-auto rounded-md border"
+                      className="mx-auto h-10 w-10 rounded-xl border border-black/10"
                       style={{ backgroundColor: c.swatch }}
                     />
-                    <div className="text-xs mt-2 font-semibold text-center">
+
+                    <div className="mt-2 text-center text-xs font-bold text-black">
                       {c.label}
                     </div>
                   </button>
@@ -189,15 +221,18 @@ useEffect(() => {
             {/* CONTINUE */}
             <Button
               size="lg"
-              className="w-full font-bold uppercase hover:scale-[1.02] transition"
+              className="mt-2 h-11 w-full rounded-2xl bg-lime-500 text-sm font-black uppercase text-black transition-all hover:bg-lime-400"
               onClick={async () => {
                 await updateSetup(safeSetup);
+
                 router.navigate({
                   to: "/products/$slug/order/text",
                   params: { slug },
                 });
               }}
             >
+              <ShoppingCart className="mr-2 h-4 w-4" />
+
               {t("order.continue")}
             </Button>
           </div>
@@ -211,20 +246,38 @@ useEffect(() => {
 function Skeleton() {
   return (
     <SiteLayout>
-      <div className="mx-auto max-w-4xl space-y-6 animate-pulse">
-        <div className="h-16 bg-gray-200 rounded-2xl" />
+      <div className="mx-auto max-w-5xl px-4 py-4 space-y-4 animate-pulse">
+        {/* HEADER */}
+        <div className="rounded-3xl border border-lime-100 bg-white p-4 space-y-3">
+          <div className="h-6 w-32 rounded-full bg-lime-100" />
+          <div className="h-8 w-2/3 rounded-xl bg-gray-200" />
+          <div className="h-4 w-1/2 rounded bg-gray-100" />
+        </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
+        {/* GRID */}
+        <div className="grid gap-4 md:grid-cols-2">
           {[1, 2].map((i) => (
-            <div key={i} className="bg-white p-6 rounded-2xl border space-y-4">
-              <div className="h-4 w-1/3 bg-gray-200 rounded" />
-              <div className="h-10 bg-gray-200 rounded" />
-              <div className="h-10 bg-gray-200 rounded" />
-              <div className="grid grid-cols-3 gap-3">
-                <div className="h-16 bg-gray-200 rounded" />
-                <div className="h-16 bg-gray-200 rounded" />
-                <div className="h-16 bg-gray-200 rounded" />
+            <div
+              key={i}
+              className="space-y-4 rounded-3xl border border-lime-100 bg-white p-4"
+            >
+              <div className="space-y-2">
+                <div className="h-4 w-24 rounded bg-gray-200" />
+                <div className="h-11 rounded-2xl bg-gray-100" />
               </div>
+
+              <div className="space-y-2">
+                <div className="h-4 w-20 rounded bg-gray-200" />
+                <div className="h-11 rounded-2xl bg-gray-100" />
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                <div className="h-20 rounded-2xl bg-gray-100" />
+                <div className="h-20 rounded-2xl bg-gray-100" />
+                <div className="h-20 rounded-2xl bg-gray-100" />
+              </div>
+
+              <div className="h-11 rounded-2xl bg-lime-100" />
             </div>
           ))}
         </div>
