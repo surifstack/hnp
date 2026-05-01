@@ -133,7 +133,7 @@ export function SiteLayout({
       {/* Language Switcher */}
 
     {showLanguageSwitcher && (
-      <div className="fixed bottom-20 right-4 z-50 sm:bottom-24 sm:right-6">
+      <div className="fixed bottom-12 right-4 z-50 sm:bottom-12 sm:right-6">
         <LanguageSwitcher />
       </div>
     )}
