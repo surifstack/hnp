@@ -45,13 +45,13 @@ export function SignIn({
             e.preventDefault();
 
             const fd = new FormData(e.currentTarget);
-
+   
             const email = (fd.get("email")?.toString() ?? "").trim();
-
+          
             const id = email || `user_${Date.now()}`;
 
             setUserId(id);
-
+          
             if (search.redirect) {
               window.location.assign(search.redirect);
               return;

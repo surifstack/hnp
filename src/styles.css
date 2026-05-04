@@ -103,7 +103,7 @@
   --sidebar-ring: oklch(0.704 0.04 256.788);
   --neon-pink: oklch(0.7 0.32 5);
   --neon-yellow: oklch(0.640.92 0.22 100);
-  --neon-green:#0baa0d ;
+  --neon-green:oklch(88% .28 130) ;
   --neon-red: oklch(0.65 0.28 25);
 }
 
