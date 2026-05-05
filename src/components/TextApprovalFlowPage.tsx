@@ -14,7 +14,8 @@ import {
 
 import { NoActiveOrder } from "./NoActiveOrder";
 import { StepCard } from "./StepCard";
-import { clampChars, clampLines } from "@/helpers";
+import { FlyerPreview } from "./FlyerPreview";
+import { useOverflowStore } from "@/hooks/useOverflowStore";
 
 export function TextApprovalFlowPage({ slug }: { slug: string }) {
   const router = useRouter();
@@ -38,7 +39,8 @@ export function TextApprovalFlowPage({ slug }: { slug: string }) {
 
   const loading = useOrderFlowStore((s) => s.loading);
   const error = useOrderFlowStore((s) => s.error);
-
+  const overflowMap = useOverflowStore((s) => s.overflowMap);
+const hasOverflow =overflowMap?.title || overflowMap?.secondary ||overflowMap?.label;
   useEffect(() => {
   if (!order || hydrated) return;
 
@@ -65,7 +67,6 @@ export function TextApprovalFlowPage({ slug }: { slug: string }) {
     titleApproved && secondaryApproved && labelApproved;
 
   const finalApproved = order.approvals.allApproved;
-
   return (
     <SiteLayout>
       <div className="mx-auto w-full max-w-6xl px-4 py-4 pb-28 md:pb-4 space-y-4">
@@ -159,7 +160,7 @@ export function TextApprovalFlowPage({ slug }: { slug: string }) {
               label={t("order.label")}
               name="title"
               value={draft.title}
-              maxChars={65}
+              maxChars={80}
               rows={2}
               disabled={loading}
               approved={titleApproved}
@@ -181,7 +182,7 @@ export function TextApprovalFlowPage({ slug }: { slug: string }) {
               name="secondary"
               value={draft.secondary}
               rows={3}
-              maxChars={180}
+              maxChars={170}
               disabled={!titleApproved || loading}
               approved={secondaryApproved}
               isActive={activeStep === "secondary"}
@@ -266,7 +267,7 @@ export function TextApprovalFlowPage({ slug }: { slug: string }) {
             {/* APPROVE */}
             <Button
               className="h-11 flex-1 rounded-2xl bg-lime-500 text-sm font-black uppercase text-black transition-all hover:bg-lime-400"
-              disabled={!allApproved || loading}
+              disabled={!allApproved || loading || hasOverflow}
               onClick={async () => {
                 if (!finalApproved) {
                   await approveAll();
@@ -320,6 +321,18 @@ export function TextApprovalFlowPage({ slug }: { slug: string }) {
           </div>
         </div>
       </div>
+      <div
+        style={{
+          position: "absolute",
+          left: "-9999px",
+          top: 0,
+          visibility: "hidden",
+          height: "auto",
+        }}
+      >
+        <FlyerPreview isOrder={false} />
+      </div>
+      
     </SiteLayout>
   );
 }

@@ -6,6 +6,7 @@ export type QuantityConfig = {
   maxQty: number;
   steps: number;
   labelsQty:number;
+  pageInchWidth:number;
   quantities: number[];
 };
 export interface ProductField {
@@ -163,3 +164,9 @@ export interface CheckoutResponse {
   orderIds: string[];
   totals: MoneyTotals;
 }
+
+export type OverflowMap = {
+  title?: boolean;
+  secondary?: boolean;
+  label?: boolean;
+};

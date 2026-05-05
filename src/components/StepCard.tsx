@@ -3,20 +3,20 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useTranslation } from "react-i18next";
 import { useOrderFlowStore } from "@/hooks/useOrderFlowStore";
-import { toast } from "sonner";
-import { clampVisual, getVisualLines } from "@/helpers";
+import { OverflowMap } from "@/lib/api.types";
 import {
   Check,
   PencilLine,
   Sparkles,
   Lock,
 } from "lucide-react";
+import { useOverflowStore } from "@/hooks/useOverflowStore";
+import { useRef } from "react";
 
 export function StepCard({
   title,
   name,
   subtitle,
-  maxChars,
   label,
   value,
   rows,
@@ -30,15 +30,24 @@ export function StepCard({
   onApprove,
 }: StepCardProps) {
   const { t } = useTranslation();
-
   const setApproval = useOrderFlowStore((s) => s.setApproval);
+
+  const overflowMap: OverflowMap = useOverflowStore(
+    (s) => s.overflowMap
+  );
+
+  const previousValid = useRef(value);
+
+  const isOverflow = (overflowMap as any)[name];
 
   return (
     <section
       id={anchorId}
       onClick={canEdit ? onActivate : undefined}
       className={`rounded-3xl border p-4 transition-all duration-200 ${
-        approved
+        isOverflow
+          ? "border-red-400 bg-red-50"
+          : approved
           ? "border-lime-400 bg-lime-50"
           : isActive
           ? "border-lime-500 bg-white shadow-lg"
@@ -62,7 +71,11 @@ export function StepCard({
         </div>
 
         {/* STATUS */}
-        {approved ? (
+        {isOverflow ? (
+          <div className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-1 text-[10px] font-bold uppercase text-red-700">
+            ⚠ Overflow
+          </div>
+        ) : approved ? (
           <div className="inline-flex items-center gap-1 rounded-full bg-lime-100 px-2 py-1 text-[10px] font-bold uppercase text-lime-700">
             <Check className="h-3 w-3" />
             Approved
@@ -94,46 +107,61 @@ export function StepCard({
         <Textarea
           rows={rows}
           value={value}
-        //  onPaste={(e) => e.preventDefault()}
-
           disabled={disabled && !canEdit}
           onChange={(e) => {
-            const v = clampVisual(e.target.value,maxChars);
-            setApproval(name as keyof Order["approvals"], false);
+            const next = e.target.value;
 
-            onChange(v);
+            setApproval(
+              name as keyof Order["approvals"],
+              false
+            );
+
+            onChange(next);
+
+            requestAnimationFrame(() => {
+              if (!(overflowMap as any)[name]) {
+                previousValid.current = next;
+              }
+            });
           }}
           className={`min-h-[88px] resize-none rounded-2xl border text-sm leading-6 transition-all ${
-            approved
+            isOverflow
+              ? "border-red-400 bg-red-50 focus-visible:ring-red-500"
+              : approved
               ? "border-lime-300 bg-lime-50 focus-visible:ring-lime-500"
               : "border-gray-200 bg-white focus-visible:ring-lime-500"
           }`}
         />
+
+        {/* ERROR MESSAGE */}
+        {isOverflow && (
+          <p className="mt-2 text-xs font-bold text-red-500">
+            Text is overflowing. Please shorten it before approving.
+          </p>
+        )}
       </div>
 
       {/* FOOTER */}
       <div className="mt-4 flex items-center justify-between">
-        {/* CHARACTER INFO */}
         <p className="text-[11px] font-medium text-gray-400">
           {value.length} characters
         </p>
 
-        {/* APPROVE BUTTON */}
         <Button
           type="button"
           disabled={
             disabled ||
             value.length === 0 ||
-            approved
+            approved ||
+            isOverflow
           }
           onClick={(e) => {
             e.stopPropagation();
-
             if (!approved) onApprove();
           }}
           className={`h-10 rounded-2xl px-5 text-xs font-black uppercase tracking-wide transition-all ${
             approved
-              ? "bg-lime-500 text-black hover:bg-lime-500"
+              ? "bg-lime-500 text-black"
               : "bg-lime-500 text-black hover:bg-lime-400"
           }`}
         >
