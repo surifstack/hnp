@@ -20,14 +20,14 @@ import { NoActiveOrder } from "./NoActiveOrder";
 
 type Props = {
   orderId: string;
-  accentColor?: string; // ✅ configurable theme color
 };
 
 export function OrderSuccessPage({
   orderId,
-  accentColor = "#22c55e", // default green
 }: Props) {
-  const { t, i18n } = useTranslation();
+const accentColor = getComputedStyle(document.documentElement)
+  .getPropertyValue('--neon-color')
+  .trim();  const { t, i18n } = useTranslation();
   const userId = useSessionStore((s) => s.userId);
   const checkout = useHnpStore((s) =>
     orderId ? s.userOrders.checkoutsById[orderId] : undefined
@@ -86,7 +86,7 @@ export function OrderSuccessPage({
     ) || null;
   return (
     <SiteLayout>
-      <div className="mx-auto w-full max-w-6xl space-y-10 py-10">
+      <div className="mx-auto w-full max-w-5xl space-y-10 py-10">
 
         {/* HEADER */}
         <section className="relative overflow-hidden rounded-3xl border bg-white p-8 shadow-sm">
