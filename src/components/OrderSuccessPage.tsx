@@ -26,7 +26,7 @@ export function OrderSuccessPage({
   orderId,
 }: Props) {
 const accentColor = getComputedStyle(document.documentElement)
-  .getPropertyValue('--neon-color')
+  .getPropertyValue('--neon-green')
   .trim();  const { t, i18n } = useTranslation();
   const userId = useSessionStore((s) => s.userId);
   const checkout = useHnpStore((s) =>
