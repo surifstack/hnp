@@ -157,7 +157,7 @@ const hasOverflow =overflowMap?.title || overflowMap?.secondary ||overflowMap?.l
             <StepCard
               title={t("order.step1Title")}
               subtitle={t("order.step1Subtitle")}
-              label={t("order.label")}
+              label={""}
               name="title"
               value={draft.title}
               maxChars={80}
@@ -178,7 +178,7 @@ const hasOverflow =overflowMap?.title || overflowMap?.secondary ||overflowMap?.l
             <StepCard
               title={t("order.step2Title")}
               subtitle={t("order.step2Subtitle")}
-              label={t("order.label")}
+              label={""}
               name="secondary"
               value={draft.secondary}
               rows={3}

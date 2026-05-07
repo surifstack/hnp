@@ -190,6 +190,7 @@ export function OrderSetupPage({ slug }: { slug: string }) {
               {COLORS.map((c) => {
                 const selected = safeSetup.colorPms === c.pms;
 
+
                 return (
                   <button
                     key={c.pms}
