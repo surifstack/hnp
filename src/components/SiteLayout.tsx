@@ -6,7 +6,7 @@ import logo from "@/assets/logo.webp";
 import bg from "@/assets/background.webp";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useCatalogStore } from "@/hooks/useCatalogStore";
-import { useCartStore } from "@/hooks/useCartStore";
+import { useHnpStore } from "@/hooks/useHnpStore";
 import { CartSheet } from "@/components/cart/CartSheet";
 import { useSessionStore } from "@/hooks/useSessionStore";
 
@@ -23,7 +23,7 @@ export function SiteLayout({
 }: SiteLayoutProps) {
   const { t } = useTranslation();
   const fetchProducts = useCatalogStore((s) => s.fetchProducts);
-  const cartCount = useCartStore((s) => s.items.length);
+  const cartCount = useHnpStore((s) => s.cart.items.length);
   const userId = useSessionStore((s) => s.userId);
 
   useEffect(() => {

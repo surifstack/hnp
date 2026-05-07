@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { useCartStore } from "@/hooks/useCartStore";
+import { useHnpStore } from "@/hooks/useHnpStore";
 import { useTranslation } from "react-i18next";
 import { estimateItemTotals, formatCents, sumCartTotals } from "./cartTotals";
 import { buildQuantityConfig } from "@/lib/data";
@@ -10,14 +10,14 @@ export function CartItems({
   effectiveActiveOrderId,
 }: {
   effectiveActiveOrderId: string | null;
-}) {
+  }) {
   const { t } = useTranslation();
 
-  const items = useCartStore((s) => s.items);
-  const setActive = useCartStore((s) => s.setActive);
-  const remove = useCartStore((s) => s.remove);
-  const updateQuantity = useCartStore((s) => s.updateQuantity);
-  const loading = useCartStore((s) => s.loading);
+  const items = useHnpStore((s) => s.cart.items);
+  const setActive = useHnpStore((s) => s.cart.setActive);
+  const remove = useHnpStore((s) => s.cart.remove);
+  const updateQuantity = useHnpStore((s) => s.cart.updateQuantity);
+  const loading = useHnpStore((s) => s.cart.loading);
 
   const totals = sumCartTotals(items);
 

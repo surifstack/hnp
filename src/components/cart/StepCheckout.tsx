@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { Link } from "@tanstack/react-router";
+import { Link, useRouter } from "@tanstack/react-router";
 
 import {
   ChevronLeft,
@@ -24,11 +24,9 @@ import { Button } from "@/components/ui/button";
 
 import { toast } from "sonner";
 
-import { useServerFn } from "@tanstack/react-start";
-
 import { useSessionStore } from "@/hooks/useSessionStore";
 
-import { useCartStore } from "@/hooks/useCartStore";
+import { useHnpStore } from "@/hooks/useHnpStore";
 
 import { useTranslation } from "react-i18next";
 
@@ -46,16 +44,13 @@ import type {
   CheckoutResponse,
 } from "@/lib/api.types";
 
-import { checkoutServerFn } from "@/server/checkout";
-
 import {
   getLanguageOption,
   LANGUAGE_OPTIONS,
 } from "@/config/languages";
 
 import { estimateItemTotals } from "@/components/cart/cartTotals";
-
-import { useUserOrdersStore } from "@/hooks/useUserOrdersStore";
+import { attentionKey } from "@/lib/data";
 
 interface Props {
   state: FormState;
@@ -71,6 +66,7 @@ export function StepCheckout({
   onBack,
 }: Props) {
   const { t } = useTranslation();
+  const router = useRouter();
 
   const [submitted, setSubmitted] =
     useState(false);
@@ -86,24 +82,18 @@ export function StepCheckout({
   const [promoApplied, setPromoApplied] =
     useState<string | null>(null);
 
-  const checkoutFn =
-    useServerFn(checkoutServerFn);
-
   const userId = useSessionStore(
     (s) => s.userId
   );
 
-  const items = useCartStore(
-    (s) => s.items
-  );
+  const items = useHnpStore((s) => s.cart.items);
 
-  const activeOrderId = useCartStore(
-    (s) => s.activeOrderId
-  );
+  const activeOrderId = useHnpStore((s) => s.cart.activeOrderId);
 
-  const setActive = useCartStore(
-    (s) => s.setActive
-  );
+  const setActive = useHnpStore((s) => s.cart.setActive);
+  const clearCart = useHnpStore((s) => s.cart.clear);
+  const resetFlow = useHnpStore((s) => s.checkout.reset);
+  const recordCheckout = useHnpStore((s) => s.userOrders.recordCheckout);
 
   const effectiveOrderId =
     orderId ?? activeOrderId;
@@ -120,8 +110,7 @@ export function StepCheckout({
   const addressFields =
     selectedLanguage?.addressFields ??
     [];
-  const attentionKey = "attentionOf";
-
+ 
   useEffect(() => {
     if (!effectiveOrderId) return;
 
@@ -264,6 +253,27 @@ export function StepCheckout({
       ]
     );
 
+  const buildStaticCheckout = (payload: CheckoutClientRequest): CheckoutResponse => {
+    const acceptedAt = new Date().toISOString();
+    const itemCount = payload.items.length;
+
+    const orderIds = payload.items.map((it) => `ord_${it.clientItemId}`);
+
+    const totalsByItem = items.map((it) => estimateItemTotals(it));
+    const currency = totalsByItem[0]?.currency ?? "usd";
+    const subtotal = totalsByItem.reduce((sum, t) => sum + t.subtotal, 0);
+    const shipping = totalsByItem.reduce((sum, t) => sum + t.shipping, 0);
+    const taxes = totalsByItem.reduce((sum, t) => sum + t.taxes, 0);
+    const total = totalsByItem.reduce((sum, t) => sum + t.total, 0);
+
+    return {
+      acceptedAt,
+      itemCount,
+      orderIds,
+      totals: { subtotal, shipping, taxes, total, currency },
+    };
+  };
+
   const placeOrder = () => {
     if (missing.length > 0) return;
 
@@ -281,69 +291,47 @@ export function StepCheckout({
 
     void (async () => {
       try {
-        const resp =
-          await checkoutFn({
-            data: checkoutPayload,
-          });
+        const itemSnapshots = items.map((it) => ({
+          clientItemId: it.orderId,
+          productSlug: it.order.productSlug,
+          quantity: it.order.setup.quantity,
+          colorPms: it.order.setup.colorPms,
+          languageCode: it.order.setup.languageCode,
+          titleLines: it.order.text.titleLines,
+          secondaryLines: it.order.text.secondaryLines,
+          labelLines: it.order.text.labelLines,
+          totals: estimateItemTotals(it),
+        }));
+
+        // Static checkout for now (no backend dependency).
+        const resp = buildStaticCheckout(checkoutPayload);
 
         setCheckout(resp);
 
-        useUserOrdersStore
-          .getState()
-          .recordCheckout({
-            userId,
+        const checkoutId = `chk_${Math.random().toString(16).slice(2, 10)}`;
 
-            acceptedAt:
-              resp.acceptedAt ??
-              new Date().toISOString(),
+        recordCheckout({
+          checkoutId,
+          userId,
 
-            serverOrderIds:
-              resp.orderIds ?? [],
+          acceptedAt:
+            resp.acceptedAt ??
+            new Date().toISOString(),
 
-            items: items.map(
-              (it) => ({
-                clientItemId:
-                  it.orderId,
+          serverOrderIds:
+            resp.orderIds ?? [],
 
-                productSlug:
-                  it.order
-                    .productSlug,
+          basic: state.basic,
+          address: state.address,
+          otpVerified: state.otpVerified,
 
-                quantity:
-                  it.order.setup
-                    .quantity,
+          items: itemSnapshots,
+          totals: resp.totals,
+        });
 
-                colorPms:
-                  it.order.setup
-                    .colorPms,
-
-                languageCode:
-                  it.order.setup
-                    .languageCode,
-
-                titleLines:
-                  it.order.text
-                    .titleLines,
-
-                secondaryLines:
-                  it.order.text
-                    .secondaryLines,
-
-                labelLines:
-                  it.order.text
-                    .labelLines,
-
-                totals:
-                  estimateItemTotals(
-                    it
-                  ),
-              })
-            ),
-          });
-
-        toast.success(
-          t("cart.checkoutSuccess")
-        );
+        clearCart();
+        resetFlow();
+        router.navigate({ to: "/order-success", search: { orderId: checkoutId } });
       } catch (e) {
         toast.error(
           e instanceof Error

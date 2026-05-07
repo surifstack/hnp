@@ -25,7 +25,7 @@ export function createClientOrderDraft(productSlug: string): Order {
     createdAt: timestamp,
     updatedAt: timestamp,
     setup: {
-      quantity: 40,
+      quantity: 20,
       colorPms: "802",
       languageCode: "en",
     },

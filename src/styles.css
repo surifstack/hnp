@@ -267,6 +267,11 @@
   border-color: color-mix(in oklab, #d32f2f, transparent 55%);
   color: color-mix(in oklab, #d32f2f, black 20%);
 }
+.userdash-pill[data-status="SUCCESS"] {
+  background: color-mix(in oklab, var(--neon-green), white 78%);
+  border-color: color-mix(in oklab, var(--neon-green), transparent 50%);
+  color: #000000;
+}
 
 .userdash-icon-badge {
   height: 44px;

@@ -116,8 +116,7 @@
     "pricing": "Bei",
     "shipping": "Usafirishaji",
     "cta": "Angalia maelezo kamili →",
-        "comingSoon": "Inakuja hivi karibuni"
-
+    "comingSoon": "Inakuja hivi karibuni"
   },
   "cart": {
     "emptyTitle": "Kikapu kipo tupu",
@@ -203,5 +202,37 @@
     "verifiedDesc": "Unaweza kuendelea hatua inayofuata.",
     "verify": "Thibitisha",
     "demoUse": "Tumia msimbo"
+  },
+  "orderSuccess": {
+    "noRecentTitle": "No recent order",
+    "noRecentSubtitle": "Submit an order from the cart to see confirmation here.",
+    "goToProducts": "Go to products",
+    "viewOrders": "View orders",
+    "confirmedTitle": "Order confirmed",
+    "confirmedSubtitle": "Thanks! Your order has been successfully placed.",
+    "successBadge": "Success",
+    "viewOrdersCta": "View orders",
+    "continueShopping": "Continue shopping",
+    "orderItemsTitle": "Order items",
+    "orderDetailsTitle": "Order details",
+    "qtyLabel": "Qty",
+    "colorLabel": "Color",
+    "languageLabel": "Language",
+    "customerTitle": "Customer",
+    "nameLabel": "Name",
+    "emailLabel": "Email",
+    "phoneLabel": "Phone",
+    "countryLabel": "Country",
+    "shippingAddressTitle": "Shipping address",
+    "paymentTitle": "Payment",
+    "paymentMethodLabel": "Method",
+    "paymentStatusLabel": "Status",
+    "summaryTitle": "Summary",
+    "itemsLabel": "Items",
+    "totalLabel": "Total",
+    "clearReceipt": "Clear receipt",
+    "shopMore": "Shop more",
+    "paidViaCard": "Paid via card",
+    "statusSuccess": "Status: Success"
   }
 }

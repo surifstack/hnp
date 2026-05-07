@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as QrRouteImport } from './routes/qr'
 import { Route as ProductsRouteImport } from './routes/products'
+import { Route as OrderSuccessRouteImport } from './routes/order-success'
 import { Route as EmployeeRouteImport } from './routes/employee'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CreateAccountRouteImport } from './routes/create-account'
@@ -51,6 +52,11 @@ const QrRoute = QrRouteImport.update({
 const ProductsRoute = ProductsRouteImport.update({
   id: '/products',
   path: '/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrderSuccessRoute = OrderSuccessRouteImport.update({
+  id: '/order-success',
+  path: '/order-success',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmployeeRoute = EmployeeRouteImport.update({
@@ -187,6 +193,7 @@ export interface FileRoutesByFullPath {
   '/create-account': typeof CreateAccountRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/employee': typeof EmployeeRouteWithChildren
+  '/order-success': typeof OrderSuccessRoute
   '/products': typeof ProductsRouteWithChildren
   '/qr': typeof QrRoute
   '/signin': typeof SigninRoute
@@ -214,6 +221,7 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/contact': typeof ContactRoute
   '/create-account': typeof CreateAccountRoute
+  '/order-success': typeof OrderSuccessRoute
   '/qr': typeof QrRoute
   '/signin': typeof SigninRoute
   '/admin/employees': typeof AdminEmployeesRoute
@@ -242,6 +250,7 @@ export interface FileRoutesById {
   '/create-account': typeof CreateAccountRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/employee': typeof EmployeeRouteWithChildren
+  '/order-success': typeof OrderSuccessRoute
   '/products': typeof ProductsRouteWithChildren
   '/qr': typeof QrRoute
   '/signin': typeof SigninRoute
@@ -274,6 +283,7 @@ export interface FileRouteTypes {
     | '/create-account'
     | '/dashboard'
     | '/employee'
+    | '/order-success'
     | '/products'
     | '/qr'
     | '/signin'
@@ -301,6 +311,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/contact'
     | '/create-account'
+    | '/order-success'
     | '/qr'
     | '/signin'
     | '/admin/employees'
@@ -328,6 +339,7 @@ export interface FileRouteTypes {
     | '/create-account'
     | '/dashboard'
     | '/employee'
+    | '/order-success'
     | '/products'
     | '/qr'
     | '/signin'
@@ -359,6 +371,7 @@ export interface RootRouteChildren {
   CreateAccountRoute: typeof CreateAccountRoute
   DashboardRoute: typeof DashboardRouteWithChildren
   EmployeeRoute: typeof EmployeeRouteWithChildren
+  OrderSuccessRoute: typeof OrderSuccessRoute
   ProductsRoute: typeof ProductsRouteWithChildren
   QrRoute: typeof QrRoute
   SigninRoute: typeof SigninRoute
@@ -385,6 +398,13 @@ declare module '@tanstack/react-router' {
       path: '/products'
       fullPath: '/products'
       preLoaderRoute: typeof ProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/order-success': {
+      id: '/order-success'
+      path: '/order-success'
+      fullPath: '/order-success'
+      preLoaderRoute: typeof OrderSuccessRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/employee': {
@@ -666,6 +686,7 @@ const rootRouteChildren: RootRouteChildren = {
   CreateAccountRoute: CreateAccountRoute,
   DashboardRoute: DashboardRouteWithChildren,
   EmployeeRoute: EmployeeRouteWithChildren,
+  OrderSuccessRoute: OrderSuccessRoute,
   ProductsRoute: ProductsRouteWithChildren,
   QrRoute: QrRoute,
   SigninRoute: SigninRoute,
@@ -673,3 +694,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}

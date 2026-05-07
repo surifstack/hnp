@@ -1,9 +1,8 @@
 import { Link, useRouter } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/SiteLayout";
 import { Button } from "@/components/ui/button";
-import { useOrderFlowStore } from "@/hooks/useOrderFlowStore";
 import { useTranslation } from "react-i18next";
-import { useCartStore } from "@/hooks/useCartStore";
+import { useHnpStore } from "@/hooks/useHnpStore";
 import { NoActiveOrder } from "./NoActiveOrder";
 import { Pencil, RotateCcw, ShoppingCart } from "lucide-react";
 import { FlyerPreview } from "./FlyerPreview";
@@ -15,13 +14,13 @@ export function ProofPage({ slug }: { slug: string }) {
   const router = useRouter();
   const { t } = useTranslation();
 
-  const order = useOrderFlowStore((s) => s.order);
-  const product = useOrderFlowStore((s) => s.product);
-  const reset = useOrderFlowStore((s) => s.reset);
-  const addOrder = useCartStore((s) => s.addOrder);
-  const resetApprovals = useOrderFlowStore((s) => s.resetApprovals);
+  const order = useHnpStore((s) => s.order.order);
+  const product = useHnpStore((s) => s.order.product);
+  const reset = useHnpStore((s) => s.order.reset);
+  const addOrder = useHnpStore((s) => s.cart.addOrder);
+  const resetApprovals = useHnpStore((s) => s.order.resetApprovals);
 
-  const loading = useOrderFlowStore((s) => s.loading);
+  const loading = useHnpStore((s) => s.order.loading);
 
   if (!order) {
     return <NoActiveOrder />;

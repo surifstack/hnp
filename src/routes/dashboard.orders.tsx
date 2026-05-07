@@ -12,17 +12,20 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useSessionStore } from "@/hooks/useSessionStore";
-import { useUserOrdersStore, type UserOrderRecord, type UserOrderStatus } from "@/hooks/useUserOrdersStore";
-import { useCartStore } from "@/hooks/useCartStore";
+import { useHnpStore } from "@/hooks/useHnpStore";
 import { createClientOrderDraft, applySetupToOrder, applyTextStep, finalizeOrderDraft } from "@/lib/order-draft";
 import { formatCents } from "@/components/cart/cartTotals";
+import type { UserOrderRecord, UserOrderStatus } from "@/hooks/useHnpStore";
 
 export const Route = createFileRoute("/dashboard/orders")({
   validateSearch: (search: Record<string, unknown>) => ({
     tab:
-      search.tab === "current" || search.tab === "history" || search.tab === "cancelled"
+      search.tab === "success" ||
+      search.tab === "current" ||
+      search.tab === "history" ||
+      search.tab === "cancelled"
         ? search.tab
-        : "current",
+        : "success",
   }),
   head: () => ({ meta: [{ title: "Orders — MININOTE" }] }),
   component: DashboardOrdersPage,
@@ -31,13 +34,19 @@ export const Route = createFileRoute("/dashboard/orders")({
 function DashboardOrdersPage() {
   const { tab } = Route.useSearch();
   const userId = useSessionStore((s) => s.userId);
-  const ordersByUserId = useUserOrdersStore((s) => s.ordersByUserId);
-  const setStatus = useUserOrdersStore((s) => s.setStatus);
+  const ordersByUserId = useHnpStore((s) => s.userOrders.ordersByUserId);
+  const setStatus = useHnpStore((s) => s.userOrders.setStatus);
 
   const orders = userId ? (ordersByUserId[userId] ?? []) : [];
 
   const targetStatus: UserOrderStatus =
-    tab === "current" ? "CURRENT" : tab === "history" ? "HISTORY" : "CANCELLED";
+    tab === "success"
+      ? "SUCCESS"
+      : tab === "current"
+        ? "CURRENT"
+        : tab === "history"
+          ? "HISTORY"
+          : "CANCELLED";
 
   const filtered = orders.filter((o) => o.status === targetStatus);
 
@@ -52,6 +61,7 @@ function DashboardOrdersPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
+            <TabButton tab="success" activeTab={tab} label="Success" />
             <TabButton tab="current" activeTab={tab} label="Current" />
             <TabButton tab="history" activeTab={tab} label="History" />
             <TabButton tab="cancelled" activeTab={tab} label="Cancelled" />
@@ -75,7 +85,9 @@ function DashboardOrdersPage() {
           <div className="userdash-surface rounded-2xl p-6 text-center">
             <div className="text-sm font-semibold">No orders here</div>
             <p className="mt-2 text-sm text-muted-foreground">
-              {tab === "current"
+              {tab === "success"
+                ? "Successful orders appear here."
+                : tab === "current"
                 ? "Start a new order from Products."
                 : tab === "history"
                   ? "Move orders to history when you’re done."
@@ -101,7 +113,7 @@ function TabButton({
   activeTab,
   label,
 }: {
-  tab: "current" | "history" | "cancelled";
+  tab: "success" | "current" | "history" | "cancelled";
   activeTab: string;
   label: string;
 }) {
@@ -118,7 +130,7 @@ function TabButton({
 }
 
 function OrderCard({ order, onSetStatus }: { order: UserOrderRecord; onSetStatus: (s: UserOrderStatus) => void }) {
-  const cartAddOrder = useCartStore((s) => s.addOrder);
+  const cartAddOrder = useHnpStore((s) => s.cart.addOrder);
 
   const placed = new Date(order.placedAt);
   const money = formatCents(order.item.totals.total, order.item.totals.currency);
@@ -143,7 +155,13 @@ function OrderCard({ order, onSetStatus }: { order: UserOrderRecord; onSetStatus
   };
 
   const statusLabel =
-    order.status === "CURRENT" ? "Current" : order.status === "HISTORY" ? "History" : "Cancelled";
+    order.status === "SUCCESS"
+      ? "Success"
+      : order.status === "CURRENT"
+        ? "Current"
+        : order.status === "HISTORY"
+          ? "History"
+          : "Cancelled";
 
   return (
     <div className="userdash-surface rounded-2xl p-5">
@@ -262,7 +280,7 @@ function OrderCard({ order, onSetStatus }: { order: UserOrderRecord; onSetStatus
             </Button>
           )}
 
-          {order.status === "CURRENT" ? (
+          {order.status === "CURRENT" || order.status === "SUCCESS" ? (
             <Button
               size="sm"
               variant="outline"

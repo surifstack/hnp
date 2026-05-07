@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useOrderFlowStore } from "@/hooks/useOrderFlowStore";
+import { useHnpStore } from "@/hooks/useHnpStore";
 import type { Product } from "@/lib/api.types";
 import { skuForSelection } from "@/lib/sku";
 import { LANGUAGE_OPTIONS } from "@/config/languages";
@@ -28,16 +28,16 @@ export function OrderSetupPage({ slug }: { slug: string }) {
   const router = useRouter();
   const { t } = useTranslation();
 
-  const loadProduct = useOrderFlowStore((s) => s.loadProduct);
-  const startOrder = useOrderFlowStore((s) => s.startOrder);
-  const updateSetup = useOrderFlowStore((s) => s.updateSetup);
-  const setSetupDraft = useOrderFlowStore((s) => s.setSetupDraft);
-  const clearOrderFlow = useOrderFlowStore((s) => s.clearOrderFlow);
+  const loadProduct = useHnpStore((s) => s.order.loadProduct);
+  const startOrder = useHnpStore((s) => s.order.startOrder);
+  const updateSetup = useHnpStore((s) => s.order.updateSetup);
+  const setSetupDraft = useHnpStore((s) => s.order.setSetupDraft);
+  const clearOrderFlow = useHnpStore((s) => s.order.clearOrderFlow);
 
-  const order = useOrderFlowStore((s) => s.order);
-  const product = useOrderFlowStore((s) => s.product);
-  const setupDraft = useOrderFlowStore((s) => s.setupDraft);
-  const loading = useOrderFlowStore((s) => s.loading);
+  const order = useHnpStore((s) => s.order.order);
+  const product = useHnpStore((s) => s.order.product);
+  const setupDraft = useHnpStore((s) => s.order.setupDraft);
+  const loading = useHnpStore((s) => s.order.loading);
 
   useEffect(() => {
     clearOrderFlow();
@@ -48,6 +48,9 @@ export function OrderSetupPage({ slug }: { slug: string }) {
   const { orderQty, maxQty, quantities } = buildQuantityConfig(
     product?.documentation?.specs ?? []
   );
+
+  console.log({ orderQty, maxQty, quantities })
+
 
   useEffect(() => {
     if (!order || order.productSlug !== slug) {
@@ -60,6 +63,8 @@ export function OrderSetupPage({ slug }: { slug: string }) {
     colorPms: "802",
     languageCode: "en",
   };
+
+  console.log(safeSetup , 'safeSetup')
 
   const selectedSku =
     safeSetup && product

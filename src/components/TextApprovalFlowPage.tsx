@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/SiteLayout";
 import { Button } from "@/components/ui/button";
-import { useOrderFlowStore } from "@/hooks/useOrderFlowStore";
 import { useTranslation } from "react-i18next";
+import { useHnpStore } from "@/hooks/useHnpStore";
 import {
   Check,
   Pencil,
@@ -24,21 +24,21 @@ export function TextApprovalFlowPage({ slug }: { slug: string }) {
   const [editMode, setEditMode] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
-  const order = useOrderFlowStore((s) => s.order);
-  const activeStep = useOrderFlowStore((s) => s.activeStep);
-  const setActiveStep = useOrderFlowStore((s) => s.setActiveStep);
-  const resetApprovals = useOrderFlowStore((s) => s.resetApprovals);
-  const draft = useOrderFlowStore((s) => s.draft);
-  const setDraft = useOrderFlowStore((s) => s.setDraft);
+  const order = useHnpStore((s) => s.order.order);
+  const activeStep = useHnpStore((s) => s.order.activeStep);
+  const setActiveStep = useHnpStore((s) => s.order.setActiveStep);
+  const resetApprovals = useHnpStore((s) => s.order.resetApprovals);
+  const draft = useHnpStore((s) => s.order.draft);
+  const setDraft = useHnpStore((s) => s.order.setDraft);
 
-  const approveTitle = useOrderFlowStore((s) => s.approveTitle);
-  const approveSecondary = useOrderFlowStore((s) => s.approveSecondary);
-  const approveAll = useOrderFlowStore((s) => s.approveAll);
-  const approveLabel = useOrderFlowStore((s) => s.approveLabel);
-  const textAllApproved = useOrderFlowStore((s) => s.textAllApproved);
+  const approveTitle = useHnpStore((s) => s.order.approveTitle);
+  const approveSecondary = useHnpStore((s) => s.order.approveSecondary);
+  const approveAll = useHnpStore((s) => s.order.approveAll);
+  const approveLabel = useHnpStore((s) => s.order.approveLabel);
+  const textAllApproved = useHnpStore((s) => s.order.textAllApproved);
 
-  const loading = useOrderFlowStore((s) => s.loading);
-  const error = useOrderFlowStore((s) => s.error);
+  const loading = useHnpStore((s) => s.order.loading);
+  const error = useHnpStore((s) => s.order.error);
   const overflowMap = useOverflowStore((s) => s.overflowMap);
 const hasOverflow =overflowMap?.title || overflowMap?.secondary ||overflowMap?.label;
   useEffect(() => {

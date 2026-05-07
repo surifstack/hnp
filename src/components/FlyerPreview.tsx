@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useOverflowStore } from "@/hooks/useOverflowStore";
 import type { Order } from "@/lib/api.types";
 import { buildQuantityConfig, getFieldValue, getSwatchByPms } from "@/lib/data";
-import { useOrderFlowStore } from "@/hooks/useOrderFlowStore";
+import { useHnpStore } from "@/hooks/useHnpStore";
 
 /* ---------------- FLYER PREVIEW ---------------- */
 
@@ -23,9 +23,9 @@ function getProofValues(order: Order) {
 export function FlyerPreview({
   isOrder,
 }: FlyerPreviewProps) {
-const order:Order|null     = useOrderFlowStore((s) => s.order);
+const order:Order|null     = useHnpStore((s) => s.order.order);
 
-const draft = useOrderFlowStore((s) => s.draft);
+const draft = useHnpStore((s) => s.order.draft);
 
 
 const orderText = order?.text;
@@ -48,7 +48,7 @@ const labelText = isOrder
   ? orderText?.labelLines
   : draftText?.label;
 
-  const product = useOrderFlowStore((s) => s.product);
+  const product = useHnpStore((s) => s.order.product);
 
     const documentation = product?.documentation;
     const specs = documentation?.specs ?? [];

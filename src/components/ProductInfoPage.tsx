@@ -2,8 +2,8 @@ import { useEffect } from "react";
 import { useRouter } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/SiteLayout";
 import { Button } from "@/components/ui/button";
-import { useOrderFlowStore } from "@/hooks/useOrderFlowStore";
 import { useTranslation } from "react-i18next";
+import { useHnpStore } from "@/hooks/useHnpStore";
 import { ProductField } from "@/lib/api.types";
 import { formatProductFieldValue } from "@/lib/data";
 import { BadgeCheck, FileText, Package2 } from "lucide-react";
@@ -12,10 +12,10 @@ export function ProductInfoPage({ slug }: { slug: string }) {
   const router = useRouter();
   const { t } = useTranslation();
 
-  const loadProduct = useOrderFlowStore((s) => s.loadProduct);
-  const product = useOrderFlowStore((s) => s.product);
-  const loading = useOrderFlowStore((s) => s.loading);
-  const error = useOrderFlowStore((s) => s.error);
+  const loadProduct = useHnpStore((s) => s.order.loadProduct);
+  const product = useHnpStore((s) => s.order.product);
+  const loading = useHnpStore((s) => s.order.loading);
+  const error = useHnpStore((s) => s.order.error);
 
   useEffect(() => {
     void loadProduct(slug);

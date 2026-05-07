@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Package, PackageX, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSessionStore } from "@/hooks/useSessionStore";
-import { useUserOrdersStore } from "@/hooks/useUserOrdersStore";
+import { useHnpStore } from "@/hooks/useHnpStore";
 
 export const Route = createFileRoute("/dashboard/")({
   head: () => ({
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/dashboard/")({
 
 function DashboardHomePage() {
   const userId = useSessionStore((s) => s.userId);
-  const ordersByUserId = useUserOrdersStore((s) => s.ordersByUserId);
+  const ordersByUserId = useHnpStore((s) => s.userOrders.ordersByUserId);
 
   const orders = userId ? (ordersByUserId[userId] ?? []) : [];
   const current = orders.filter((o) => o.status === "CURRENT");

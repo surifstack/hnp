@@ -2,7 +2,7 @@ import { Order, StepCardProps } from "@/lib/api.types";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useTranslation } from "react-i18next";
-import { useOrderFlowStore } from "@/hooks/useOrderFlowStore";
+import { useHnpStore } from "@/hooks/useHnpStore";
 import { OverflowMap } from "@/lib/api.types";
 import {
   Check,
@@ -30,7 +30,7 @@ export function StepCard({
   onApprove,
 }: StepCardProps) {
   const { t } = useTranslation();
-  const setApproval = useOrderFlowStore((s) => s.setApproval);
+  const setApproval = useHnpStore((s) => s.order.setApproval);
 
   const overflowMap: OverflowMap = useOverflowStore(
     (s) => s.overflowMap

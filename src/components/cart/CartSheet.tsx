@@ -12,7 +12,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-import { useCartStore } from "@/hooks/useCartStore";
+import { useHnpStore } from "@/hooks/useHnpStore";
 import {
   estimateItemTotals,
   formatCents,
@@ -25,14 +25,14 @@ import { buildQuantityConfig } from "@/lib/data";
 export function CartSheet({ trigger }: { trigger: ReactNode }) {
   const { t } = useTranslation();
 
-  const items = useCartStore((s) => s.items);
-  const activeOrderId = useCartStore((s) => s.activeOrderId);
-  const setActive = useCartStore((s) => s.setActive);
-  const remove = useCartStore((s) => s.remove);
-  const updateQuantity = useCartStore((s) => s.updateQuantity);
-  const clear = useCartStore((s) => s.clear);
-  const loading = useCartStore((s) => s.loading);
-  const error = useCartStore((s) => s.error);
+  const items = useHnpStore((s) => s.cart.items);
+  const activeOrderId = useHnpStore((s) => s.cart.activeOrderId);
+  const setActive = useHnpStore((s) => s.cart.setActive);
+  const remove = useHnpStore((s) => s.cart.remove);
+  const updateQuantity = useHnpStore((s) => s.cart.updateQuantity);
+  const clear = useHnpStore((s) => s.cart.clear);
+  const loading = useHnpStore((s) => s.cart.loading);
+  const error = useHnpStore((s) => s.cart.error);
 
   const totals = sumCartTotals(items);
 

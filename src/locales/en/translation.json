@@ -27,19 +27,19 @@
     "save": "Save",
     "alreadyHaveAccount": "Already have an account?",
     "back": "Back",
-    "unMatchEmail" : "Emails do not match. Please re-enter your email.",
+    "unMatchEmail": "Emails do not match. Please re-enter your email.",
     "reEnterEmail": "Please re-enter your email.",
-    "otpMessage":"A verification code will be sent to your email",
+    "otpMessage": "A verification code will be sent to your email",
     "sendCodeAndLogin": "Send code & sign in",
     "notAccount": "Don't have an account?"
   },
   "order": {
     "setupTitle": "{{name}} setup",
-     "total": "Total",
-     "secondary":"Secondary",
-     "label": "Label",
-     "title": "Title",
-     "done": "Done",
+    "total": "Total",
+    "secondary": "Secondary",
+    "label": "Label",
+    "title": "Title",
+    "done": "Done",
     "quantity": "Quantity {{qty}}",
     "color": "Color",
     "language": "Language",
@@ -66,9 +66,7 @@
     "goToSetup": "Go to setup",
     "locked": "Locked",
     "typeYourText": "Type your text…",
-    "backToProduct" : "Back to product"
-
-   
+    "backToProduct": "Back to product"
   },
   "proof": {
     "title": "Your Proof",
@@ -81,8 +79,7 @@
     "generatingPreview": "Generating preview…",
     "makeChanges": "Make changes",
     "enterAnotherOrder": "Enter another order",
-     "noActiveOrder": "No active order"
-    
+    "noActiveOrder": "No active order"
   },
   "contact": {
     "title": "Contact Us",
@@ -96,83 +93,75 @@
     "sendMessage": "Send Message",
     "orderNumber": "Order Number",
     "message": "Your Message"
-
   },
-  "defaultError":{
+  "defaultError": {
     "somethingWentWrong": "Something went wrong. Please try again later.",
     "anErrorOccurred": "An error occurred. Please try again later.",
     "tryAgain": "Try again",
     "goHome": "Go home"
   },
   "product": {
-      "fallbackTitle": "Product",
-      "noDescription": "No description available",
-      "howItWorks": "How it works",
-      "skus": "SKUs",
-      "green": "Green",
-      "pink": "Pink",
-      "yellow": "Yellow",
-      "documentation": "Documentation",
-      "noOverview": "No overview available",
-      "specs": "Specs",
-      "title": "Products",
-      "subtitle": "Explore our neon print products with full specs, pricing, and customization options.",
-      "pricing": "Pricing",
-      "shipping": "Shipping",
-      "cta": "View full details →",
-      "commingSoon" :"Coming Soon"
-    },
-     "cart": {
-      "emptyTitle": "Cart is empty",
-      "basicDetailsTitle": "Basic details", 
-      "name": "Name", 
-      "continue": "Continue",
-      "emptySubtitle": "Add products to your cart to continue checkout.",
-      "browseProducts": "Browse products",
-      "yourCart": "Your cart",
-      "itemCount": "{{count}} item(s)",
-      "loading": "Loading cart…",
-      "quantity": "Qty",
-      "increase": "+",
-      "decrease": "-",
-      "remove": "Remove",
-      "subtotal": "Subtotal",
-      "shipping": "Shipping",
-      "total": "Total",
-      "title": "Cart",
-      "color": "Color",
-      "taxes": "Taxes",
-      "checkout": "Checkout",
-      "clear": "Clear",
-      "selectedProducts": "Selected products",
-      "orderSummary": "Order summary",
-      "customer": "Customer",
-      "email": "Email",
-      "phone": "Phone",
-      "country": "Country",
-      "shippingAddress": "Shipping address",
-      "selectCountry": "Select country",
-      "promoCode": "Promo Code",
-      "enterPromo": "Enter promo code",
-      "apply": "Apply",
-      "applied": "Applied: {{code}}",
-
-      "checkoutSubmission": "Checkout submission",
-      "backendPreview": "Backend checkout payload preview",
-      "savedOrders": "Saved orders",
-      "totalAmount": "Total",
-
-      "back": "Back",
-      "submitOrder": "Submit order",
-      "working": "Working…",
-
-      "cannotCheckout": "Cannot place order yet",
-
-      "cannotPlaceOrder": "Cannot place order yet",
-  
+    "fallbackTitle": "Product",
+    "noDescription": "No description available",
+    "howItWorks": "How it works",
+    "skus": "SKUs",
+    "green": "Green",
+    "pink": "Pink",
+    "yellow": "Yellow",
+    "documentation": "Documentation",
+    "noOverview": "No overview available",
+    "specs": "Specs",
+    "title": "Products",
+    "subtitle": "Explore our neon print products with full specs, pricing, and customization options.",
+    "pricing": "Pricing",
+    "shipping": "Shipping",
+    "cta": "View full details →",
+    "commingSoon": "Coming Soon"
+  },
+  "cart": {
+    "emptyTitle": "Cart is empty",
+    "basicDetailsTitle": "Basic details",
+    "name": "Name",
+    "continue": "Continue",
+    "emptySubtitle": "Add products to your cart to continue checkout.",
+    "browseProducts": "Browse products",
+    "yourCart": "Your cart",
+    "itemCount": "{{count}} item(s)",
+    "loading": "Loading cart…",
+    "quantity": "Qty",
+    "increase": "+",
+    "decrease": "-",
+    "remove": "Remove",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "total": "Total",
+    "title": "Cart",
+    "color": "Color",
+    "taxes": "Taxes",
+    "checkout": "Checkout",
+    "clear": "Clear",
+    "selectedProducts": "Selected products",
+    "orderSummary": "Order summary",
+    "customer": "Customer",
+    "email": "Email",
+    "phone": "Phone",
+    "country": "Country",
+    "shippingAddress": "Shipping address",
+    "selectCountry": "Select country",
+    "promoCode": "Promo Code",
+    "enterPromo": "Enter promo code",
+    "apply": "Apply",
+    "applied": "Applied: {{code}}",
+    "checkoutSubmission": "Checkout submission",
+    "backendPreview": "Backend checkout payload preview",
+    "savedOrders": "Saved orders",
+    "totalAmount": "Total",
+    "back": "Back",
+    "submitOrder": "Submit order",
+    "working": "Working…",
+    "cannotCheckout": "Cannot place order yet",
+    "cannotPlaceOrder": "Cannot place order yet",
     "appliedPromo": "Applied: {{code}}",
-
-
     "signInRequired": "Please sign in to submit your order",
     "promoRequired": "Enter a promo code",
     "promoAppliedSuccess": "Promo code applied",
@@ -193,10 +182,9 @@
       "attentionOf": "Attention Of",
       "attentionPlaceholder": "e.g. John Smith / Mailroom"
     },
-    "checkoutSubmittion":"Submit the full persisted cart to the backend in one validated request."
-  
+    "checkoutSubmittion": "Submit the full persisted cart to the backend in one validated request."
   },
-    "checkout": {
+  "checkout": {
     "steps": {
       "details": "Details",
       "verify": "Verify",
@@ -204,7 +192,7 @@
       "pay": "Pay"
     }
   },
-  "otp" :{
+  "otp": {
     "title": "OTP",
     "sentTo": "We sent a 4-digit code to",
     "fieldLabel": "Enter OTP",
@@ -214,5 +202,37 @@
     "verifiedDesc": "You can continue to the next step.",
     "verify": "Verify",
     "demoUse": "Use code"
+  },
+  "orderSuccess": {
+    "noRecentTitle": "No recent order",
+    "noRecentSubtitle": "Submit an order from the cart to see confirmation here.",
+    "goToProducts": "Go to products",
+    "viewOrders": "View orders",
+    "confirmedTitle": "Order confirmed",
+    "confirmedSubtitle": "Thanks! Your order has been successfully placed.",
+    "successBadge": "Success",
+    "viewOrdersCta": "View orders",
+    "continueShopping": "Continue shopping",
+    "orderItemsTitle": "Order items",
+    "orderDetailsTitle": "Order details",
+    "qtyLabel": "Qty",
+    "colorLabel": "Color",
+    "languageLabel": "Language",
+    "customerTitle": "Customer",
+    "nameLabel": "Name",
+    "emailLabel": "Email",
+    "phoneLabel": "Phone",
+    "countryLabel": "Country",
+    "shippingAddressTitle": "Shipping address",
+    "paymentTitle": "Payment",
+    "paymentMethodLabel": "Method",
+    "paymentStatusLabel": "Status",
+    "summaryTitle": "Summary",
+    "itemsLabel": "Items",
+    "totalLabel": "Total",
+    "clearReceipt": "Clear receipt",
+    "shopMore": "Shop more",
+    "paidViaCard": "Paid via card",
+    "statusSuccess": "Status: Success"
   }
 }

@@ -1,4 +1,4 @@
-import type { CartItem } from "@/hooks/useCartStore";
+import type { CartItem } from "@/hooks/useHnpStore";
 import type { MoneyTotals } from "@/lib/api.types";
 import { buildQuantityConfig } from "@/lib/data";
 

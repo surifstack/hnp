@@ -5,8 +5,7 @@ import { StepBasicDetails } from "@/components/cart/StepBasicDetails";
 import { StepOtp } from "@/components/cart/StepOtp";
 import { StepAddress } from "@/components/cart/StepAddress";
 import { StepCheckout } from "@/components/cart/StepCheckout";
-import { useCartStore } from "@/hooks/useCartStore";
-import { useCheckoutFlowStore } from "@/hooks/useCheckoutFlowStore";
+import { useHnpStore } from "@/hooks/useHnpStore";
 import { Button } from "@/components/ui/button";
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
@@ -14,17 +13,17 @@ import { useTranslation } from "react-i18next";
 export function Cart({ orderId }: { orderId: string | undefined }) {
   const { t } = useTranslation();
 
-  const items = useCartStore((s) => s.items);
-  const activeOrderId = useCartStore((s) => s.activeOrderId);
-  const setActive = useCartStore((s) => s.setActive);
-  const loading = useCartStore((s) => s.loading);
+  const items = useHnpStore((s) => s.cart.items);
+  const activeOrderId = useHnpStore((s) => s.cart.activeOrderId);
+  const setActive = useHnpStore((s) => s.cart.setActive);
+  const loading = useHnpStore((s) => s.cart.loading);
 
-  const step = useCheckoutFlowStore((s) => s.step);
-  const form = useCheckoutFlowStore((s) => s.form);
-  const setStep = useCheckoutFlowStore((s) => s.setStep);
-  const setBasic = useCheckoutFlowStore((s) => s.setBasic);
-  const setAddress = useCheckoutFlowStore((s) => s.setAddress);
-  const setOtpVerified = useCheckoutFlowStore((s) => s.setOtpVerified);
+  const step = useHnpStore((s) => s.checkout.step);
+  const form = useHnpStore((s) => s.checkout.form);
+  const setStep = useHnpStore((s) => s.checkout.setStep);
+  const setBasic = useHnpStore((s) => s.checkout.setBasic);
+  const setAddress = useHnpStore((s) => s.checkout.setAddress);
+  const setOtpVerified = useHnpStore((s) => s.checkout.setOtpVerified);
 
   /* ---------------- INIT ORDER ---------------- */
 
