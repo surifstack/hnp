@@ -33,7 +33,7 @@ export function getFieldValue<T = ProductField['value']>(
 export function buildQuantityConfig(
   specs: ProductField[] | undefined
 ): QuantityConfig {
-  const orderQty = getFieldValue(specs, "order_qty", 40) as number;
+  const orderQty = getFieldValue(specs, "order_qty", 20) as number;
   const maxQty = getFieldValue(specs, "max_order_qty", 400) as number;
   const labelsQty = getFieldValue(specs, "labels_per_sheet", 52) as number;
   const pageInchWidth = getFieldValue(specs, "width_in", 6) as number;

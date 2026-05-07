@@ -134,7 +134,7 @@ const labelText = isOrder
             <div
                           ref={box1Ref}
 
-            className="box1Text"
+            className="box1Text mb-2"
             id="box1Text"
            style={{
             fontSize: "26pt",
@@ -159,7 +159,7 @@ const labelText = isOrder
             id="box2Text"
             style={{
               fontFamily: "Arial, sans-serif",
-              fontSize: "19px",
+              fontSize: "16pt",
               lineHeight: 1.25,
               width: "80%",
               margin: "0 auto",
