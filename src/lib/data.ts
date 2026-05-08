@@ -1,4 +1,5 @@
 import type { PmsColor, ProductField , QuantityConfig } from "@/lib/api.types";
+import { HnpOrderStatus } from "./hnp.types";
 
 export const COLORS: Array<{ pms: PmsColor; label: string; swatch: string }> = [
   { pms: "802", label: "PMS 802", swatch: "var(--neon-green)" },
@@ -30,6 +31,7 @@ export function getFieldValue<T = ProductField['value']>(
 
 
 
+export const OrderStatus: HnpOrderStatus[] = ["NEW", "PROCESSING", "SHIPPED", "CANCELLED"];
 
 export function buildQuantityConfig(
   specs: ProductField[] | undefined
@@ -54,4 +56,10 @@ export function buildQuantityConfig(
     labelsQty,
     pageInchWidth
   };
+}
+
+export function CentMoney(cents: number) {
+  return new Intl.NumberFormat(undefined, { style: "currency", currency: "USD" }).format(
+    cents / 100,
+  );
 }

@@ -41,6 +41,7 @@ import { CartItems } from "@/components/cart/CartItem";
 
 import type {
   CheckoutClientRequest,
+  CheckoutRequest,
   CheckoutResponse,
 } from "@/lib/api.types";
 
@@ -51,6 +52,7 @@ import {
 
 import { estimateItemTotals } from "@/components/cart/cartTotals";
 import { attentionKey } from "@/lib/data";
+import { apiJson } from "@/lib/api";
 
 interface Props {
   state: FormState;
@@ -81,10 +83,9 @@ export function StepCheckout({
 
   const [promoApplied, setPromoApplied] =
     useState<string | null>(null);
+    const user = useSessionStore((s) => s.user);
 
-  const userId = useSessionStore(
-    (s) => s.userId
-  );
+  const userId =  user?.id ?? null;
 
   const items = useHnpStore((s) => s.cart.items);
 
@@ -253,27 +254,6 @@ export function StepCheckout({
       ]
     );
 
-  const buildStaticCheckout = (payload: CheckoutClientRequest): CheckoutResponse => {
-    const acceptedAt = new Date().toISOString();
-    const itemCount = payload.items.length;
-
-    const orderIds = payload.items.map((it) => `ord_${it.clientItemId}`);
-
-    const totalsByItem = items.map((it) => estimateItemTotals(it));
-    const currency = totalsByItem[0]?.currency ?? "usd";
-    const subtotal = totalsByItem.reduce((sum, t) => sum + t.subtotal, 0);
-    const shipping = totalsByItem.reduce((sum, t) => sum + t.shipping, 0);
-    const taxes = totalsByItem.reduce((sum, t) => sum + t.taxes, 0);
-    const total = totalsByItem.reduce((sum, t) => sum + t.total, 0);
-
-    return {
-      acceptedAt,
-      itemCount,
-      orderIds,
-      totals: { subtotal, shipping, taxes, total, currency },
-    };
-  };
-
   const placeOrder = () => {
     if (missing.length > 0) return;
 
@@ -281,6 +261,11 @@ export function StepCheckout({
       toast.error(
         t("cart.signInRequired")
       );
+
+      router.navigate({
+        to: "/signin",
+        search: { redirect: "/cart" },
+      });
 
       return;
     }
@@ -303,8 +288,18 @@ export function StepCheckout({
           totals: estimateItemTotals(it),
         }));
 
-        // Static checkout for now (no backend dependency).
-        const resp = buildStaticCheckout(checkoutPayload);
+        const payload: CheckoutRequest = {
+          items: checkoutPayload.items,
+          customer: checkoutPayload.customer,
+          address: checkoutPayload.address,
+          otpVerified: checkoutPayload.otpVerified,
+          promoCode: checkoutPayload.promoCode,
+        };
+
+        const resp = await apiJson<CheckoutResponse>("/orders/checkout", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
 
         setCheckout(resp);
 
@@ -651,7 +646,7 @@ export function StepCheckout({
           disabled={
             missing.length > 0 ||
             submitted ||
-            !checkoutPayload
+            (Boolean(userId) && !checkoutPayload)
           }
           className="h-11 flex-1 rounded-2xl bg-lime-500 text-sm font-black uppercase text-black hover:bg-lime-400 disabled:opacity-50"
         >
@@ -659,7 +654,9 @@ export function StepCheckout({
 
           {submitted
             ? t("cart.working")
-            : t(
+            : !userId
+              ? "Sign in to order"
+              : t(
                 "cart.submitOrder"
               )}
         </Button>

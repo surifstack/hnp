@@ -74,7 +74,6 @@ export const checkoutServerFn = createServerFn({ method: "POST" })
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-user-id": data.userId,
       },
       body: JSON.stringify(payload),
     });

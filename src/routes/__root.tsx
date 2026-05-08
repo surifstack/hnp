@@ -5,6 +5,9 @@ import appCss from "../styles.css?url";
 
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useEffect } from "react";
+import { ensureSession } from "@/lib/auth";
+import { useSessionStore } from "@/hooks/useSessionStore";
 
 
 function NotFoundComponent() {
@@ -72,5 +75,15 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
+  const status = useSessionStore((s) => s.status);
+
+  useEffect(() => {
+    window.localStorage.removeItem("hnp-session");
+
+    if (status === "idle") {
+      void ensureSession();
+    }
+  }, [status]);
+
   return <Outlet />;
 }

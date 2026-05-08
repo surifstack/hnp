@@ -131,9 +131,7 @@ const labelText = isOrder
               gap: `${BOX_GAP_IN}in`,
             }}
           >
-            <div
-                          ref={box1Ref}
-
+            <div ref={box1Ref}
             className="box1Text mb-2"
             id="box1Text"
            style={{

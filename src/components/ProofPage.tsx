@@ -1,8 +1,9 @@
-import { Link, useRouter } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { useHnpStore } from "@/hooks/useHnpStore";
+import { useSessionStore } from "@/hooks/useSessionStore";
 import { NoActiveOrder } from "./NoActiveOrder";
 import { Pencil, RotateCcw, ShoppingCart } from "lucide-react";
 import { FlyerPreview } from "./FlyerPreview";
@@ -19,6 +20,7 @@ export function ProofPage({ slug }: { slug: string }) {
   const reset = useHnpStore((s) => s.order.reset);
   const addOrder = useHnpStore((s) => s.cart.addOrder);
   const resetApprovals = useHnpStore((s) => s.order.resetApprovals);
+  const user = useSessionStore((s) => s.user);
 
   const loading = useHnpStore((s) => s.order.loading);
 
@@ -46,21 +48,28 @@ export function ProofPage({ slug }: { slug: string }) {
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {/* APPROVE */}
             <Button
-              asChild
               size="lg"
               className="h-11 rounded-2xl bg-[var(--neon-green)] text-sm font-black uppercase text-black transition-all hover:bg-lime-400"
-            >
-              <Link
-                to="/cart"
-                search={{ orderId: "" }}
-                onClick={() => {
-                  addOrder(order, product);
-                }}
-              >
-                <ShoppingCart className="mr-2 h-4 w-4" />
+              onClick={() => {
+                addOrder(order, product);
 
-                {t("proof.approveAndOrder")}
-              </Link>
+                if (!user?.id) {
+                  router.navigate({
+                    to: "/signin",
+                    search: { redirect: "/cart" },
+                  });
+                  return;
+                }
+
+                router.navigate({
+                  to: "/cart",
+                  search: { orderId: "" },
+                });
+              }}
+            >
+              <ShoppingCart className="mr-2 h-4 w-4" />
+
+              {user?.id ? t("proof.approveAndOrder") : "Sign in to order"}
             </Button>
 
             {/* EDIT */}

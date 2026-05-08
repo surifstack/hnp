@@ -5,7 +5,7 @@ import {
   CreditCard,
   Package,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useHnpStore } from "@/hooks/useHnpStore";
 import { formatCents } from "@/components/cart/cartTotals";
@@ -28,7 +28,7 @@ export function OrderSuccessPage({
 const accentColor = getComputedStyle(document.documentElement)
   .getPropertyValue('--neon-green')
   .trim();  const { t, i18n } = useTranslation();
-  const userId = useSessionStore((s) => s.userId);
+  const user = useSessionStore((s) => s.user);
   const checkout = useHnpStore((s) =>
     orderId ? s.userOrders.checkoutsById[orderId] : undefined
   );
@@ -70,7 +70,7 @@ const accentColor = getComputedStyle(document.documentElement)
     };
   }, [checkout, productSlugs]);
 
-  if (!orderId || !checkout || (userId && checkout.userId !== userId)) {
+  if (!orderId || !checkout || (user?.id && checkout.userId !== user.id)) {
     return <NoActiveOrder />;
   }
 

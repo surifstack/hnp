@@ -1,8 +1,9 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { useSessionStore } from "./useSessionStore";
 
 export type UserProfile = {
-  userId: string;
+  id: string;
   firstName?: string;
   lastName?: string;
   phone?: string;
@@ -12,42 +13,44 @@ export type UserProfile = {
 };
 
 interface UserProfileState {
-  profilesByUserId: Record<string, UserProfile>;
-  upsertProfile: (userId: string, patch: Partial<Omit<UserProfile, "userId" | "createdAt">>) => void;
+  profilesById: Record<string, UserProfile>;
+  upsertProfile: (patch: Partial<Omit<UserProfile, "id" | "createdAt">>) => void;
 }
 
 function nowIso() {
   return new Date().toISOString();
 }
 
-export function formatDisplayName(profile: UserProfile | undefined, userId: string) {
+export function formatDisplayName(profile: UserProfile | undefined, id: string) {
   const full = `${profile?.firstName ?? ""} ${profile?.lastName ?? ""}`.trim();
   if (full) return full;
-  const short = userId.includes("@") ? userId.split("@")[0] : userId;
+  const short = id.includes("@") ? id.split("@")[0] : id;
   return short.length > 20 ? `${short.slice(0, 20)}…` : short;
 }
 
 export const useUserProfileStore = create<UserProfileState>()(
   persist(
     (set) => ({
-      profilesByUserId: {},
-      upsertProfile: (userId, patch) =>
+      profilesById: {},
+      upsertProfile: (patch) =>
         set((state) => {
-          const existing = state.profilesByUserId[userId];
+          const id = useSessionStore.getState().user?.id;
+          if (!id) return state;
+
+          const existing = state.profilesById[id];
           const createdAt = existing?.createdAt ?? nowIso();
           const next: UserProfile = {
-            userId,
-            createdAt,
-            updatedAt: nowIso(),
             ...existing,
             ...patch,
+            id,
+            createdAt,
+            updatedAt: nowIso(),
           };
           return {
-            profilesByUserId: { ...state.profilesByUserId, [userId]: next },
+            profilesById: { ...state.profilesById, [id]: next },
           };
         }),
     }),
-    { name: "hnp-user-profiles", version: 1 },
+    { name: "hnp-user-profiles", version: 2 },
   ),
 );
-

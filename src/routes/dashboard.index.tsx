@@ -6,16 +6,16 @@ import { useHnpStore } from "@/hooks/useHnpStore";
 
 export const Route = createFileRoute("/dashboard/")({
   head: () => ({
-    meta: [{ title: "Dashboard — MININOTE" }],
+    meta: [{ title: "Dashboard — HNP" }],
   }),
   component: DashboardHomePage,
 });
 
 function DashboardHomePage() {
-  const userId = useSessionStore((s) => s.userId);
+  const user = useSessionStore((s) => s.user);
   const ordersByUserId = useHnpStore((s) => s.userOrders.ordersByUserId);
 
-  const orders = userId ? (ordersByUserId[userId] ?? []) : [];
+  const orders = user?.id ? (ordersByUserId[user.id] ?? []) : [];
   const current = orders.filter((o) => o.status === "CURRENT");
   const history = orders.filter((o) => o.status === "HISTORY");
   const cancelled = orders.filter((o) => o.status === "CANCELLED");

@@ -1,13 +1,18 @@
 import { Link, useRouter } from "@tanstack/react-router";
-import { ShieldCheck, LockKeyhole, Mail } from "lucide-react";
+import { KeyRound, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { SiteLayout } from "@/components/SiteLayout";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
+import { login, requestLoginOtp } from "@/lib/auth";
 
-import { useSessionStore } from "@/hooks/useSessionStore";
-import { useTranslation } from "react-i18next";
+type LoginDraft = {
+  email: string;
+  password: string;
+};
 
 export function SignIn({
   search,
@@ -16,14 +21,37 @@ export function SignIn({
 }) {
   const router = useRouter();
   const { t } = useTranslation();
+  const [draft, setDraft] = useState<LoginDraft | null>(null);
+  const [otpCode, setOtpCode] = useState("");
+  const [devOtp, setDevOtp] = useState<string | null>(null);
+  const [expiresAt, setExpiresAt] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const setUserId = useSessionStore((s) => s.setUserId);
+  const finishLogin = () => {
+    if (!draft || otpCode.length < 4) return;
+
+    setSubmitting(true);
+    setError(null);
+
+    void login(draft.email, draft.password, otpCode)
+      .then((data) => {
+        if (search.redirect) {
+          window.location.assign(search.redirect);
+          return;
+        }
+
+        router.navigate({ to: "/dashboard" });
+      })
+      .catch((err) => {
+        setError(err instanceof Error ? err.message : "Unable to sign in");
+      })
+      .finally(() => setSubmitting(false));
+  };
 
   return (
     <SiteLayout>
       <div className="mx-auto w-full max-w-xl space-y-6">
-
-        {/* HEADER */}
         <section className="bg-white rounded-3xl border shadow-xl p-8 text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border-4 border-[var(--neon-green)]/30 bg-[var(--neon-green)]/10">
             <ShieldCheck className="h-8 w-8 text-black" />
@@ -34,93 +62,150 @@ export function SignIn({
           </h1>
 
           <p className="mt-3 text-sm leading-relaxed text-gray-500">
-            {t("common.otpMessage")}
+            {draft ? `Enter the OTP sent to ${draft.email}` : t("common.otpMessage")}
           </p>
         </section>
 
-        {/* FORM */}
         <form
           className="bg-white rounded-3xl border shadow-xl p-6 md:p-8 space-y-5"
           onSubmit={(e) => {
             e.preventDefault();
 
-            const fd = new FormData(e.currentTarget);
-   
-            const email = (fd.get("email")?.toString() ?? "").trim();
-          
-            const id = email || `user_${Date.now()}`;
-
-            setUserId(id);
-          
-            if (search.redirect) {
-              window.location.assign(search.redirect);
+            if (draft) {
+              finishLogin();
               return;
             }
 
-            router.navigate({ to: "/dashboard" });
+            const fd = new FormData(e.currentTarget);
+            const email = (fd.get("email")?.toString() ?? "").trim();
+            const password = (fd.get("password")?.toString() ?? "").trim();
+
+            setSubmitting(true);
+            setError(null);
+
+            void requestLoginOtp(email, password)
+              .then((res) => {
+                setDraft({ email, password });
+                setDevOtp(res.devOtp ?? null);
+                setExpiresAt(res.expiresAt);
+              })
+              .catch((err) => {
+                setError(err instanceof Error ? err.message : "Unable to send OTP");
+              })
+              .finally(() => setSubmitting(false));
           }}
         >
-          {/* EMAIL */}
-          <div className="space-y-2">
-            <Label
-              htmlFor="email"
-              className="text-xs font-bold uppercase tracking-wide"
-            >
-              {t("common.email")}
-            </Label>
+          {!draft ? (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wide">
+                  {t("common.email")}
+                </Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    autoComplete="email"
+                    placeholder="john@example.com"
+                    className="h-12 rounded-xl border-2 pl-10 focus-visible:ring-[var(--neon-green)]"
+                  />
+                </div>
+              </div>
 
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-xs font-bold uppercase tracking-wide">
+                  {t("common.password")}
+                </Label>
+                <div className="relative">
+                  <LockKeyhole className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    required
+                    autoComplete="current-password"
+                    placeholder="••••••••"
+                    className="h-12 rounded-xl border-2 pl-10 focus-visible:ring-[var(--neon-green)]"
+                  />
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="space-y-4">
+              {devOtp ? (
+                <p className="rounded-xl border border-lime-200 bg-lime-50 px-4 py-3 text-sm font-semibold text-lime-800">
+                  Development OTP: <span className="font-mono text-black">{devOtp}</span>
+                </p>
+              ) : null}
 
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                required
-                autoComplete="email"
-                placeholder="john@example.com"
-                className="h-12 rounded-xl border-2 pl-10 focus-visible:ring-[var(--neon-green)]"
-              />
+              <div className="space-y-2">
+                <Label htmlFor="otpCode" className="text-xs font-bold uppercase tracking-wide">
+                  OTP code
+                </Label>
+                <div className="relative">
+                  <KeyRound className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                  <Input
+                    id="otpCode"
+                    name="otpCode"
+                    inputMode="numeric"
+                    maxLength={6}
+                    required
+                    value={otpCode}
+                    onChange={(e) => {
+                      setOtpCode(e.target.value.replace(/\D/g, ""));
+                      setError(null);
+                    }}
+                    className="h-12 rounded-xl border-2 pl-10 focus-visible:ring-[var(--neon-green)]"
+                  />
+                </div>
+                {expiresAt ? (
+                  <p className="text-xs font-medium text-gray-500">
+                    Code expires at {new Date(expiresAt).toLocaleTimeString()}.
+                  </p>
+                ) : null}
+              </div>
             </div>
+          )}
+
+          {error ? (
+            <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+              {error}
+            </p>
+          ) : null}
+
+          <div className="grid gap-3">
+            <Button
+              type="submit"
+              size="lg"
+              disabled={submitting || (Boolean(draft) && otpCode.length < 4)}
+              className="w-full h-12 rounded-xl bg-black text-white font-extrabold uppercase tracking-wide transition active:scale-[0.98]"
+            >
+              {submitting ? "Working..." : draft ? "Verify OTP and sign in" : "Send OTP"}
+            </Button>
+
+            {draft ? (
+              <Button
+                type="button"
+                variant="outline"
+                className="h-12 rounded-xl font-bold uppercase tracking-wide"
+                onClick={() => {
+                  setDraft(null);
+                  setOtpCode("");
+                  setDevOtp(null);
+                  setExpiresAt(null);
+                  setError(null);
+                }}
+              >
+                Change email
+              </Button>
+            ) : null}
           </div>
 
-          {/* PASSWORD */}
-          <div className="space-y-2">
-            <Label
-              htmlFor="password"
-              className="text-xs font-bold uppercase tracking-wide"
-            >
-              {t("common.password")}
-            </Label>
-
-            <div className="relative">
-              <LockKeyhole className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                required
-                autoComplete="current-password"
-                placeholder="••••••••"
-                className="h-12 rounded-xl border-2 pl-10 focus-visible:ring-[var(--neon-green)]"
-              />
-            </div>
-          </div>
-
-          {/* SUBMIT */}
-          <Button
-            type="submit"
-            size="lg"
-            className="w-full h-12 rounded-xl bg-black text-white font-extrabold uppercase tracking-wide transition active:scale-[0.98]"
-          >
-            {t("common.sendCodeAndLogin")}
-          </Button>
-
-          {/* CREATE ACCOUNT */}
           <div className="pt-2 text-center text-sm text-gray-500">
             {t("common.notAccount")}{" "}
-
             <Link
               to="/create-account"
               className="font-bold text-black underline underline-offset-4 hover:opacity-70"
