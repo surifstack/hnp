@@ -57,13 +57,8 @@ export function CreateAccount({
       phone: draft.phone,
       otpCode,
     })
-      .then((user) => {
-        upsertProfile(user.id, {
-          firstName: draft.firstName,
-          lastName: draft.lastName,
-          phone: draft.phone,
-        });
-
+      .then(() => {
+          upsertProfile({firstName: draft.firstName,lastName: draft.lastName,phone: draft.phone});
         if (search.redirect) {
           window.location.assign(search.redirect);
           return;
@@ -273,6 +268,8 @@ export function CreateAccount({
             {t("common.alreadyHaveAccount")}{" "}
             <Link
               to="/signin"
+              search={{redirect:search.redirect  ? search.redirect : "/dashboard"}}
+
               className="font-bold text-black underline underline-offset-4 hover:opacity-70"
             >
               {t("common.signIn")}
