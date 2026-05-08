@@ -49,20 +49,7 @@ export function SiteLayout({
         <div className="mx-auto w-full max-w-6xl">
           {/* Top Bar */}
           <div className="flex items-center justify-between gap-3 mb-4">
-            {sessionStatus !== "ready" ? (
-              <span className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide bg-black text-white px-4 py-2 rounded-full whitespace-nowrap">
-                <User className="h-4 w-4" />
-                ...
-              </span>
-            ) : user?.id ? (
-              <Link
-                to="/dashboard"
-                className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide bg-black text-white px-4 py-2 rounded-full whitespace-nowrap"
-              >
-                <User className="h-4 w-4" />
-                {t("common.dashboard")}
-              </Link>
-            ) : (
+          
               <Link
                 to="/signin"
                 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide bg-black text-white px-4 py-2 rounded-full whitespace-nowrap"
@@ -70,7 +57,7 @@ export function SiteLayout({
                 <User className="h-4 w-4" />
                 {t("common.signIn")}
               </Link>
-            )}
+          
 
             <CartSheet
               trigger={
