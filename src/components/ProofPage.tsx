@@ -7,6 +7,7 @@ import { useSessionStore } from "@/hooks/useSessionStore";
 import { NoActiveOrder } from "./NoActiveOrder";
 import { Pencil, RotateCcw, ShoppingCart } from "lucide-react";
 import { FlyerPreview } from "./FlyerPreview";
+import { SignIn } from "./SignIn";
 
 
 /* ---------------- MAIN PAGE ---------------- */
@@ -27,6 +28,11 @@ export function ProofPage({ slug }: { slug: string }) {
   if (!order) {
     return <NoActiveOrder />;
   }
+
+
+    if (!user?.id) {
+      return <SignIn search={{redirect :`/products/${slug}/proof`}} />
+    }
 
   return (
     <SiteLayout>
@@ -52,15 +58,6 @@ export function ProofPage({ slug }: { slug: string }) {
               className="h-11 rounded-2xl bg-[var(--neon-green)] text-sm font-black uppercase text-black transition-all hover:bg-lime-400"
               onClick={() => {
                 addOrder(order, product);
-
-                if (!user?.id) {
-                  router.navigate({
-                    to: "/signin",
-                    search: { redirect: "/cart" },
-                  });
-                  return;
-                }
-
                 router.navigate({
                   to: "/cart",
                   search: { orderId: "" },
