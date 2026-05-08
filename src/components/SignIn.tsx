@@ -208,6 +208,7 @@ export function SignIn({
             {t("common.notAccount")}{" "}
             <Link
               to="/create-account"
+              search={{redirect:search.redirect  ? search.redirect : "/dashboard"}}
               className="font-bold text-black underline underline-offset-4 hover:opacity-70"
             >
               {t("proof.createAccount")}
