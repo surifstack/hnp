@@ -201,11 +201,9 @@ export function CreateAccount({
             </>
           ) : (
             <div className="space-y-4">
-              {devOtp ? (
                 <p className="rounded-xl border border-lime-200 bg-lime-50 px-4 py-3 text-sm font-semibold text-lime-800">
                   Development OTP: <span className="font-mono text-black">{devOtp}</span>
                 </p>
-              ) : null}
 
               <AccountField
                 icon={<KeyRound />}
