@@ -1,15 +1,8 @@
-import { redirect } from "@tanstack/react-router";
-import { API_BASE_URL,
-  apiJson,
-  clearAccessToken,
-  ensureAccessToken,
-  errorMessage,
-  setAccessToken,
-} from "@/lib/api";
-import { useSessionStore, type AuthRole, type AuthUser } from "@/hooks/useSessionStore";
 
+import { redirect } from "@tanstack/react-router";
+import { API_BASE_URL,apiFetch, apiJson, errorMessage } from "@/lib/api";
+import { useSessionStore, type AuthRole, type AuthUser } from "@/hooks/useSessionStore";
 type AuthResponse = {
-  accessToken: string;
   user: AuthUser;
 };
 
@@ -19,7 +12,8 @@ export type RegisterInput = {
   email: string;
   password: string;
   otpCode: string;
-  phone?: string;
+  phoneCountryCode?: string;
+  phoneNumber?: string;
 };
 
 type OtpResponse = {
@@ -30,6 +24,8 @@ type OtpResponse = {
 
 let sessionPromise: Promise<AuthUser | null> | null = null;
 
+// ---------------- OTP ----------------
+
 export async function requestLoginOtp(email: string, password: string) {
   return authRequest<OtpResponse>("/auth/login/otp", { email, password });
 }
@@ -38,47 +34,69 @@ export async function requestRegisterOtp(email: string) {
   return authRequest<OtpResponse>("/auth/register/otp", { email });
 }
 
+// ---------------- AUTH ----------------
+
 export async function login(email: string, password: string, otpCode: string) {
-  const session = await authRequest<AuthResponse>("/auth/login", { email, password, otpCode });
-  setAuthenticatedSession(session);
+  const session = await authRequest<AuthResponse>("/auth/login", {
+    email,
+    password,
+    otpCode,
+  });
+
+  setSession(session.user);
   return session.user;
 }
 
 export async function register(input: RegisterInput) {
   const session = await authRequest<AuthResponse>("/auth/register", input);
-  setAuthenticatedSession(session);
+
+  setSession(session.user);
   return session.user;
 }
 
+// ---------------- LOGOUT ----------------
+
 export async function logout() {
   try {
-    await fetch(`${API_BASE_URL}/auth/logout`, {
-      method: "POST",
-      credentials: "include",
-    });
+    await apiFetch("/auth/logout", { method: "POST" });
   } finally {
-    clearAccessToken();
     useSessionStore.getState().setSession(null);
   }
 }
 
+// ---------------- PROFILE ----------------
+
 export async function loadProfile() {
-  const hasAccessToken = await ensureAccessToken();
-  if (!hasAccessToken) {
-    useSessionStore.getState().setSession(null);
-    return null;
-  }
   const user = await apiJson<AuthUser>("/auth/profile");
+
   useSessionStore.getState().setSession(user);
   return user;
 }
 
+// ---------------- SESSION ----------------
+
 export async function ensureSession() {
   const state = useSessionStore.getState();
+
+  // If we have a user in Zustand, we are likely recovering from a page refresh.
+  // Verify the session using cookie auth.
+  if (state.user && !sessionPromise) {
+    sessionPromise = loadProfile()
+      .catch(() => {
+        useSessionStore.getState().setSession(null);
+        return null;
+      })
+      .finally(() => {
+        sessionPromise = null;
+      });
+    return sessionPromise;
+  }
+
   if (state.user) return state.user;
   if (sessionPromise) return sessionPromise;
 
   useSessionStore.getState().setStatus("loading");
+
   sessionPromise = loadProfile()
     .catch(() => {
       useSessionStore.getState().setSession(null);
@@ -91,7 +109,17 @@ export async function ensureSession() {
   return sessionPromise;
 }
 
+// ---------------- ROLE GUARD ----------------
+
 export async function requireRoles(roles: AuthRole[], redirectTo: string) {
+  // TanStack Start can run `beforeLoad` during SSR. The server does not have
+  // access to the browser cookie jar, so any API call to `/auth/profile` would
+  // look unauthenticated and cause an incorrect redirect.
+  // Do auth checks on the client after hydration.
+  if (typeof window === "undefined") {
+    return null as unknown as AuthUser;
+  }
+
   const user = await ensureSession();
 
   if (!user) {
@@ -110,15 +138,18 @@ export async function requireRoles(roles: AuthRole[], redirectTo: string) {
   return user;
 }
 
-function setAuthenticatedSession(session: AuthResponse) {
-  setAccessToken(session.accessToken);
-  useSessionStore.getState().setSession(session.user);
+// ---------------- HELPERS ----------------
+
+function setSession(user: AuthUser) {
+  useSessionStore.getState().setSession(user);
 }
+
+// ---------------- AUTH REQUEST ----------------
 
 async function authRequest<T>(path: string, body: unknown) {
   const res = await fetch(`${API_BASE_URL}${path}`, {
     method: "POST",
-    credentials: "include",
+    credentials: "include", // IMPORTANT for cookies
     headers: {
       "Content-Type": "application/json",
     },
@@ -132,6 +163,8 @@ async function authRequest<T>(path: string, body: unknown) {
 
   return (await res.json()) as T;
 }
+
+// ---------------- SAFE TEXT ----------------
 
 async function safeText(res: Response) {
   try {

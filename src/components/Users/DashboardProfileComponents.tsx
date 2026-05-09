@@ -13,15 +13,15 @@ export function DashboardProfileComponents() {
 
   const [firstName, setFirstName] = React.useState(profile?.firstName ?? "");
   const [lastName, setLastName] = React.useState(profile?.lastName ?? "");
-  const [phone, setPhone] = React.useState(profile?.phone ?? "");
-  const [country, setCountry] = React.useState(profile?.country ?? "");
+  const [phoneCountryCode, setPhoneCountryCode] = React.useState(profile?.phoneCountryCode ?? "");
+  const [phoneNumber, setPhoneNumber] = React.useState(profile?.phoneNumber ?? "");
 
   React.useEffect(() => {
     setFirstName(profile?.firstName ?? "");
     setLastName(profile?.lastName ?? "");
-    setPhone(profile?.phone ?? "");
-    setCountry(profile?.country ?? "");
-  }, [profile?.firstName, profile?.lastName, profile?.phone, profile?.country]);
+    setPhoneCountryCode(profile?.phoneCountryCode ?? "");
+    setPhoneNumber(profile?.phoneNumber ?? "");
+  }, [profile?.firstName, profile?.lastName, profile?.phoneCountryCode, profile?.phoneNumber]);
 
   if (!user) return null;
 
@@ -47,8 +47,8 @@ export function DashboardProfileComponents() {
             upsertProfile({
               firstName: firstName.trim() || undefined,
               lastName: lastName.trim() || undefined,
-              phone: phone.trim() || undefined,
-              country: country.trim() || undefined,
+              phoneCountryCode: phoneCountryCode.trim() || undefined,
+              phoneNumber: phoneNumber.trim() || undefined,
             });
             toast.success("Saved");
           }}
@@ -76,20 +76,20 @@ export function DashboardProfileComponents() {
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phoneCountryCode">Country code</Label>
               <Input
-                id="phone"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                id="phoneCountryCode"
+                value={phoneCountryCode}
+                onChange={(e) => setPhoneCountryCode(e.target.value)}
                 className="bg-white"
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="country">Country</Label>
+              <Label htmlFor="phoneNumber">Phone number</Label>
               <Input
-                id="country"
-                value={country}
-                onChange={(e) => setCountry(e.target.value)}
+                id="phoneNumber"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
                 className="bg-white"
               />
             </div>

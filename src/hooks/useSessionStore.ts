@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { clearAccessToken } from "@/lib/api";
 
 export type AuthRole = "USER" | "EMPLOYEE" | "ADMIN";
 
@@ -8,7 +7,10 @@ export interface AuthUser {
   id: string;
   email: string;
   role: AuthRole;
-  name?: string;
+  firstName?: string;
+  lastName?: string;
+  phoneCountryCode?: string;
+  phoneNumber?: string;
 }
 
 interface SessionState {
@@ -37,7 +39,7 @@ export const useSessionStore = create<SessionState>()(
       setStatus: (status) => set({ status }),
       setSession: (user) => set(stateForUser(user)),
       signOut: () => {
-        clearAccessToken();
+        
         set(stateForUser(null));
       },
     }),

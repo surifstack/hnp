@@ -78,8 +78,6 @@ function RootComponent() {
   const status = useSessionStore((s) => s.status);
 
   useEffect(() => {
-    window.localStorage.removeItem("hnp-session");
-
     if (status === "idle") {
       void ensureSession();
     }

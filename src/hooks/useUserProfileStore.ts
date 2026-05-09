@@ -6,8 +6,8 @@ export type UserProfile = {
   id: string;
   firstName?: string;
   lastName?: string;
-  phone?: string;
-  country?: string;
+  phoneCountryCode?: string;
+  phoneNumber?: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -35,6 +35,7 @@ export const useUserProfileStore = create<UserProfileState>()(
       upsertProfile: (patch) =>
         set((state) => {
           const id = useSessionStore.getState().user?.id;
+          console.log(id , 'id')
           if (!id) return state;
 
           const existing = state.profilesById[id];

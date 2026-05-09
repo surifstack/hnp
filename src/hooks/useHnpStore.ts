@@ -683,7 +683,7 @@ export const useHnpStore = create<HnpStoreState>()(
           })),
         reset: () =>
           set((state) => ({
-            checkout: { ...state.checkout, step: 1, form: initialFormState },
+            checkout: { ...state.checkout, step: 1 }, // Keep form data, only reset step
           })),
       },
 

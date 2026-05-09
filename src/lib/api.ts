@@ -1,33 +1,15 @@
 export const API_BASE_URL =
-  import.meta.env.VITE_API_URL?.toString().trim() || "https://hnp-api.onrender.com";
+  import.meta.env.VITE_API_URL?.toString().trim() ||
+  "https://hnp-api.onrender.com";
 
-type RefreshResponse = {
-  accessToken: string;
-};
+// ❌ REMOVED: localStorage completely
 
-let refreshPromise: Promise<boolean> | null = null;
-
-const ACCESS_TOKEN_STORAGE_KEY = 'accessToken';
-
-export function setAccessToken(token: string | null) {
-  if (token) {
-    localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, token);
-  } else {
-    localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
-  }
-}
-
-export function getAccessToken() {
-  return localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY);
-}
-
-export function clearAccessToken() {
-  localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
-}
+// -------------------- API CORE --------------------
 
 export async function ensureAccessToken() {
-  if (getAccessToken()) return true;
-  return refreshAccessToken();
+  // Cookie-based auth: access token is in an httpOnly cookie.
+  // Session is maintained by the server via an httpOnly cookie.
+  return true;
 }
 
 export class ApiError extends Error {
@@ -42,79 +24,59 @@ export class ApiError extends Error {
   }
 }
 
+// -------------------- API REQUEST --------------------
+
 export async function apiJson<T>(
   path: string,
-  init: RequestInit & { headers?: Record<string, string> } = {},
+  init: RequestInit = {},
 ): Promise<T> {
   const res = await apiFetch(path, init);
-
-  return (await res.json()) as T;
+  return res.json();
 }
 
 export async function apiText(
   path: string,
-  init: RequestInit & { headers?: Record<string, string> } = {},
+  init: RequestInit = {},
 ): Promise<string> {
-  const res = await apiFetch(path, init, false);
-  return await res.text();
+  const res = await apiFetch(path, init);
+  return res.text();
 }
 
-async function apiFetch(
+export async function apiFetch(
   path: string,
-  init: RequestInit & { headers?: Record<string, string> } = {},
-  json = true,
-  retry = true,
-) {
-  const currentAccessToken = getAccessToken();
+  init: RequestInit = {},
+): Promise<Response> {
   const url = `${API_BASE_URL}${path.startsWith("/") ? path : `/${path}`}`;
-  const res = await fetch(url, {
-    ...init,
-    credentials: "include",
-    headers: {
-      ...(json ? { "Content-Type": "application/json" } : {}),
-      ...(currentAccessToken ? { Authorization: `Bearer ${currentAccessToken}` } : {}),
-      ...(init.headers ?? {}),
-    },
-  });
 
-  if (res.status === 401 && retry && (await refreshAccessToken())) {
-    return apiFetch(path, init, json, false);
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...(init.headers as Record<string, string> ?? {}),
+  };
+
+  // If body is FormData, the browser must set boundary Content-Type
+  if (init.body instanceof FormData) {
+    delete headers["Content-Type"];
   }
 
+  const res = await fetch(url, {
+    ...init,
+    credentials: "include", // IMPORTANT for cookies
+    headers,
+  });
+
   if (!res.ok) {
-    const bodyText = await safeText(res);
-    throw new ApiError(errorMessage(bodyText) || `API ${res.status} for ${path}`, res.status, bodyText);
+    const text = await safeText(res);
+    throw new ApiError(
+      errorMessage(text) || `API Error ${res.status}`,
+      res.status,
+      text,
+    );
   }
 
   return res;
 }
 
-async function refreshAccessToken() {
-  refreshPromise ??= (async () => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
-        method: "POST",
-        credentials: "include",
-      });
-
-      if (!res.ok) {
-        clearAccessToken();
-        return false;
-      }
-
-      const body = (await res.json()) as RefreshResponse;
-      setAccessToken(body.accessToken);
-      return true;
-    } catch {
-      clearAccessToken();
-      return false;
-    } finally {
-      refreshPromise = null;
-    }
-  })();
-
-  return refreshPromise;
-}
+// -------------------- HELPERS --------------------
 
 async function safeText(res: Response) {
   try {
@@ -128,13 +90,14 @@ export function errorMessage(bodyText?: string) {
   if (!bodyText) return "";
 
   try {
-    const body = JSON.parse(bodyText) as { message?: unknown; error?: unknown };
-    if (Array.isArray(body.message)) return body.message.join(", ");
-    if (typeof body.message === "string") return body.message;
-    if (typeof body.error === "string") return body.error;
+    const body = JSON.parse(bodyText);
+
+    if (Array.isArray(body.message)) {
+      return body.message.join(", ");
+    }
+
+    return body.message || body.error || bodyText;
   } catch {
     return bodyText;
   }
-
-  return bodyText;
 }

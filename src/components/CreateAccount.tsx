@@ -2,11 +2,6 @@ import { Link, useRouter } from "@tanstack/react-router";
 import { KeyRound, LockKeyhole, Mail, Phone, User, UserPlus } from "lucide-react";
 import { forwardRef, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-
-import { SiteLayout } from "@/components/SiteLayout";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -14,16 +9,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { LANGUAGE_OPTIONS } from "@/config/languages";
+import { SiteLayout } from "@/components/SiteLayout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useUserProfileStore } from "@/hooks/useUserProfileStore";
 import { register, requestRegisterOtp } from "@/lib/auth";
+import { LANGUAGE_OPTIONS } from "@/config/languages";
 
 type RegisterDraft = {
   firstName: string;
   lastName: string;
   email: string;
   password: string;
-  phone: string;
+  phoneCountryCode: string;
+  phoneNumber: string;
 };
 
 export function CreateAccount({
@@ -54,11 +54,17 @@ export function CreateAccount({
       lastName: draft.lastName,
       email: draft.email,
       password: draft.password,
-      phone: draft.phone,
+      phoneCountryCode: draft.phoneCountryCode,
+      phoneNumber: draft.phoneNumber,
       otpCode,
     })
       .then(() => {
-          upsertProfile({firstName: draft.firstName,lastName: draft.lastName,phone: draft.phone});
+        upsertProfile({
+          firstName: draft.firstName,
+          lastName: draft.lastName,
+          phoneCountryCode: draft.phoneCountryCode,
+          phoneNumber: draft.phoneNumber,
+        });
         if (search.redirect) {
           window.location.assign(search.redirect);
           return;
@@ -104,7 +110,8 @@ export function CreateAccount({
             const lastName = (fd.get("last")?.toString() ?? "").trim();
             const email = (fd.get("email")?.toString() ?? "").trim();
             const confirmEmail = (fd.get("confirmEmail")?.toString() ?? "").trim();
-            const phone = (fd.get("phone")?.toString() ?? "").trim();
+            const phoneCountryCode = (fd.get("phoneCountryCode")?.toString() ?? "").trim();
+            const phoneNumber = (fd.get("phoneNumber")?.toString() ?? "").trim();
             const password = (fd.get("password")?.toString() ?? "").trim();
 
             if (email.toLowerCase() !== confirmEmail.toLowerCase()) {
@@ -118,7 +125,14 @@ export function CreateAccount({
 
             void requestRegisterOtp(email)
               .then((res) => {
-                setDraft({ firstName, lastName, email, password, phone });
+                setDraft({
+                  firstName,
+                  lastName,
+                  email,
+                  password,
+                  phoneCountryCode,
+                  phoneNumber,
+                });
                 setDevOtp(res.devOtp ?? null);
                 setExpiresAt(res.expiresAt);
               })
@@ -173,24 +187,39 @@ export function CreateAccount({
                 </Label>
 
                 <div className="flex gap-2">
-                  <Select defaultValue="+1">
-                    <SelectTrigger className="h-12 w-40 rounded-xl border-2">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {LANGUAGE_OPTIONS.map((c) => (
-                        <SelectItem key={`${c.value}-${c.name}`} value={c.value}>
-                          {c.flag} {c.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Select
+  name="phoneCountryCode"
+  defaultValue="+91"
+  onValueChange={(v) => {
+    const form = document.querySelector("form") as HTMLFormElement;
+    const input = form?.elements.namedItem("phoneCountryCode") as HTMLInputElement;
+    if (input) input.value = v;
+  }}
+>
+  <SelectTrigger className="h-12 w-32 rounded-xl border-2">
+    <SelectValue placeholder="+Code" />
+  </SelectTrigger>
+
+  <SelectContent>
+    {LANGUAGE_OPTIONS.map((c) => (
+      <SelectItem key={c.dialCode} value={c.dialCode as string}>
+        <span className="flex items-center gap-2">
+          <span>{c.flag}</span>
+          <span>{c.dialCode}</span>
+          <span className="text-xs text-gray-500">{c.name}</span>
+        </span>
+      </SelectItem>
+    ))}
+  </SelectContent>
+</Select>
+
+                  
 
                   <div className="relative flex-1">
                     <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                     <Input
                       type="tel"
-                      name="phone"
+                      name="phoneNumber"
                       placeholder={t("common.phonePlaceholder")}
                       className="h-12 rounded-xl border-2 pl-10 focus-visible:ring-[var(--neon-green)]"
                       required

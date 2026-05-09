@@ -1,0 +1,236 @@
+diff --git a/src/domain/user.ts b/src/domain/user.ts
+index 56cfc56..c7a6fff 100644
+--- a/src/domain/user.ts
++++ b/src/domain/user.ts
+@@ -5,7 +5,10 @@ export interface AuthUser {
+   id: string;
+   email: string;
+   role: UserRole;
+-  name?: string;
++  firstName?: string;
++  lastName?: string;
++  phoneCountryCode?: string;
++  phoneNumber?: string;
+ }
+ 
+ export type PublicUser = AuthUser;
+@@ -15,12 +18,4 @@ export interface UserRecord extends AuthUser {
+   status: UserStatus;
+   createdAt: string;
+   updatedAt: string;
+-  refreshTokens: RefreshTokenRecord[];
+-}
+-
+-export interface RefreshTokenRecord {
+-  id: string;
+-  tokenHash: string;
+-  createdAt: string;
+-  expiresAt: string;
+ }
+diff --git a/src/auth/dto/register.dto.ts b/src/auth/dto/register.dto.ts
+index 9a5373e..a66c011 100644
+--- a/src/auth/dto/register.dto.ts
++++ b/src/auth/dto/register.dto.ts
+@@ -1,4 +1,4 @@
+-import { IsEmail, IsOptional, IsString, Length, MaxLength, MinLength } from 'class-validator';
++import { IsEmail, IsOptional, IsString, MaxLength, MinLength, Matches } from 'class-validator';
+ 
+ export class RegisterDto {
+   @IsString()
+@@ -18,11 +18,19 @@ export class RegisterDto {
+   password!: string;
+ 
+   @IsString()
+-  @Length(4, 6)
++  @MinLength(4)
++  @MaxLength(6)
+   otpCode!: string;
+ 
+   @IsOptional()
+   @IsString()
+-  @MaxLength(40)
+-  phone?: string;
++  @MaxLength(6)
++  @Matches(/^\+\d{1,5}$/)
++  phoneCountryCode?: string;
++
++  @IsOptional()
++  @IsString()
++  @MaxLength(20)
++  @Matches(/^[0-9\s-]{4,20}$/)
++  phoneNumber?: string;
+ }
+diff --git a/src/auth/auth.service.ts b/src/auth/auth.service.ts
+index 29f7b53..9e4ae59 100644
+--- a/src/auth/auth.service.ts
++++ b/src/auth/auth.service.ts
+@@ -39,15 +39,27 @@ export class AuthService {
+     return this.createOtp(email, 'register');
+   }
+ 
+-  async register(input: { firstName: string; lastName: string; email: string; password: string; otpCode: string }) {
++  async register(input: {
++    firstName: string;
++    lastName: string;
++    email: string;
++    password: string;
++    otpCode: string;
++    phoneCountryCode?: string;
++    phoneNumber?: string;
++  }) {
+     this.verifyOtp(input.email, 'register', input.otpCode);
+-    const name = [input.firstName, input.lastName].map((part) => part.trim()).filter(Boolean).join(' ');
++
+     const user = await this.data.createUser({
+       email: input.email,
+       password: input.password,
+-      name,
++      firstName: input.firstName,
++      lastName: input.lastName,
++      phoneCountryCode: input.phoneCountryCode,
++      phoneNumber: input.phoneNumber,
+       role: 'USER',
+     });
++
+     return this.issueSession(user);
+   }
+ 
+@@ -125,7 +137,7 @@ export class AuthService {
+     this.otpStore.delete(key);
+   }
+ 
+-  private async issueSession(user: { id: string; email: string; role: AuthUser['role']; name?: string }) {
++  private async issueSession(user: { id: string; email: string; role: AuthUser['role'] }) {
+     const publicUser = this.data.toPublicUser(user as never);
+     const { sessionId } = this.sessions.create(publicUser.id);
+     return { sessionId, user: publicUser };
+diff --git a/src/auth/auth-data.service.ts b/src/auth/auth-data.service.ts
+index f5188c1..fd454d2 100644
+--- a/src/auth/auth-data.service.ts
++++ b/src/auth/auth-data.service.ts
+@@ -2,7 +2,7 @@ import { ConflictException, Injectable, Logger } from '@nestjs/common';
+ import { promises as fs } from 'node:fs';
+ import path from 'node:path';
+ import { randomBytes, randomUUID, scryptSync, timingSafeEqual } from 'node:crypto';
+-import type { AuthUser, RefreshTokenRecord, UserRecord, UserRole } from '../domain/user';
++import type { AuthUser, UserRecord, UserRole } from '../domain/user';
+ 
+ interface AuthSnapshot {
+   version: 1;
+@@ -32,7 +32,15 @@ export class AuthDataService {
+     return (await this.load()).users.find((user) => user.id === id);
+   }
+ 
+-  async createUser(input: { email: string; password: string; name?: string; role?: UserRole }) {
++  async createUser(input: {
++    email: string;
++    password: string;
++    firstName?: string;
++    lastName?: string;
++    phoneCountryCode?: string;
++    phoneNumber?: string;
++    role?: UserRole;
++  }) {
+     const snapshot = await this.load();
+     const email = normalizeEmail(input.email);
+     if (snapshot.users.some((user) => user.email === email)) {
+@@ -43,13 +51,15 @@ export class AuthDataService {
+     const user: UserRecord = {
+       id: randomUUID(),
+       email,
+-      name: input.name?.trim() || undefined,
+       role: input.role ?? 'USER',
++      firstName: input.firstName?.trim() || undefined,
++      lastName: input.lastName?.trim() || undefined,
++      phoneCountryCode: input.phoneCountryCode?.trim() || undefined,
++      phoneNumber: normalizePhoneNumber(input.phoneNumber),
+       passwordHash: hashPassword(input.password),
+       status: 'ACTIVE',
+       createdAt,
+       updatedAt: createdAt,
+-      refreshTokens: [],
+     };
+ 
+     snapshot.users.push(user);
+@@ -66,42 +76,6 @@ export class AuthDataService {
+     }
+   }
+ 
+-  async addRefreshToken(user: UserRecord, tokenHash: string, expiresAt: string) {
+-    user.refreshTokens = [
+-      ...user.refreshTokens.filter((token) => token.expiresAt > nowIso()),
+-      { id: randomUUID(), tokenHash, createdAt: nowIso(), expiresAt },
+-    ];
+-    await this.saveUser(user);
+-  }
+-
+-  async rotateRefreshToken(tokenHash: string, next: RefreshTokenRecord) {
+-    const snapshot = await this.load();
+-    const now = nowIso();
+-    for (const user of snapshot.users) {
+-      const match = user.refreshTokens.find((token) => token.tokenHash === tokenHash && token.expiresAt > now);
+-      if (!match) continue;
+-      user.refreshTokens = [
+-        ...user.refreshTokens.filter((token) => token.tokenHash !== tokenHash && token.expiresAt > now),
+-        next,
+-      ];
+-      user.updatedAt = now;
+-      await this.save();
+-      return user;
+-    }
+-    return null;
+-  }
+-
+-  async removeRefreshToken(tokenHash: string) {
+-    const snapshot = await this.load();
+-    let changed = false;
+-    for (const user of snapshot.users) {
+-      const before = user.refreshTokens.length;
+-      user.refreshTokens = user.refreshTokens.filter((token) => token.tokenHash !== tokenHash);
+-      changed ||= user.refreshTokens.length !== before;
+-    }
+-    if (changed) await this.save();
+-  }
+-
+   verifyPassword(user: UserRecord, password: string) {
+     const [salt, stored] = user.passwordHash.split(':');
+     if (!salt || !stored) return false;
+@@ -114,8 +88,11 @@ export class AuthDataService {
+     return {
+       id: user.id,
+       email: user.email,
+-      name: user.name,
+       role: user.role,
++      firstName: user.firstName,
++      lastName: user.lastName,
++      phoneCountryCode: user.phoneCountryCode,
++      phoneNumber: user.phoneNumber,
+     };
+   }
+ 
+@@ -167,13 +144,13 @@ export class AuthDataService {
+     users.push({
+       id: randomUUID(),
+       email: normalizeEmail(email),
+-      name: role === 'ADMIN' ? 'Admin' : 'Employee',
+       role,
++      firstName: role === 'ADMIN' ? 'Admin' : 'Employee',
++      lastName: '',
+       passwordHash: hashPassword(password),
+       status: 'ACTIVE',
+       createdAt,
+       updatedAt: createdAt,
+-      refreshTokens: [],
+     });
+   }
+ }
+@@ -187,3 +164,9 @@ function hashPassword(password: string) {
+   const hash = scryptSync(password, salt, 64).toString('base64url');
+   return `${salt}:${hash}`;
+ }
++
++function normalizePhoneNumber(value: string | undefined) {
++  const trimmed = value?.trim();
++  if (!trimmed) return undefined;
++  return trimmed.replace(/\s+/g, ' ');
++}
