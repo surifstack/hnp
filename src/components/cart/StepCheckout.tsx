@@ -46,6 +46,8 @@ import type {
 } from "@/lib/api.types";
 
 import {
+  COUNTRY_OPTIONS,
+  getCountryOption,
   getLanguageOption,
   LANGUAGE_OPTIONS,
 } from "@/config/languages";
@@ -86,31 +88,23 @@ export function StepCheckout({
     const user = useSessionStore((s) => s.user);
 
   const userId =  user?.id ?? null;
-
   const items = useHnpStore((s) => s.cart.items);
-
   const activeOrderId = useHnpStore((s) => s.cart.activeOrderId);
-
   const setActive = useHnpStore((s) => s.cart.setActive);
   const clearCart = useHnpStore((s) => s.cart.clear);
   const resetFlow = useHnpStore((s) => s.checkout.reset);
-  const recordCheckout = useHnpStore((s) => s.userOrders.recordCheckout);
 
-  const effectiveOrderId =
-    orderId ?? activeOrderId;
+  const effectiveOrderId = orderId ?? activeOrderId;
 
-  const selectedLanguage =
-    useMemo(() => {
-      return LANGUAGE_OPTIONS.find(
-        (l) =>
-          l.value ===
-          state.basic.country
+   const selectedCountry = useMemo(() => {
+      return COUNTRY_OPTIONS.find(
+        (c) => c.code === state.basic.country
       );
     }, [state.basic.country]);
 
-  const addressFields =
-    selectedLanguage?.addressFields ??
-    [];
+   const addressFields = useMemo(() => {
+    return selectedCountry?.addressFormat?.fields ?? [];
+  }, [selectedCountry]);
  
   useEffect(() => {
     if (!effectiveOrderId) return;
@@ -152,15 +146,12 @@ export function StepCheckout({
         "Email is not verified"
       );
     }
-
-    const fields =
-      selectedLanguage?.addressFields ??
-      [];
+    const fields = selectedCountry?.addressFormat?.fields ?? [];
 
     if (
       fields.length === 0 ||
       !buildAddressSchema(
-        fields
+        state.basic.country
       ).safeParse(state.address)
         .success
     ) {
@@ -174,7 +165,7 @@ export function StepCheckout({
     items,
     state,
     t,
-    selectedLanguage,
+    selectedCountry,
   ]);
 
   const checkoutPayload =
@@ -221,29 +212,15 @@ export function StepCheckout({
           })),
 
           customer: {
-            name:
-              state.basic.first_name +
-              " " +
-              state.basic.last_name,
-
-            email:
-              state.basic.email,
-
-            phone:
-              state.basic.phone,
-
-            country:
-              state.basic.country,
+            first_name :state.basic.first_name,
+            last_name :state.basic.last_name,
+            email:state.basic.email,
+            phone:state.basic.phone,
+            country:state.basic.country,
           },
-
           address: state.address,
-
-          otpVerified:
-            state.otpVerified,
-
-          promoCode:
-            promoApplied ??
-            undefined,
+          otpVerified:state.otpVerified,
+          promoCode:promoApplied ??undefined,
         };
       },
       [
@@ -289,7 +266,7 @@ export function StepCheckout({
         }));
 
         const payload: CheckoutRequest = {
-          items: checkoutPayload.items,
+          items: itemSnapshots,
           customer: checkoutPayload.customer,
           address: checkoutPayload.address,
           otpVerified: checkoutPayload.otpVerified,
@@ -300,33 +277,15 @@ export function StepCheckout({
           method: "POST",
           body: JSON.stringify(payload),
         });
-
-        setCheckout(resp);
-
-        const checkoutId = `chk_${Math.random().toString(16).slice(2, 10)}`;
-
-        recordCheckout({
-          checkoutId,
-          userId,
-
-          acceptedAt:
-            resp.acceptedAt ??
-            new Date().toISOString(),
-
-          serverOrderIds:
-            resp.orderIds ?? [],
-
-          basic: state.basic,
-          address: state.address,
-          otpVerified: state.otpVerified,
-
-          items: itemSnapshots,
-          totals: resp.totals,
-        });
-
-        clearCart();
-        resetFlow();
-        router.navigate({ to: "/order-success", search: { orderId: checkoutId } });
+        const checkoutId = resp?.checkoutId;
+        
+       if(!checkoutId){
+        toast.error("Error in saving order")
+       }
+      toast.success("Order successfully completed");
+      clearCart();
+      resetFlow();
+      router.navigate({ to: "/order-success", search: { orderId: checkoutId } });
       } catch (e) {
         toast.error(
           e instanceof Error
@@ -400,7 +359,7 @@ export function StepCheckout({
   }
 
   const countryName =
-    getLanguageOption(
+    getCountryOption(
       state.basic.country
     ) || null;
 

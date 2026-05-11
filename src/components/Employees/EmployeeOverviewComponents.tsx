@@ -1,19 +1,17 @@
-import { useEmployeeStore } from "@/hooks/useEmployeeStore";
-
+import { useEmployeeOrdersStore } from "@/hooks/useEmployeeOrdersStore";
+import { useEmployeeUsersStore } from "@/hooks/useEmployeeUsersStore";
 
 export function EmployeeOverviewComponents() {
-  const users = useEmployeeStore((s) => s.users);
-  const orders = useEmployeeStore((s) => s.orders);
-  const newOrders = orders.filter((o) => o.status === "NEW").length;
+  const users = useEmployeeUsersStore((s) => s.users);
+  const orders = useEmployeeOrdersStore((s) => s.orders);
+  const newOrders = orders.filter((o) => o.status === "In Progress").length;
 
   return (
     <div className="space-y-4">
-      <div className="rounded-2xl border-2 border-black bg-white p-5 shadow-md">
-        <h1 className="text-2xl font-extrabold uppercase tracking-wide">Employee Overview</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Orders + users only (dummy)
-        </p>
-      </div>
+      <section className="userdash-surface rounded-2xl p-5">
+        <h1 className="text-2xl font-semibold tracking-tight">Employee Overview</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Orders + users only (dummy)</p>
+      </section>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <StatCard label="New Orders" value={`${newOrders}`} />
@@ -24,12 +22,10 @@ export function EmployeeOverviewComponents() {
   );
 }
 
-
-
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border-2 border-black bg-white p-5 shadow-md">
-      <div className="text-xs font-bold uppercase tracking-widest text-black/70">{label}</div>
+    <div className="userdash-surface rounded-2xl p-5">
+      <div className="text-xs font-medium text-muted-foreground">{label}</div>
       <div className="mt-1 text-3xl font-extrabold">{value}</div>
     </div>
   );

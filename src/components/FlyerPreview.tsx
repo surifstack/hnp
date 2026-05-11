@@ -8,7 +8,6 @@ import { useHnpStore } from "@/hooks/useHnpStore";
 
 const SAFE_MARGIN_IN = 0.1;
 const TOP_SAFE_OFFSET_IN = 0.2;
-const BOX_GAP_IN = "10px";
 
 type FlyerPreviewProps = {
   isOrder: boolean;
@@ -52,15 +51,20 @@ const labelText = isOrder
 
     const documentation = product?.documentation;
     const specs = documentation?.specs ?? [];
-  
+     console.log(product);
+     
     const {labelsQty} = buildQuantityConfig(specs ?? []);
     
   
-    const PAGE_HEIGHT_IN = getFieldValue(specs, "height_in", 8.5) as number;
+    const PAGE_HEIGHT_IN = getFieldValue(specs, "height_in", 8.9) as number;
+
+    console.log(PAGE_HEIGHT_IN , 'PAGE_HEIGHT_IN')
+
+
     const PAGE_WIDTH_IN = getFieldValue(specs, "width_in", 6) as number;
 
 
-  const bgClass = getSwatchByPms(order.setup.colorPms).swatch;
+  const bgClass = getSwatchByPms( order.setup.colorPms).swatch;
 
   const USABLE_WIDTH_IN = Math.max(PAGE_WIDTH_IN - 0.2, 0);
 
@@ -115,11 +119,11 @@ const labelText = isOrder
           style={{
             backgroundColor: bgClass,
             width: `${PAGE_WIDTH_IN}in`,
-            minHeight: `${PAGE_HEIGHT_IN}in`,
+            height: `${PAGE_HEIGHT_IN}in`,
             paddingLeft: `${SAFE_MARGIN_IN}in`,
             paddingRight: `${SAFE_MARGIN_IN}in`,
             paddingTop: `${TOP_SAFE_OFFSET_IN}in`,
-            paddingBottom: "0.35in",
+            paddingBottom: "0.1in",
             boxSizing: "border-box",
           }}
         >
@@ -128,19 +132,19 @@ const labelText = isOrder
             style={{
               width: `${USABLE_WIDTH_IN}in`,
               maxWidth: `${USABLE_WIDTH_IN}in`,
-              gap: `${BOX_GAP_IN}in`,
             }}
           >
             <div ref={box1Ref}
-            className="box1Text mb-2"
+            className="box1Text"
             id="box1Text"
            style={{
-            fontSize: "26pt",
-            lineHeight: 1.05,
+            fontSize: "24pt",
+            lineHeight: 1,
             fontWeight: 800,
             textTransform: "uppercase",
             letterSpacing: "0.02em",
-            maxHeight: "1.2in",
+            minHeight: "0.5in",
+            height: "0.5in",
             overflow: "hidden",
             display: "-webkit-box",
             WebkitLineClamp: 2,
@@ -159,9 +163,11 @@ const labelText = isOrder
               fontFamily: "Arial, sans-serif",
               fontSize: "16pt",
               lineHeight: 1.25,
-              width: "80%",
+              width: "83%",
               margin: "0 auto",
-              maxHeight: "1.8in",
+
+              maxHeight: "1.2in",
+              height: "1.2in",
               overflow: "hidden",
               display: "-webkit-box",
               WebkitLineClamp: 4,
@@ -173,48 +179,70 @@ const labelText = isOrder
             {box2Text}
           </div>
           </div>
-
-          <div
-            className="mx-auto mt-5 grid grid-cols-4 gap-2 slots gap-y-0"
-            id="slots"
-            style={{ width: `${USABLE_WIDTH_IN}in` }}
-          >
-            {Array.from({ length: labelsQty }).map((_, i) => (
-              <div
-            key={i}
-            className="flex slot items-center justify-center border border-black text-center"
-            style={{
-              height: "0.51in",
-              width: "100%",
-              overflow: "hidden",
-              boxSizing: "border-box",
-            }}
-          >
-            <p
-            ref={
-                    i === 0
-                      ? labelRef
-                      : undefined
-                  }
+           <div className="mt-auto">
+            <div
+              className="mx-auto grid grid-cols-4 gap-2 gap-y-0"
+              id="slots"
               style={{
-                fontSize: "12px",
-                lineHeight: 1.1,
-                width: "100%",
-                padding:"2px",
-                wordBreak: "break-all",
-                overflowWrap: "anywhere",
-                display: "-webkit-box",
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: "vertical",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                color:"#544b4b"
+                width: `${USABLE_WIDTH_IN}in`,
+                marginTop: "0.1in",
               }}
             >
-              {labelText}
-            </p>
-          </div>
-            ))}
+              {Array.from({
+                length: labelsQty,
+              }).map((_, i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-center border border-black text-center"
+                  style={{
+                    height: "0.52in",
+                    minHeight:
+                      "0.52in",
+                    maxHeight:
+                      "0.52in",
+                    width: "100%",
+                    overflow:
+                      "hidden",
+                    boxSizing:
+                      "border-box",
+                  }}
+                >
+                  <p
+                    ref={
+                      i === 0
+                        ? labelRef
+                        : undefined
+                    }
+                    style={{
+                      fontSize:
+                        "12px",
+                      lineHeight: 1.1,
+                      width: "100%",
+                      padding: "2px",
+                      wordBreak:
+                        "break-word",
+                      overflowWrap:
+                        "break-word",
+                      textAlign:
+                        "center",
+                      overflow:
+                        "hidden",
+                      display:
+                        "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient:
+                        "vertical",
+                      textOverflow:
+                        "ellipsis",
+                      color:
+                        "#544b4b",
+                    }}
+                  >
+                    {labelText}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

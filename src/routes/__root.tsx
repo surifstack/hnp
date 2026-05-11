@@ -37,14 +37,14 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "MININOTE" },
-      { name: "description", content: "MININOTE print products" },
-      { name: "author", content: "MININOTE" },
-      { property: "og:title", content: "MININOTE" },
-      { property: "og:description", content: "MININOTE print products" },
+      { title: "HNP" },
+      { name: "description", content: "HNP print products" },
+      { name: "author", content: "HNP" },
+      { property: "og:title", content: "HNP" },
+      { property: "og:description", content: "HNP print products" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@mininote" },
+      { name: "twitter:site", content: "@HNP" },
     ],
     links: [
       {

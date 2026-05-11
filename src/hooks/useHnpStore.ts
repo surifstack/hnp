@@ -37,33 +37,10 @@ type OrderFlowDraft = {
   label: string;
 };
 
-export type UserOrderItemSnapshot = {
-  clientItemId: string;
-  productSlug: string;
-  quantity: number;
-  colorPms: PmsColor;
-  languageCode: string;
-  titleLines: string[];
-  secondaryLines: string[];
-  labelLines: string[];
-  totals: MoneyTotals;
-};
-
-export type UserOrderStatus = "SUCCESS" | "CURRENT" | "HISTORY" | "CANCELLED";
-
-export type UserOrderRecord = {
-  id: string;
-  clientItemId: string;
-  placedAt: string;
-  status: UserOrderStatus;
-  item: UserOrderItemSnapshot;
-};
-
-export type LastCheckoutSnapshot = {
+type LastCheckoutSnapshot = {
   acceptedAt: string;
   orderIds: string[];
   totals: CheckoutResponse["totals"];
-  items: UserOrderItemSnapshot[];
 };
 
 type CartSlice = {
@@ -120,38 +97,10 @@ type CheckoutSlice = {
   reset: () => void;
 };
 
-type UserOrdersSlice = {
-  ordersByUserId: Record<string, UserOrderRecord[]>;
-  checkoutsById: Record<
-    string,
-    LastCheckoutSnapshot & {
-      userId: string;
-      basic: BasicDetails;
-      address: Record<string, string>;
-      otpVerified: boolean;
-      payment: { method: string; status: string };
-    }
-  >;
-  recordCheckout: (input: {
-    checkoutId: string;
-    userId: string;
-    acceptedAt: string;
-    serverOrderIds: string[];
-    basic: BasicDetails;
-    address: Record<string, string>;
-    otpVerified: boolean;
-    items: UserOrderItemSnapshot[];
-    totals: CheckoutResponse["totals"];
-  }) => void;
-  setStatus: (userId: string, orderId: string, status: UserOrderStatus) => void;
-  clearUser: (userId: string) => void;
-};
-
 type HnpStoreState = {
   cart: CartSlice;
   order: OrderSlice;
   checkout: CheckoutSlice;
-  userOrders: UserOrdersSlice;
 };
 
 function nowIso() {
@@ -291,31 +240,45 @@ export const useHnpStore = create<HnpStoreState>()(
 
         hydrateProducts: async () => {
           const items = get().cart.items;
-          const missingSlugs = [
-            ...new Set(items.filter((item) => !item.product).map((item) => item.order.productSlug)),
-          ];
-          if (missingSlugs.length === 0) return;
+          
+          // If no items, return early
+          if (!items || items.length === 0) return;
+          
+          // Check which items need products
+          const itemsNeedingProducts = items.filter((item) => !item.product);
+          if (itemsNeedingProducts.length === 0) return;
 
           set((state) => ({ cart: { ...state.cart, loading: true, error: null } }));
+          
           try {
+            // Get unique product slugs
+            const missingSlugs = [
+              ...new Set(itemsNeedingProducts.map((item) => item.order.productSlug)),
+            ];
+            
+            // Fetch all products in parallel
             const results = await Promise.allSettled(
               missingSlugs.map((slug) => apiJson<Product>(`/products/${slug}`)),
             );
 
+            // Create a map of slug to product
             const productBySlug = new Map<string, Product>();
-            for (const result of results) {
+            for (let i = 0; i < results.length; i++) {
+              const result = results[i];
               if (result.status === "fulfilled") {
-                productBySlug.set(result.value.slug, result.value);
+                productBySlug.set(missingSlugs[i], result.value);
               }
             }
 
+            // Update items with their products
             set((state) => ({
               cart: {
                 ...state.cart,
                 loading: false,
+                error: null,
                 items: state.cart.items.map((item) => ({
                   ...item,
-                  product: item.product ?? productBySlug.get(item.order.productSlug) ?? null,
+                  product: item.product || productBySlug.get(item.order.productSlug) || null,
                 })),
               },
             }));
@@ -686,77 +649,17 @@ export const useHnpStore = create<HnpStoreState>()(
             checkout: { ...state.checkout, step: 1 }, // Keep form data, only reset step
           })),
       },
-
-      userOrders: {
-        ordersByUserId: {},
-        checkoutsById: {},
-
-        recordCheckout: ({ checkoutId, userId, acceptedAt, serverOrderIds, basic, address, otpVerified, items, totals }) =>
-          set((state) => {
-            const prev = state.userOrders.ordersByUserId[userId] ?? [];
-            const records: UserOrderRecord[] = items.map((item, i) => {
-              const serverId = serverOrderIds[i];
-              return {
-                id: serverId || item.clientItemId || newId("ord"),
-                clientItemId: item.clientItemId,
-                placedAt: acceptedAt,
-                status: "SUCCESS",
-                item,
-              };
-            });
-
-            return {
-              userOrders: {
-                ...state.userOrders,
-                ordersByUserId: {
-                  ...state.userOrders.ordersByUserId,
-                  [userId]: [...records, ...prev],
-                },
-                checkoutsById: {
-                  ...state.userOrders.checkoutsById,
-                  [checkoutId]: {
-                    acceptedAt,
-                    orderIds: serverOrderIds,
-                    totals,
-                    items,
-                    userId,
-                    basic,
-                    address,
-                    otpVerified,
-                    payment: { method: "card", status: "success" },
-                  },
-                },
-              },
-            };
-          }),
-
-        setStatus: (userId, orderId, status) =>
-          set((state) => {
-            const next = (state.userOrders.ordersByUserId[userId] ?? []).map((o) =>
-              o.id === orderId ? { ...o, status } : o,
-            );
-            return {
-              userOrders: {
-                ...state.userOrders,
-                ordersByUserId: { ...state.userOrders.ordersByUserId, [userId]: next },
-              },
-            };
-          }),
-
-        clearUser: (userId) =>
-          set((state) => {
-            const next = { ...state.userOrders.ordersByUserId };
-            delete next[userId];
-            return { userOrders: { ...state.userOrders, ordersByUserId: next } };
-          }),
-      },
     }),
     {
       name: "hnp",
       version: 3,
       partialize: (state) => ({
         cart: {
-          items: state.cart.items.map(({ orderId, addedAt, order }) => ({ orderId, addedAt, order })),
+          items: state.cart.items.map(({ orderId, addedAt, order }) => ({ 
+            orderId, 
+            addedAt, 
+            order 
+          })),
           activeOrderId: state.cart.activeOrderId,
         },
         order: {
@@ -771,22 +674,15 @@ export const useHnpStore = create<HnpStoreState>()(
           step: state.checkout.step,
           form: state.checkout.form,
         },
-        userOrders: {
-          ordersByUserId: state.userOrders.ordersByUserId,
-          checkoutsById: state.userOrders.checkoutsById,
-        },
       }),
       merge: (persistedState, currentState) => {
         const persisted = persistedState as
           | {
               cart?: { items?: PersistedCartItem[]; activeOrderId?: string | null };
-              // v1 of `hnp` used `orderFlow`/`checkoutFlow`
               orderFlow?: Partial<OrderSlice>;
               checkoutFlow?: Partial<CheckoutSlice>;
-              // v2 uses `order`/`checkout`
               order?: Partial<OrderSlice>;
               checkout?: Partial<CheckoutSlice>;
-              userOrders?: Partial<UserOrdersSlice>;
             }
           | undefined;
 
@@ -810,10 +706,6 @@ export const useHnpStore = create<HnpStoreState>()(
             ...currentState.checkout,
             ...(persisted?.checkout ?? persisted?.checkoutFlow ?? {}),
           },
-          userOrders: {
-            ...currentState.userOrders,
-            ...(persisted?.userOrders ?? {}),
-          },
         } satisfies HnpStoreState;
       },
       onRehydrateStorage: () => (state, error) => {
@@ -822,20 +714,16 @@ export const useHnpStore = create<HnpStoreState>()(
         const legacyCart = readLegacyPersist<{ items: PersistedCartItem[]; activeOrderId: string | null }>("hnp-cart");
         const legacyOrderFlow = readLegacyPersist<Partial<OrderSlice>>("hnp-order-flow");
         const legacyCheckoutFlow = readLegacyPersist<{ step: Step; form: FormState }>("hnp-checkout-flow");
-        const legacyUserOrders = readLegacyPersist<{ ordersByUserId: Record<string, UserOrderRecord[]> }>("hnp-user-orders");
         const hasAnyLegacy = Boolean(
           legacyCart ||
             legacyOrderFlow ||
-            legacyCheckoutFlow ||
-            legacyUserOrders,
+            legacyCheckoutFlow,
         );
         const isFresh =
           state.cart.items.length === 0 &&
           !state.order.order &&
           !state.order.productSlug &&
-          state.checkout.step === 1 &&
-          Object.keys(state.userOrders.ordersByUserId).length === 0 &&
-          Object.keys(state.userOrders.checkoutsById).length === 0;
+          state.checkout.step === 1;
 
         if (hasAnyLegacy && isFresh) {
           useHnpStore.setState((current) => ({
@@ -855,22 +743,23 @@ export const useHnpStore = create<HnpStoreState>()(
                   form: legacyCheckoutFlow.state.form ?? initialFormState,
                 }
               : current.checkout,
-            userOrders: legacyUserOrders?.state
-              ? { ...current.userOrders, ordersByUserId: legacyUserOrders.state.ordersByUserId ?? {} }
-              : current.userOrders,
           }));
 
           try {
             localStorage.removeItem("hnp-cart");
             localStorage.removeItem("hnp-order-flow");
             localStorage.removeItem("hnp-checkout-flow");
-            localStorage.removeItem("hnp-user-orders");
           } catch {
             // ignore
           }
         }
 
-        void state.cart.hydrateProducts();
+        // CRITICAL FIX: Wait for state to be set before hydrating products
+        setTimeout(() => {
+          if (state?.cart?.items?.length > 0) {
+            void state.cart.hydrateProducts();
+          }
+        }, 0);
       },
     },
   ),

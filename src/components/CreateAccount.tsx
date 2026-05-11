@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useUserProfileStore } from "@/hooks/useUserProfileStore";
 import { register, requestRegisterOtp } from "@/lib/auth";
-import { LANGUAGE_OPTIONS } from "@/config/languages";
+import { COUNTRY_OPTIONS, LANGUAGE_OPTIONS } from "@/config/languages";
 
 type RegisterDraft = {
   firstName: string;
@@ -201,7 +201,7 @@ export function CreateAccount({
   </SelectTrigger>
 
   <SelectContent>
-    {LANGUAGE_OPTIONS.map((c) => (
+    {COUNTRY_OPTIONS.map((c) => (
       <SelectItem key={c.dialCode} value={c.dialCode as string}>
         <span className="flex items-center gap-2">
           <span>{c.flag}</span>

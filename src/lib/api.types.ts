@@ -35,7 +35,6 @@ export type StepCardProps = {
 
 export interface Product {
   id: string;
-  slug: string;
   name: string;
   description: string;
 
@@ -125,7 +124,8 @@ export interface CheckoutClientItemInput {
 }
 
 export interface CheckoutCustomerInput {
-  name: string;
+  first_name: string;
+  last_name: string;
   email: string;
   phone: string;
   country: string;
@@ -163,6 +163,7 @@ export interface CheckoutResponse {
   itemCount: number;
   orderIds: string[];
   totals: MoneyTotals;
+  checkoutId: string;
 }
 
 export type OverflowMap = {
@@ -170,3 +171,76 @@ export type OverflowMap = {
   secondary?: boolean;
   label?: boolean;
 };
+
+export interface Pagination {
+    total: number;
+    totalPages: number;
+    currentPage: number;
+    limit: number;
+    offset: number,
+       
+}
+
+
+export interface OrderItem {
+  id: string;
+  productId: string;
+
+  product: Product;
+
+  setup: {
+    quantity: number;
+    colorPms: PmsColor;
+    languageCode: string;
+  };
+
+  text: {
+    titleLines: string[];
+    secondaryLines: string[];
+    labelLines: string[];
+  };
+
+  pricing: {
+    subtotal: number;
+    shipping: number;
+    taxes: number;
+    total: number;
+    currency: string;
+  };
+
+  status: string;
+
+  approvals: {
+    title: boolean;
+    secondary: boolean;
+    label: boolean;
+    final: boolean;
+  };
+
+  createdAt: string;
+  updatedAt: string;
+}
+export type Address = Record<string, string>;
+
+export interface OrderDetail extends Order {
+  _id: string;
+  countryCode: string;
+  customer: CheckoutCustomerInput;
+
+  address: Address;
+
+  items: OrderItem[];
+
+  totals: MoneyTotals;
+
+  checkoutInfo: {
+    checkoutAt: string;
+    clientTimestamp: number;
+    promoCodeValidated: boolean;
+  };
+
+  otpVerified: boolean;
+
+  totalItems: number;
+  itemCount?: number;
+}

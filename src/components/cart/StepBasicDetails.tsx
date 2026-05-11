@@ -25,7 +25,7 @@ import {
 
 import { useTranslation } from "react-i18next";
 
-import { LANGUAGE_OPTIONS } from "@/config/languages";
+import { COUNTRY_OPTIONS } from "@/config/languages";
 
 import {
   ArrowRight,
@@ -98,6 +98,11 @@ export function StepBasicDetails({
 
     onNext();
   };
+
+  // Get selected country details to show preview
+  const selectedCountry = COUNTRY_OPTIONS.find(
+    (c) => c.code === value.country
+  );
 
   return (
     <form
@@ -219,7 +224,7 @@ export function StepBasicDetails({
         />
       </div>
 
-      {/* COUNTRY */}
+      {/* COUNTRY SELECTION */}
       <div className="space-y-3 rounded-2xl border border-gray-100 bg-gray-50 p-4">
         <div className="flex items-center gap-2">
           <Globe2 className="h-4 w-4 text-lime-600" />
@@ -231,7 +236,7 @@ export function StepBasicDetails({
 
         <div className="space-y-2">
           <Label className="text-sm font-semibold">
-            {t("cart.country")}
+            {t("cart.country")} <span className="text-red-500">*</span>
           </Label>
 
           <Select
@@ -258,17 +263,17 @@ export function StepBasicDetails({
             </SelectTrigger>
 
             <SelectContent>
-              {LANGUAGE_OPTIONS.map(
+              {COUNTRY_OPTIONS.map(
                 (c) => (
                   <SelectItem
-                    key={c.name}
-                    value={c.value}
+                    key={c.code}
+                    value={c.code}
                   >
                     <div className="flex items-center gap-2">
                       <span>{c.flag}</span>
-
-                      <span>
-                        {c.name}
+                      <span>{c.name}</span>
+                      <span className="text-xs text-gray-400">
+                        ({c.dialCode})
                       </span>
                     </div>
                   </SelectItem>
@@ -285,6 +290,8 @@ export function StepBasicDetails({
               {errors.country}
             </p>
           )}
+
+       
         </div>
       </div>
 
@@ -297,7 +304,7 @@ export function StepBasicDetails({
       >
         <ArrowRight className="mr-2 h-4 w-4" />
 
-        {t("cart.continue")}
+        { t("cart.continue")}
       </Button>
     </form>
   );

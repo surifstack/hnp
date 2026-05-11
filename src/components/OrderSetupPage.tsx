@@ -54,7 +54,7 @@ export function OrderSetupPage({ slug }: { slug: string }) {
 
   useEffect(() => {
     if (!order || order.productSlug !== slug) {
-      void startOrder(slug as Product["slug"]);
+      void startOrder(slug as Product["id"]);
     }
   }, [order, slug, startOrder]);
 
@@ -64,7 +64,6 @@ export function OrderSetupPage({ slug }: { slug: string }) {
     languageCode: "en",
   };
 
-  console.log(safeSetup , 'safeSetup')
 
   const selectedSku =
     safeSetup && product

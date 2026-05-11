@@ -2,88 +2,111 @@ import { Link } from "@tanstack/react-router";
 import {
   CheckCircle2,
   MapPin,
-  CreditCard,
   Package,
 } from "lucide-react";
-import { use, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useHnpStore } from "@/hooks/useHnpStore";
 import { formatCents } from "@/components/cart/cartTotals";
 import { useTranslation } from "react-i18next";
 import { apiJson } from "@/lib/api";
-import type { Product } from "@/lib/api.types";
+import type { OrderDetail, Product } from "@/lib/api.types";
 import { useSessionStore } from "@/hooks/useSessionStore";
 import { SiteLayout } from "./SiteLayout";
-import { getLanguageOption, LANGUAGE_OPTIONS } from "@/config/languages";
+import { COUNTRY_OPTIONS, getCountryOption, getLanguageOption, LANGUAGE_OPTIONS } from "@/config/languages";
 import { attentionKey } from "@/lib/data";
 import { NoActiveOrder } from "./NoActiveOrder";
+import { useCatalogStore } from "@/hooks/useCatalogStore";
+
+/* ===================== TYPES ===================== */
 
 type Props = {
   orderId: string;
 };
 
-export function OrderSuccessPage({
-  orderId,
-}: Props) {
-const accentColor = getComputedStyle(document.documentElement)
-  .getPropertyValue('--neon-green')
-  .trim();  const { t, i18n } = useTranslation();
-  const user = useSessionStore((s) => s.user);
-  const checkout = useHnpStore((s) =>
-    orderId ? s.userOrders.checkoutsById[orderId] : undefined
+/* ===================== COMPONENT ===================== */
+
+export function OrderSuccessPage({ orderId }: Props) {
+  const accentColor = getComputedStyle(document.documentElement)
+    .getPropertyValue("--neon-green")
+    .trim();
+
+  const { t, i18n } = useTranslation();
+  const products = useCatalogStore((s) => s.products);
+
+  const [order, setOrder] = useState<OrderDetail | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [productsById, setProductsById] = useState<Record<string, Product>>(
+    {}
   );
 
-  const [productsBySlug, setProductsBySlug] = useState<Record<string, Product>>({});
+  const user = useSessionStore((s) => s.user);
 
-  const productSlugs = useMemo(() => {
-    return [...new Set((checkout?.items ?? []).map((it) => it.productSlug))];
-  }, [checkout]);
-
-  const selectedLanguage = useMemo(() => {
-    return LANGUAGE_OPTIONS.find((l) => l.value === checkout?.basic?.country);
-  }, [checkout?.basic?.country]);
-
-  const addressFields = selectedLanguage?.addressFields ?? [];
+  /* ===================== FETCH ORDER ===================== */
 
   useEffect(() => {
-    if (!checkout) return;
+    if (!orderId) return;
 
     let cancelled = false;
 
     (async () => {
-      const results = await Promise.allSettled(
-        productSlugs.map((slug) => apiJson<Product>(`/products/${slug}`))
-      );
+      try {
+        setLoading(true);
+        setError(null);
 
-      if (cancelled) return;
+        const res = await apiJson<OrderDetail>(
+          `/orders/checkout/${orderId}`
+        );
 
-      const next: Record<string, Product> = {};
-      for (const r of results) {
-        if (r.status === "fulfilled") next[r.value.slug] = r.value;
+        if (!cancelled) setOrder(res);
+      } catch (e) {
+        if (!cancelled) setError("Failed to load order");
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-
-      setProductsBySlug(next);
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [checkout, productSlugs]);
+  }, [orderId]);
 
-  if (!orderId || !checkout || (user?.id && checkout.userId !== user.id)) {
-    return <NoActiveOrder />;
+  /* ===================== PRODUCT IDS ===================== */
+
+  
+
+
+  /* ===================== STATES ===================== */
+
+  if (loading) return <OrderSuccessSkeleton />;
+
+  if (error) {
+    return (
+      <div className="p-10 text-red-500 text-center">{error}</div>
+    );
   }
 
-  const placedAt = new Date(checkout.acceptedAt);
-  const money = formatCents(checkout.totals.total, checkout.totals.currency);
+  if (!order || (!user?.id)) return <NoActiveOrder />;
 
-  const addressEntries = Object.entries(checkout.address ?? {}).filter(
+  /* ===================== DERIVED VALUES ===================== */
+
+  const placedAt = new Date(order.createdAt);
+
+  const selectedLanguage = COUNTRY_OPTIONS.find(
+    (l) => l.code === order.countryCode
+  );
+
+  const addressFields = selectedLanguage?.addressFormat?.fields ?? [];
+
+  const addressEntries = Object.entries(order.address ?? {}).filter(
     ([, v]) => String(v ?? "").trim().length > 0
   );
- const countryName =
-    getLanguageOption(
-      checkout.basic.country
-    ) || null;
+
+  const countryName = getCountryOption(order.countryCode);
+
+  /* ===================== UI ===================== */
+
   return (
     <SiteLayout>
       <div className="mx-auto w-full max-w-5xl space-y-10 py-10">
@@ -91,7 +114,8 @@ const accentColor = getComputedStyle(document.documentElement)
         {/* HEADER */}
         <section className="relative overflow-hidden rounded-3xl border bg-white p-8 shadow-sm">
 
-          <div className="absolute inset-0 opacity-10"
+          <div
+            className="absolute inset-0 opacity-10"
             style={{
               background: `radial-gradient(circle at top, ${accentColor}, transparent 60%)`,
             }}
@@ -113,46 +137,43 @@ const accentColor = getComputedStyle(document.documentElement)
 
               <div>
                 <h1 className="text-4xl font-bold tracking-tight">
-                  {t("orderSuccess.confirmedTitle", { defaultValue: "Order confirmed" })}
+                  {t("orderSuccess.confirmedTitle")}
                 </h1>
 
-                <p className="mt-1 text-base text-muted-foreground">
-                  {t("orderSuccess.confirmedSubtitle", {
-                    defaultValue: "Your order has been successfully placed.",
-                  })}
+                <p className="mt-1 text-muted-foreground">
+                  {t("orderSuccess.confirmedSubtitle")}
                 </p>
 
-                <div className="mt-3 flex flex-wrap gap-3 text-sm">
+                <div className="mt-3 flex gap-3 text-sm">
                   <span
                     className="rounded-full px-3 py-1 text-white font-semibold"
                     style={{ backgroundColor: accentColor }}
                   >
-                    {t(
-              "orderSuccess.successBadge"
-            )}
+                    {t("orderSuccess.successBadge")}
                   </span>
 
                   <span className="text-muted-foreground">
                     {placedAt.toLocaleString(i18n.language)}
                   </span>
 
-                  <span className="font-semibold">{money}</span>
+                  <span className="font-semibold">
+                    {formatCents(order.totals.total, order.totals.currency)}
+                  </span>
                 </div>
               </div>
             </div>
 
             <div className="flex gap-2">
-              <Button asChild className="text-white semibold" style={{ backgroundColor: accentColor }}>
-                <Link to="/dashboard/orders">{t(
-              "orderSuccess.viewOrdersCta"
-            )}</Link>
+              <Button asChild style={{ backgroundColor: accentColor }}>
+                <Link to="/dashboard/orders">
+                  {t("orderSuccess.viewOrdersCta")}
+                </Link>
               </Button>
 
-
               <Button asChild variant="outline">
-                <Link to="/products">{t(
-              "orderSuccess.continueShopping"
-            )}</Link>
+                <Link to="/products">
+                  {t("orderSuccess.continueShopping")}
+                </Link>
               </Button>
             </div>
           </div>
@@ -164,120 +185,80 @@ const accentColor = getComputedStyle(document.documentElement)
           {/* ITEMS */}
           <div className="lg:col-span-2 space-y-5">
 
-            <h2 className="text-xl font-semibold"> {t(
-              "orderSuccess.orderItemsTitle"
-            )}</h2>
+            <h2 className="text-xl font-semibold">
+              {t("orderSuccess.orderItemsTitle")}
+            </h2>
 
-            {checkout.items.map((it) => {
-              const product = productsBySlug[it.productSlug];
-
+            {order.items.map((it) => {
+              const product = products?.find((p) => p.id === it.productId);
               return (
-                <div key={it.clientItemId} className="rounded-2xl border bg-white p-5">
+                <div key={it.id} className="rounded-2xl border bg-white p-5">
 
                   <div className="flex justify-between">
+
                     <div>
                       <div className="text-lg font-semibold">
-                        {product?.name ?? it.productSlug}
+                        {product?.name ?? "unknow"}
                       </div>
 
-                      <div className="mt-1 text-sm text-muted-foreground">
+                      <div className="text-sm text-muted-foreground">
                         {product?.description ?? ""}
                       </div>
 
                       <div className="mt-3 text-sm text-muted-foreground space-y-1">
-                        <div>{t(
-              "orderSuccess.qtyLabel"
-            )}: {it.quantity}</div>
-                        <div>{t(
-              "orderSuccess.colorLabel"
-            )}: PMS {it.colorPms}</div>
-                        <div>{t(
-              "orderSuccess.languageLabel"
-            )}: {it.languageCode}</div>
+                        <div>Qty: {it.setup.quantity}</div>
+                        <div>Color: PMS {it.setup.colorPms}</div>
+                        <div>Lang: {it.setup.languageCode}</div>
                       </div>
                     </div>
 
-                    <div className="text-lg font-bold" style={{ color: accentColor }}>
-                      {formatCents(it.totals.total, it.totals.currency)}
+                    <div
+                      className="text-lg font-bold"
+                      style={{ color: accentColor }}
+                    >
+                      {formatCents(it.pricing.total, it.pricing.currency)}
                     </div>
-                  </div>
 
+                  </div>
                 </div>
               );
             })}
-            
           </div>
 
           {/* SIDEBAR */}
           <div className="space-y-5">
 
-            <h2 className="text-xl font-semibold"> {t(
-              "orderSuccess.orderDetailsTitle"
-            )}</h2>
-
-            <Card title={t(
-              "orderSuccess.customerTitle"
-            )}  icon={<Package />}>
-              <Info label={t(
-              "orderSuccess.nameLabel"
-            )} value={`${checkout.basic.first_name ?? ""} ${checkout.basic.last_name ?? ""}`} />
-              <Info label={t(
-              "orderSuccess.emailLabel"
-            )} value={checkout.basic.email} />
-              <Info label={t(
-              "orderSuccess.phoneLabel"
-            )} value={checkout.basic.phone} />
-              <Info label={t(
-              "orderSuccess.countryLabel"
-            )} value={
-              countryName
-                ? countryName.name
-                : checkout.basic.country
-            } />
+            <Card title="Customer" icon={<Package />}>
+              <Info label="Name" value={`${order.customer.first_name} ${order.customer.last_name}`} />
+              <Info label="Email" value={order.customer.email} />
+              <Info label="Phone" value={order.customer.phone} />
+              <Info label="Country" value={countryName?.name ?? order.countryCode} />
             </Card>
 
-            <Card title={t(
-              "orderSuccess.shippingAddressTitle"
-            )} icon={<MapPin />}>
-               {checkout.address[attentionKey]?.trim() ? (
-                            <Info
-                              label={t("cart.address.attentionOf", { defaultValue: "Attention Of" })}
-                              value={checkout.address[attentionKey] ?? ""}
-                            />
-                          ) : null}
-              {addressEntries.length ? (
+            <Card title="Shipping Address" icon={<MapPin />}>
+              {addressFields.length ? (
                 addressFields.map((f) => (
                   <Info
                     key={f.key}
                     label={f.label}
-                    value={checkout.address?.[f.key]}
+                    value={order.address?.[f.key]}
                   />
                 ))
               ) : (
-                <div className="text-muted-foreground">No address provided</div>
+                <div className="text-muted-foreground">
+                  No address provided
+                </div>
               )}
             </Card>
 
-            <Card title={t(
-              "orderSuccess.paymentTitle"
-            )} icon={<CreditCard />}>
-              <Info label={t(
-              "orderSuccess.paymentMethodLabel"
-            )} value={checkout.payment?.method} />
-              <Info label={t(
-              "orderSuccess.paymentStatusLabel"
-            )} value={checkout.payment?.status} />
-            </Card>
-
-            <Card title={t(
-              "orderSuccess.summaryTitle"
-            )} icon={<Package />}>
-              <Info label={t(
-              "orderSuccess.itemsLabel"
-            )}value={checkout.items.length} />
-              <Info label={t(
-              "orderSuccess.totalLabel"
-            )} value={money} highlight color={accentColor} />
+            <Card title="Summary" icon={<Package />}>
+              <Info label="Items" value={order.items.length} />
+              <Info
+                label="Total"
+                value={formatCents(order.totals.total, order.totals.currency)}
+                highlight
+                color={accentColor}
+              />
             </Card>
 
           </div>
@@ -287,17 +268,36 @@ const accentColor = getComputedStyle(document.documentElement)
   );
 }
 
-/* ---------- UI HELPERS ---------- */
+/* ===================== SKELETON ===================== */
+
+function OrderSuccessSkeleton() {
+  return (
+    <div className="mx-auto w-full max-w-5xl space-y-6 py-10 animate-pulse">
+      <div className="h-32 bg-gray-200 rounded-3xl" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-4">
+          <div className="h-6 w-40 bg-gray-200 rounded" />
+          {[1, 2].map((i) => (
+            <div key={i} className="h-28 bg-gray-200 rounded-2xl" />
+          ))}
+        </div>
+        <div className="space-y-4">
+          <div className="h-6 w-40 bg-gray-200 rounded" />
+          <div className="h-40 bg-gray-200 rounded-2xl" />
+          <div className="h-40 bg-gray-200 rounded-2xl" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ===================== UI HELPERS ===================== */
 
 function Card({
   title,
   icon,
   children,
-}: {
-  title: string;
-  icon: React.ReactNode;
-  children: React.ReactNode;
-}) {
+}: any) {
   return (
     <div className="rounded-2xl border bg-white p-4">
       <div className="flex items-center gap-2 font-semibold text-sm mb-3">
@@ -314,17 +314,12 @@ function Info({
   value,
   highlight,
   color,
-}: {
-  label: string;
-  value?: string | number | null;
-  highlight?: boolean;
-  color?: string;
-}) {
+}: any) {
   return (
     <div className="flex justify-between text-sm">
       <span className="text-muted-foreground">{label}</span>
       <span
-        className={`font-medium ${highlight ? "font-bold" : ""}`}
+        className={highlight ? "font-bold" : "font-medium"}
         style={{ color: highlight ? color : undefined }}
       >
         {value || "—"}

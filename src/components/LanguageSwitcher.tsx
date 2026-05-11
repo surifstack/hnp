@@ -12,8 +12,6 @@ import {
 import { getLanguageOption, getTypography, LANGUAGE_OPTIONS } from "@/config/languages";
 import { useEffect } from "react";
 
-
-
 export function LanguageSwitcher() {
   const { i18n } = useTranslation();
 
@@ -45,7 +43,6 @@ export function LanguageSwitcher() {
           aria-label="Language"
         >
           <Languages className="h-4 w-4" />
-          <span className="text-base leading-none">{current.flag}</span>
           <span>{current.name}</span>
         </button>
       </DropdownMenuTrigger>
@@ -59,7 +56,6 @@ export function LanguageSwitcher() {
               }}
             className={o.value === current.value ? "bg-accent" : undefined}
           >
-            <span className="text-base leading-none">{o.flag}</span>
             <span className="font-semibold">{o.name}</span>
             <span className="ml-auto text-xs font-bold uppercase tracking-widest opacity-60">
               {o.value}

@@ -1,6 +1,6 @@
 export const API_BASE_URL =
   import.meta.env.VITE_API_URL?.toString().trim() ||
-  "https://hnp-api.onrender.com";
+  "https://hnp-api.onrender.com/api";
 
 // ❌ REMOVED: localStorage completely
 

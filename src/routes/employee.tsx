@@ -13,6 +13,9 @@ function EmployeeLayoutRoute() {
     <HnpLayout
       title="Employee"
       subtitle="Limited access"
+      redirectTo="/employee"
+      allowedRoles={["EMPLOYEE", "ADMIN"]}
+      badge="Employee"
       nav={[
         { to: "/employee", label: "Overview", icon: <ClipboardList /> },
         { to: "/employee/orders", label: "Orders", icon: <ClipboardList /> },

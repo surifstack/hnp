@@ -1,6 +1,5 @@
-
 import { redirect } from "@tanstack/react-router";
-import { API_BASE_URL,apiFetch, apiJson, errorMessage } from "@/lib/api";
+import { API_BASE_URL, apiFetch, apiJson, errorMessage } from "@/lib/api";
 import { useSessionStore, type AuthRole, type AuthUser } from "@/hooks/useSessionStore";
 type AuthResponse = {
   user: AuthUser;
@@ -112,12 +111,24 @@ export async function ensureSession() {
 // ---------------- ROLE GUARD ----------------
 
 export async function requireRoles(roles: AuthRole[], redirectTo: string) {
-  // TanStack Start can run `beforeLoad` during SSR. The server does not have
-  // access to the browser cookie jar, so any API call to `/auth/profile` would
-  // look unauthenticated and cause an incorrect redirect.
-  // Do auth checks on the client after hydration.
   if (typeof window === "undefined") {
-    return null as unknown as AuthUser;
+    try {
+      const { getSessionUserServerFn } = await import("@/server/authSession");
+      const user = await getSessionUserServerFn();
+
+      if (!roles.includes(user.role)) {
+        throw redirect({
+          to: user.role === "EMPLOYEE" ? "/employee" : "/dashboard",
+        });
+      }
+
+      return user;
+    } catch {
+      throw redirect({
+        to: "/signin",
+        search: { redirect: redirectTo },
+      });
+    }
   }
 
   const user = await ensureSession();

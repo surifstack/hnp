@@ -13,6 +13,9 @@ function AdminLayoutRoute() {
     <HnpLayout
       title="Admin"
       subtitle="Full access"
+      redirectTo="/admin"
+      allowedRoles={["ADMIN"]}
+      badge="Admin"
       nav={[
         { to: "/admin", label: "Overview", icon: <Shield /> },
         { to: "/admin/employees", label: "Employees", icon: <Users /> },

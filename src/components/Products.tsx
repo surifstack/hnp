@@ -8,10 +8,10 @@ export function Products() {
   const { t } = useTranslation();
 
   const fetchProducts = useCatalogStore((s) => s.fetchProducts);
+
   const products = useCatalogStore((s) => s.products);
   const loading = useCatalogStore((s) => s.loading);
   const error = useCatalogStore((s) => s.error);
-
   useEffect(() => {
     void fetchProducts();
   }, [fetchProducts]);
@@ -265,16 +265,16 @@ export function Products() {
 
             return isAvailable ? (
               <Link
-                key={p.slug}
+                key={p.id}
                 to="/products/$slug"
-                params={{ slug: p.slug }}
+                params={{ slug: p.id }}
                 className="block group"
               >
                 {CardContent}
               </Link>
             ) : (
               <div
-                key={p.slug}
+                key={p.id}
                 className="block"
               >
                 {CardContent}

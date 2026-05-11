@@ -1,12 +1,10 @@
-
-
 import { useEffect } from "react";
 import { useAdminStore } from "@/hooks/useAdminStore";
 import { useAdminProductsStore } from "@/hooks/useAdminProductsStore";
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border-2 border-black bg-white p-5 shadow-md">
-      <div className="text-xs font-bold uppercase tracking-widest text-black/70">{label}</div>
+    <div className="userdash-surface rounded-2xl p-5">
+      <div className="text-xs font-medium text-muted-foreground">{label}</div>
       <div className="mt-1 text-3xl font-extrabold">{value}</div>
     </div>
   );
@@ -33,12 +31,12 @@ export function AdminOverviewComponents() {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-2xl border-2 border-black bg-white p-5 shadow-md">
-        <h1 className="text-2xl font-extrabold uppercase tracking-wide">Admin Overview</h1>
+      <section className="userdash-surface rounded-2xl p-5">
+        <h1 className="text-2xl font-semibold tracking-tight">Admin Overview</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Dummy data dashboard (Zustand). No auth wired yet.
         </p>
-      </div>
+      </section>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <StatCard label="Active Employees" value={`${activeEmployees}`} />

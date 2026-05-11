@@ -1,10 +1,7 @@
-
 import { useMemo } from "react";
 import { useAdminStore } from "@/hooks/useAdminStore";
 import type { HnpOrderStatus } from "@/lib/hnp.types";
 import { CentMoney, OrderStatus } from "@/lib/data";
-
-
 
 export function OrderComponents() {
   const orders = useAdminStore((s) => s.orders);
@@ -17,30 +14,34 @@ export function OrderComponents() {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-2xl border-2 border-black bg-white p-5 shadow-md">
-        <h1 className="text-2xl font-extrabold uppercase tracking-wide">Orders</h1>
+      <section className="userdash-surface rounded-2xl p-5">
+        <h1 className="text-2xl font-semibold tracking-tight">Orders</h1>
         <p className="mt-1 text-sm text-muted-foreground">Change order status (dummy).</p>
-      </div>
+      </section>
 
-      <div className="overflow-hidden rounded-2xl border-2 border-black bg-white shadow-md">
-        <div className="border-b-2 border-black px-5 py-3">
-          <div className="text-sm font-extrabold uppercase tracking-widest">Order list</div>
+      <section className="userdash-surface overflow-hidden rounded-2xl">
+        <div className="border-b border-slate-200 px-5 py-4">
+          <div className="text-sm font-semibold text-slate-900">Order list</div>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="bg-black text-white">
+            <thead className="bg-slate-50 text-slate-600">
               <tr>
-                <th className="px-4 py-3 font-extrabold uppercase tracking-widest">Order</th>
-                <th className="px-4 py-3 font-extrabold uppercase tracking-widest">Customer</th>
-                <th className="px-4 py-3 font-extrabold uppercase tracking-widest">Items</th>
-                <th className="px-4 py-3 font-extrabold uppercase tracking-widest">Total</th>
-                <th className="px-4 py-3 font-extrabold uppercase tracking-widest">Status</th>
-                <th className="px-4 py-3 font-extrabold uppercase tracking-widest">Updated</th>
+                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider">Order</th>
+                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider">
+                  Customer
+                </th>
+                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider">Items</th>
+                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider">Total</th>
+                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider">Status</th>
+                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider">
+                  Updated
+                </th>
               </tr>
             </thead>
             <tbody>
               {sorted.map((o) => (
-                <tr key={o.id} className="border-t-2 border-black/10">
+                <tr key={o.id} className="border-t border-slate-100">
                   <td className="px-4 py-3 font-semibold">{o.id}</td>
                   <td className="px-4 py-3">
                     <div className="font-semibold">{o.customerName}</div>
@@ -50,7 +51,7 @@ export function OrderComponents() {
                   <td className="px-4 py-3">{CentMoney(o.totalCents)}</td>
                   <td className="px-4 py-3">
                     <select
-                      className="h-9 rounded-md border-2 border-black bg-white px-2 text-sm font-semibold"
+                      className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium shadow-sm"
                       value={o.status}
                       onChange={(e) => setOrderStatus(o.id, e.target.value as HnpOrderStatus)}
                     >
@@ -76,7 +77,7 @@ export function OrderComponents() {
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
     </div>
   );
 }
