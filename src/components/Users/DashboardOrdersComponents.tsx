@@ -44,6 +44,7 @@ import type {
   Pagination,
 } from "@/lib/api.types";
 import { getLanguageOption , getCountryOption } from "@/config/languages";
+import { PagePagination } from "../PagePagination";
 
 /* ================= TYPES ================= */
 
@@ -236,7 +237,7 @@ export function DashboardOrdersComponents({
         ))}
 
         {/* EMPTY */}
-
+         <PagePagination totalPages={pagination?.total ?? 0} currentPage={pagination?.currentPage ?? 1} />
         {!orders.length ? (
           <div className="rounded-3xl border border-slate-200 bg-white p-10 text-center shadow-sm">
 
