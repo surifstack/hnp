@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 
 import {
   Eye,
@@ -72,6 +72,9 @@ export function DashboardOrdersComponents({
   tab: string;
 }) {
   const navigate = useNavigate();
+   const search = useSearch({
+      strict: false,
+    });
 
   const user = useSessionStore((s) => s.user);
 
@@ -114,7 +117,7 @@ export function DashboardOrdersComponents({
 
         const response =
           await apiJson<OrdersResponse>(
-            `/orders?type=${currentTab}&limit=10&offset=0`
+            `/orders?type=${currentTab}&limit=${Number(pagination?.limit ?? 10)}&page=${Number(search?.page ?? 1  )}`
           );
 
         if (cancelled) return;
@@ -136,7 +139,7 @@ export function DashboardOrdersComponents({
     return () => {
       cancelled = true;
     };
-  }, [currentTab, user?.id]);
+  }, [currentTab,search?.page ?? '', user?.id]);
 
   /* ================= LOADING ================= */
 
