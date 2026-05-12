@@ -49,9 +49,6 @@ export function OrderSetupPage({ slug }: { slug: string }) {
     product?.documentation?.specs ?? []
   );
 
-  console.log({ orderQty, maxQty, quantities })
-
-
   useEffect(() => {
     if (!order || order.productSlug !== slug) {
       void startOrder(slug as Product["id"]);

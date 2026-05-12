@@ -8,329 +8,159 @@ import {
   Power,
   Trash2,
   User2,
+  Briefcase,
 } from "lucide-react";
 
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
-import { Input } from "@/components/ui/input";
-
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-
-import { apiJson } from "@/lib/api";
-
-import type {
-  Employee,
-  EmployeePayload,
-} from "@/lib/types";
+import { HnpUser, UserStatus } from "@/lib/hnp.types";
+import { useAdminEmployeeStore } from "@/hooks/useAdminEmployeeStore";
+import { EmployeeDialog } from "../Admin/EmployeeDialog";
+import { CustomerRow } from "./UserHelpers";
 
 type Props = {
-  employee: Employee;
+  employee: HnpUser;
 
   onDelete: (id: string) => void;
 
   onToggle: (
     id: string,
-    active: boolean
+    status: UserStatus
   ) => void;
 
   onUpdated?: () => void;
 };
 
+
+
+
 export function EmployeeCard({
   employee,
   onDelete,
   onToggle,
-  onUpdated,
 }: Props) {
-  const [openEdit, setOpenEdit] =
-    useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
 
-  const [loading, setLoading] =
-    useState(false);
+  const isActive = employee.status === "ACTIVE";
 
-  const [form, setForm] =
-    useState<EmployeePayload>({
-      firstName:
-        employee.firstName || "",
-
-      lastName:
-        employee.lastName || "",
-
-      email: employee.email || "",
-
-      phoneCountryCode:
-        employee.phoneCountryCode ||
-        "+1",
-
-      phoneNumber:
-        employee.phoneNumber || "",
-    });
-
-  async function updateEmployee() {
-    try {
-      setLoading(true);
-
-      await apiJson(
-        `/admin/employees/${employee._id}`,
-        {
-          method: "PATCH",
-
-          body: JSON.stringify(form),
-        }
-      );
-
-      setOpenEdit(false);
-
-      onUpdated?.();
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false);
-    }
-  }
+  const joinedDate = new Date(employee.createdAt);
 
   return (
-    <div
-      className="
-        overflow-hidden rounded-3xl border border-slate-200
-        bg-white shadow-sm transition-all duration-300
-        hover:-translate-y-0.5 hover:shadow-xl
-      "
-    >
-      {/* TOP BAR */}
+    <div className="
+      overflow-hidden rounded-3xl border border-slate-200
+      bg-white shadow-sm transition-all duration-300
+      hover:-translate-y-1 hover:shadow-xl
+    ">
+
+      {/* NEON TOP BAR */}
       <div className="h-1 w-full bg-[var(--neon-green)]" />
 
-      <div className="p-6">
-        <div className="flex flex-col gap-5">
-          {/* HEADER */}
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h3 className="text-xl font-bold text-slate-900">
-                {employee.firstName}{" "}
-                {employee.lastName}
-              </h3>
+      <div className="p-6 space-y-5">
 
-              <div className="mt-1 flex items-center gap-2 text-sm text-slate-500">
-                <User2 className="h-4 w-4" />
+        {/* HEADER */}
+        <div className="flex items-start justify-between gap-4">
 
-                {employee.role ||
-                  "Employee"}
-              </div>
-            </div>
+          <div>
+            <h3 className="text-lg font-bold text-slate-900">
+              {employee.firstName} {employee.lastName}
+            </h3>
 
-            <div
-              className={`
-                rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-wide
-                ${
-                  employee.active
-                    ? "border-emerald-200 bg-emerald-100 text-emerald-700"
-                    : "border-red-200 bg-red-100 text-red-700"
-                }
-              `}
-            >
-              {employee.active
-                ? "Active"
-                : "Inactive"}
+            <div className="mt-2 flex items-center gap-2 text-sm text-slate-500">
+              <Calendar className="h-4 w-4" />
+              Joined {joinedDate.toLocaleDateString()}
             </div>
           </div>
 
-          {/* INFO GRID */}
-          <div className="grid grid-cols-1 gap-3 rounded-2xl bg-slate-50 p-4">
-            <InfoCard
-              icon={
-                <Mail className="h-4 w-4" />
+          {/* STATUS */}
+          <div
+            className={`
+              rounded-full border px-3 py-1 text-xs font-bold uppercase
+              ${
+                isActive
+                  ? "border-emerald-200 bg-emerald-100 text-emerald-700"
+                  : "border-slate-200 bg-slate-100 text-slate-600"
               }
-              label="Email"
-              value={employee.email}
-            />
-
-            <InfoCard
-              icon={
-                <Phone className="h-4 w-4" />
-              }
-              label="Phone"
-              value={`${employee.phoneCountryCode} ${employee.phoneNumber}`}
-            />
-
-            <InfoCard
-              icon={
-                <Calendar className="h-4 w-4" />
-              }
-              label="Created"
-              value={new Date(
-                employee.createdAt
-              ).toLocaleDateString()}
-            />
-          </div>
-
-          {/* ACTIONS */}
-          <div className="grid grid-cols-2 gap-3">
-            {/* EDIT */}
-            <Dialog
-              open={openEdit}
-              onOpenChange={
-                setOpenEdit
-              }
-            >
-              <DialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="rounded-2xl border-slate-200"
-                >
-                  <Pencil className="mr-2 h-4 w-4" />
-
-                  Edit
-                </Button>
-              </DialogTrigger>
-
-              <DialogContent className="rounded-3xl border-slate-200 sm:max-w-lg">
-                <DialogHeader>
-                  <DialogTitle className="text-xl font-bold">
-                    Edit Employee
-                  </DialogTitle>
-                </DialogHeader>
-
-                <div className="mt-4 space-y-4">
-                  <div className="grid grid-cols-2 gap-3">
-                    <Input
-                      placeholder="First Name"
-                      value={
-                        form.firstName
-                      }
-                      onChange={(e) =>
-                        setForm((p) => ({
-                          ...p,
-                          firstName:
-                            e.target
-                              .value,
-                        }))
-                      }
-                      className="h-11 rounded-2xl"
-                    />
-
-                    <Input
-                      placeholder="Last Name"
-                      value={
-                        form.lastName
-                      }
-                      onChange={(e) =>
-                        setForm((p) => ({
-                          ...p,
-                          lastName:
-                            e.target
-                              .value,
-                        }))
-                      }
-                      className="h-11 rounded-2xl"
-                    />
-                  </div>
-
-                  <Input
-                    placeholder="Email"
-                    value={form.email}
-                    onChange={(e) =>
-                      setForm((p) => ({
-                        ...p,
-                        email:
-                          e.target
-                            .value,
-                      }))
-                    }
-                    className="h-11 rounded-2xl"
-                  />
-
-                  <div className="grid grid-cols-3 gap-3">
-                    <Input
-                      placeholder="+1"
-                      value={
-                        form.phoneCountryCode
-                      }
-                      onChange={(e) =>
-                        setForm((p) => ({
-                          ...p,
-                          phoneCountryCode:
-                            e.target
-                              .value,
-                        }))
-                      }
-                      className="h-11 rounded-2xl"
-                    />
-
-                    <Input
-                      placeholder="Phone Number"
-                      value={
-                        form.phoneNumber
-                      }
-                      onChange={(e) =>
-                        setForm((p) => ({
-                          ...p,
-                          phoneNumber:
-                            e.target
-                              .value,
-                        }))
-                      }
-                      className="col-span-2 h-11 rounded-2xl"
-                    />
-                  </div>
-
-                  <Button
-                    onClick={
-                      updateEmployee
-                    }
-                    disabled={loading}
-                    className="h-11 w-full rounded-2xl"
-                  >
-                    {loading
-                      ? "Updating..."
-                      : "Update Employee"}
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
-
-            {/* ACTIVE / INACTIVE */}
-            <Button
-              variant="outline"
-              className="rounded-2xl border-slate-200"
-              onClick={() =>
-                onToggle(
-                  employee._id,
-                  employee.active
-                )
-              }
-            >
-              <Power className="mr-2 h-4 w-4" />
-
-              {employee.active
-                ? "Disable"
-                : "Enable"}
-            </Button>
-
-            {/* DELETE */}
-            <Button
-              variant="destructive"
-              className="col-span-2 rounded-2xl"
-              onClick={() =>
-                onDelete(
-                  employee._id
-                )
-              }
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-
-              Delete Employee
-            </Button>
+            `}
+          >
+            {employee.status}
           </div>
         </div>
+
+        {/* CONTACT INFO */}
+        <div className="space-y-3 rounded-2xl bg-slate-50 p-4 border border-slate-100">
+
+          <CustomerRow
+            icon={<Mail className="h-4 w-4" />}
+            value={employee.email}
+          />
+
+          <CustomerRow
+            icon={<Phone className="h-4 w-4" />}
+            value={`${employee.phoneCountryCode} ${employee.phoneNumber}`}
+          />
+
+          {employee.role && (
+            <CustomerRow
+              icon={<Briefcase className="h-4 w-4" />}
+              value={employee.role}
+            />
+          )}
+        </div>
+
+        {/* STATS */}
+        <div className="grid grid-cols-2 gap-3">
+
+        
+        </div>
+
+      
+
+        {/* ACTIONS */}
+        <div className="flex justify-end gap-2 pt-2">
+
+          <Button
+            variant="outline"
+            onClick={() => setOpenEdit(true)}
+            className="rounded-xl"
+          >
+            Edit
+          </Button>
+
+          <Button
+            variant="outline"
+            onClick={() => onToggle(employee._id, employee.status)}
+            className="rounded-xl"
+          >
+            {isActive ? "Disable" : "Enable"}
+          </Button>
+
+          <Button
+            onClick={() => onDelete(employee._id)}
+            className="rounded-xl bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
+          >
+            Delete
+          </Button>
+        </div>
       </div>
+
+      {/* EDIT MODAL */}
+      <EmployeeDialog
+        open={openEdit}
+        setOpen={setOpenEdit}
+        mode="edit"
+        form={{
+          firstName: employee.firstName || "",
+          lastName: employee.lastName || "",
+          email: employee.email || "",
+          phoneCountryCode: employee.phoneCountryCode || "",
+          phoneNumber: employee.phoneNumber || "",
+        }}
+        setForm={() => {}}
+        loading={false}
+        onSubmit={() => {}}
+      />
     </div>
   );
 }

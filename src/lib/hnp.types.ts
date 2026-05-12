@@ -22,6 +22,7 @@ export type UserStatus =
 
 export interface HnpUser {
   id: string;
+  _id:string;
 
   email: string;
 

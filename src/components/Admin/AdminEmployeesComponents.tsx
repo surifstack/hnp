@@ -6,8 +6,8 @@ import {
 } from "lucide-react";
 
 import { useEffect } from "react";
-
 import { Button } from "@/components/ui/button";
+
 import { Input } from "@/components/ui/input";
 
 import {
@@ -26,9 +26,17 @@ import {
   EmployeeCard,
   EmployeesSkeleton,
 } from "../Helpers/EmployeeHelper";
-import { AddEmployee } from "./AddEmployee";
+import { EmployeeDialog } from "./EmployeeDialog";
 
 export function AdminEmployeesComponents() {
+
+  const openAdd = useAdminEmployeeStore((s) => s.openAdd);
+  const setOpenAdd = useAdminEmployeeStore((s) => s.setOpenAdd);
+
+  const form = useAdminEmployeeStore((s) => s.form);
+  const setForm = useAdminEmployeeStore((s) => s.setForm);
+
+  const createEmployee = useAdminEmployeeStore((s) => s.createEmployee);
   const employees =
     useAdminEmployeeStore(
       (s) => s.employees
@@ -165,7 +173,15 @@ export function AdminEmployeesComponents() {
             </Select>
 
             {/* ADD EMPLOYEE */}
-            <AddEmployee />
+           <EmployeeDialog
+            open={openAdd}
+            setOpen={setOpenAdd}
+            mode="add"
+            form={form}
+            setForm={setForm}
+            loading={loading}
+            onSubmit={createEmployee}
+          />
           </div>
         </div>
       </section>
@@ -196,7 +212,8 @@ export function AdminEmployeesComponents() {
       )}
 
       {/* PAGINATION */}
-      <PagePagination
+     {pagination.totalPages > 1 &&
+       <PagePagination
         currentPage={
           pagination.currentPage
         }
@@ -207,6 +224,7 @@ export function AdminEmployeesComponents() {
         //   fetchEmployees(page);
         // }}
       />
+       } 
     </div>
   );
 }

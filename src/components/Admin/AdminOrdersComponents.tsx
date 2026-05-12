@@ -250,7 +250,9 @@ export function AdminOrdersComponents() {
       )}
 
       {/* PAGINATION */}
-      <PagePagination
+
+      {pagination.totalPages > 1 &&
+       <PagePagination
         currentPage={
           pagination.currentPage
         }
@@ -261,6 +263,8 @@ export function AdminOrdersComponents() {
         //   fetchOrders(page);
         // }}
       />
+        }
+     
     </div>
   );
 }

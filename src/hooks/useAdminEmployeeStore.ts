@@ -7,13 +7,13 @@ import { apiJson } from "@/lib/api";
 import type { Pagination } from "@/lib/api.types";
 
 import type {
-  Employee,
   EmployeePayload,
   EmployeeResponse,
 } from "@/lib/types";
+import { HnpUser } from "@/lib/hnp.types";
 
 type AdminEmployeeStore = {
-  employees: Employee[];
+  employees: HnpUser[];
 
   loading: boolean;
 
@@ -54,7 +54,7 @@ type AdminEmployeeStore = {
 
   toggleStatus: (
     id: string,
-    active: boolean
+    status: string
   ) => Promise<void>;
 };
 
@@ -252,7 +252,7 @@ export const useAdminEmployeeStore =
             method: "PATCH",
 
             body: JSON.stringify({
-              active: !active,
+              status: active,
             }),
           }
         );
