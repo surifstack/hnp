@@ -600,25 +600,26 @@ export function StepCheckout({
           {t("cart.back")}
         </Button>
 
-        <Button
-          onClick={placeOrder}
-          disabled={
-            missing.length > 0 ||
-            submitted ||
-            (Boolean(userId) && !checkoutPayload)
-          }
-          className="h-11 flex-1 rounded-2xl bg-lime-500 text-sm font-black uppercase text-black hover:bg-lime-400 disabled:opacity-50"
-        >
-          <ArrowRight className="mr-2 h-4 w-4" />
+       <Button
+        onClick={placeOrder}
+        disabled={
+          missing.length > 0 ||
+          submitted ||
+          (Boolean(userId) && !checkoutPayload) ||
+          user?.role !== "USER"
+        }
+        className="h-11 flex-1 rounded-2xl bg-lime-500 text-sm font-black uppercase text-black hover:bg-lime-400 disabled:opacity-50"
+      >
+        <ArrowRight className="mr-2 h-4 w-4" />
 
-          {submitted
-            ? t("cart.working")
-            : !userId
-              ? "Sign in to order"
-              : t(
-                "cart.submitOrder"
-              )}
-        </Button>
+        {submitted
+          ? t("cart.working")
+          : !userId
+            ? "Sign in to order"
+            : user?.role !== "USER"
+              ? "Only users can order"
+              : t("cart.submitOrder")}
+      </Button>
       </div>
     </div>
   );

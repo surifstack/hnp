@@ -30,7 +30,7 @@ export function ProofPage({ slug }: { slug: string }) {
   }
 
 
-    if (!user?.id) {
+    if (!user?.id || user.role !== 'USER') {
       return <SignIn search={{redirect :`/products/${slug}/proof`}} />
     }
 
