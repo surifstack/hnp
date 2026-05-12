@@ -4,11 +4,7 @@ import { LayoutDashboard, Package, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DashboardScaffold, type DashboardNavItem } from "@/components/dashboard/DashboardScaffold";
 
-type NavItem = {
-  to: "/dashboard" | "/dashboard/orders" | "/dashboard/profile";
-  label: string;
-  icon: React.ReactNode;
-};
+
 
 const NAV: DashboardNavItem[] = [
   {

@@ -177,7 +177,7 @@ export interface Pagination {
     totalPages: number;
     currentPage: number;
     limit: number;
-    offset: number,
+    offset?: number,
        
 }
 
@@ -244,3 +244,28 @@ export interface OrderDetail extends Order {
   totalItems: number;
   itemCount?: number;
 }
+
+export type UserDetail = {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  phoneCountryCode: string;
+  createdAt: string;
+  updatedAt: string;
+
+  orderStats?: {
+    totalOrders: number;
+    totalSpent: number;
+    completedOrders: number;
+    cancelledOrders: number;
+  };
+
+  lastOrder?: {
+    _id: string;
+    createdAt: string;
+    total: number;
+    currency: string;
+  };
+};
