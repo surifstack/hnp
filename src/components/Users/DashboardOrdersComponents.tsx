@@ -237,7 +237,7 @@ export function DashboardOrdersComponents({
         ))}
 
         {/* EMPTY */}
-         <PagePagination totalPages={pagination?.total ?? 0} currentPage={pagination?.currentPage ?? 1} />
+         <PagePagination totalPages={pagination?.totalPages ?? 0} currentPage={pagination?.currentPage ?? 1} />
         {!orders.length ? (
           <div className="rounded-3xl border border-slate-200 bg-white p-10 text-center shadow-sm">
 
