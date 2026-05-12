@@ -41,8 +41,16 @@ export function SignIn({
           return;
         }
 
-        router.navigate({ to: "/dashboard" });
-      })
+        if(data.role == 'EMPLOYEE'){
+          router.navigate({ to: "/employee/orders" });
+          return;
+        }
+        if(data.role == 'ADMIN'){
+          router.navigate({ to: "/admin/orders" });
+          return;
+        }
+          router.navigate({ to: "/dashboard" });
+        })
       .catch((err) => {
         setError(err instanceof Error ? err.message : "Unable to sign in");
       })

@@ -116,7 +116,8 @@
     "pricing": "Pricing",
     "shipping": "Shipping",
     "cta": "View full details →",
-    "commingSoon": "Coming Soon"
+    "commingSoon": "Coming Soon",
+    "productInfo" :"Product info"
   },
   "cart": {
     "emptyTitle": "Cart is empty",

@@ -37,9 +37,7 @@ export function OrderSuccessPage({ orderId }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [productsById, setProductsById] = useState<Record<string, Product>>(
-    {}
-  );
+ 
 
   const user = useSessionStore((s) => s.user);
 
@@ -75,7 +73,7 @@ export function OrderSuccessPage({ orderId }: Props) {
   /* ===================== PRODUCT IDS ===================== */
 
   
-
+console.log(order, 'order')
 
   /* ===================== STATES ===================== */
 
