@@ -48,7 +48,7 @@ export function SignIn({
           redirect.startsWith("/employee"))
       ) {
         router.navigate({
-          to: "/dashboard",
+          to: redirect,
         });
 
         return;
