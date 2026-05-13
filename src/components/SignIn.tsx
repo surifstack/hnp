@@ -84,6 +84,7 @@ export function SignIn({
     setError(err instanceof Error ? err.message : "Unable to sign in");
   })
   .finally(() => setSubmitting(false));
+}
 
   return (
     <SiteLayout>
