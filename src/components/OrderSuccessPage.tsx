@@ -163,7 +163,7 @@ console.log(order, 'order')
 
             <div className="flex gap-2">
               <Button asChild style={{ backgroundColor: accentColor }}>
-                <Link to="/dashboard/orders">
+                <Link to="/dashboard/orders?tab=current">
                   {t("orderSuccess.viewOrdersCta")}
                 </Link>
               </Button>

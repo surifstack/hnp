@@ -94,7 +94,7 @@ export function QrPage() {
         {!loading && !error && (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {(products ?? []).map((p, index) => {
-              const isAvailable = index === 0;
+            const isAvailable = p.isAvailable === true;
 
               return (
                 <div

@@ -42,7 +42,7 @@ export interface Product {
 
   // flexible (not locked to G/P/Y)
   skus?: Record<string, string>;
-
+  isAvailable?:boolean;
   productInfo?: ProductField[];
 
   documentation?: {

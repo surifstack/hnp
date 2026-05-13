@@ -51,7 +51,7 @@ export function Products() {
         {/* PRODUCTS */}
         <div className="space-y-4">
           {(products ?? []).map((p, index) => {
-            const isAvailable = index === 0;
+            const isAvailable = p.isAvailable === true;
 
             const CardContent = (
               <div
