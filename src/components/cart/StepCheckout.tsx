@@ -231,17 +231,17 @@ export function StepCheckout({
       ]
     );
 
-  const placeOrder = () => {
+    const placeOrder = () => {
     if (missing.length > 0) return;
 
     if (!userId) {
-      toast.error(
-        t("cart.signInRequired")
-      );
+      toast.error(t("cart.signInRequired"));
 
       router.navigate({
         to: "/signin",
-        search: { redirect: "/cart" },
+        search: {
+          redirect: "/cart",
+        },
       });
 
       return;
@@ -253,46 +253,107 @@ export function StepCheckout({
 
     void (async () => {
       try {
+        /* ---------------------------------------------------------------------- */
+        /*                               PREPARE ITEMS                            */
+        /* ---------------------------------------------------------------------- */
+
         const itemSnapshots = items.map((it) => ({
           clientItemId: it.orderId,
+
           productSlug: it.order.productSlug,
+
           quantity: it.order.setup.quantity,
+
           colorPms: it.order.setup.colorPms,
+
           languageCode: it.order.setup.languageCode,
+
           titleLines: it.order.text.titleLines,
+
           secondaryLines: it.order.text.secondaryLines,
+
           labelLines: it.order.text.labelLines,
+
           totals: estimateItemTotals(it),
         }));
 
+        /* ---------------------------------------------------------------------- */
+        /*                               REQUEST BODY                             */
+        /* ---------------------------------------------------------------------- */
+
         const payload: CheckoutRequest = {
           items: itemSnapshots,
+
           customer: checkoutPayload.customer,
+
           address: checkoutPayload.address,
+
           otpVerified: checkoutPayload.otpVerified,
+
           promoCode: checkoutPayload.promoCode,
         };
 
-        const resp = await apiJson<CheckoutResponse>("/orders/checkout", {
-          method: "POST",
-          body: JSON.stringify(payload),
-        });
-        const checkoutId = resp?.checkoutId;
-        
-       if(!checkoutId){
-        toast.error("Error in saving order")
-       }
-      toast.success("Order successfully completed");
-      clearCart();
-      resetFlow();
-      router.navigate({ to: "/order-success", search: { orderId: checkoutId } });
+        /* ---------------------------------------------------------------------- */
+        /*                               API CALL                                 */
+        /* ---------------------------------------------------------------------- */
+
+        const resp = await apiJson<CheckoutResponse>(
+          "/orders/checkout",
+          {
+            method: "POST",
+
+            body: JSON.stringify(payload),
+          },
+        );
+
+        /* ---------------------------------------------------------------------- */
+        /*                          VALIDATE RESPONSE                             */
+        /* ---------------------------------------------------------------------- */
+
+        if (!resp?.checkoutId) {
+          toast.error("Unable to create order");
+
+          return;
+        }
+
+        if (!resp?.payment?.url) {
+          toast.error("Unable to initialize payment");
+
+          return;
+        }
+
+        /* ---------------------------------------------------------------------- */
+        /*                            SUCCESS MESSAGE                             */
+        /* ---------------------------------------------------------------------- */
+
+        toast.success("Redirecting to secure payment...");
+
+        /* ---------------------------------------------------------------------- */
+        /*                     OPTIONAL LOCAL CLEANUP FIRST                       */
+        /* ---------------------------------------------------------------------- */
+
+        clearCart();
+
+        resetFlow();
+
+        /* ---------------------------------------------------------------------- */
+        /*                           STRIPE REDIRECT                              */
+        /* ---------------------------------------------------------------------- */
+
+        window.location.href = resp.payment.url;
+
+        /* ---------------------------------------------------------------------- */
+        /*                       DO NOT ROUTE TO SUCCESS PAGE                     */
+        /* ---------------------------------------------------------------------- */
+        /* Stripe automatically redirects to:
+          /order-success?session_id=xxx&orderId=xxx
+        */
+
       } catch (e) {
         toast.error(
           e instanceof Error
             ? e.message
-            : t(
-                "cart.checkoutFailed"
-              )
+            : t("cart.checkoutFailed"),
         );
       } finally {
         setSubmitted(false);

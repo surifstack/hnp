@@ -35,81 +35,55 @@ export function SignIn({
     setError(null);
 
     void login(draft.email, draft.password, otpCode)
-     .then((data) => {
-        // custom redirect from protected route
-        if (search.redirect) {
-          // prevent redirect loops
-          const redirect = search.redirect;
+  .then((data) => {
+    // custom redirect from protected route
+    if (search.redirect) {
+      const redirect = search.redirect;
 
-          // EMPLOYEE trying to access admin
-          if (
-            data.role === "EMPLOYEE" &&
-            redirect.startsWith("/admin")
-          ) {
-            router.navigate({
-              to: "/employee/orders",
-            });
-
-            return;
-          }
-
-          // USER trying to access admin/employee
-          if (
-            data.role === "USER" &&
-            (redirect.startsWith("/admin") ||
-              redirect.startsWith("/employee"))
-          ) {
-            router.navigate({
-              to: "/dashboard",
-            });
-
-            return;
-          }
-
-          // ADMIN trying to access employee
-          if (
-            data.role === "ADMIN" &&
-            redirect.startsWith("/employee")
-          ) {
-            router.navigate({
-              to: "/admin/orders",
-            });
-
-            return;
-          }
-
-          // safe redirect
-          window.location.assign(redirect);
-
-          return;
-        }
-
-        // default redirects
-        if (data.role === "EMPLOYEE") {
-          router.navigate({
-            to: "/employee/orders",
-          });
-
-          return;
-        }
-
-        if (data.role === "ADMIN") {
-          router.navigate({
-            to: "/admin/orders",
-          });
-
-          return;
-        }
-
+      // ONLY restrict normal USER
+      if (
+        data.role === "USER" &&
+        (redirect.startsWith("/admin") ||
+          redirect.startsWith("/employee"))
+      ) {
         router.navigate({
           to: "/dashboard",
         });
-      })
-      .catch((err) => {
-        setError(err instanceof Error ? err.message : "Unable to sign in");
-      })
-      .finally(() => setSubmitting(false));
-  };
+
+        return;
+      }
+
+      // ADMIN + EMPLOYEE allowed
+      window.location.assign(redirect);
+
+      return;
+    }
+
+    // default redirects
+    if (data.role === "EMPLOYEE") {
+      router.navigate({
+        to: "/employee/orders",
+      });
+
+      return;
+    }
+
+    if (data.role === "ADMIN") {
+      router.navigate({
+        to: "/admin/orders",
+      });
+
+      return;
+    }
+
+    router.navigate({
+      to: "/dashboard",
+    });
+  })
+  .catch((err) => {
+    setError(err instanceof Error ? err.message : "Unable to sign in");
+  })
+  .finally(() => setSubmitting(false));
 
   return (
     <SiteLayout>

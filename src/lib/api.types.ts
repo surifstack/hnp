@@ -159,11 +159,25 @@ export interface MoneyTotals {
 }
 
 export interface CheckoutResponse {
+  success: boolean;
+
   acceptedAt: string;
+
   itemCount: number;
+
   orderIds: string[];
-  totals: MoneyTotals;
+
   checkoutId: string;
+
+  status: string;
+
+  totals: MoneyTotals;
+
+  payment: {
+    sessionId: string;
+
+    url: string | null;
+  };
 }
 
 export type OverflowMap = {

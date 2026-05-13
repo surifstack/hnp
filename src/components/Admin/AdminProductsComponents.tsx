@@ -29,10 +29,7 @@ export function AdminProductsComponents() {
       (s) => s.error
     );
 
-  const hiddenById =
-    useAdminProductsStore(
-      (s) => s.hiddenById
-    );
+  
 
   const fetchProducts =
     useAdminProductsStore(
@@ -116,14 +113,11 @@ export function AdminProductsComponents() {
             <ProductCard
               key={product.id}
               product={product}
-              hidden={
-                hiddenById[
-                  product.id
-                ]
-              }
+              hidden={product.isAvailable}
               onToggle={() =>
                 toggleHidden(
-                  product.id
+                  product.id,
+                  !product.isAvailable
                 )
               }
             />

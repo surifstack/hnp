@@ -53,7 +53,7 @@ export function ProductCard({
     product.skus ?? {}
   );
 
-  const visible = !hidden;
+  const visible = hidden;
 
   return (
     <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl">

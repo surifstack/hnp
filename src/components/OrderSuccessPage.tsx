@@ -21,11 +21,12 @@ import { useCatalogStore } from "@/hooks/useCatalogStore";
 
 type Props = {
   orderId: string;
+  sessionId:string;
 };
 
 /* ===================== COMPONENT ===================== */
 
-export function OrderSuccessPage({ orderId }: Props) {
+export function OrderSuccessPage({ orderId , sessionId }: Props) {
   const accentColor = getComputedStyle(document.documentElement)
     .getPropertyValue("--neon-green")
     .trim();
@@ -54,7 +55,7 @@ export function OrderSuccessPage({ orderId }: Props) {
         setError(null);
 
         const res = await apiJson<OrderDetail>(
-          `/orders/checkout/${orderId}`
+          `/orders/checkout/${orderId}?sessionId=${sessionId}`
         );
 
         if (!cancelled) setOrder(res);
@@ -68,7 +69,7 @@ export function OrderSuccessPage({ orderId }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [orderId]);
+  }, [orderId ,sessionId]);
 
   /* ===================== PRODUCT IDS ===================== */
 
@@ -163,7 +164,7 @@ console.log(order, 'order')
 
             <div className="flex gap-2">
               <Button asChild style={{ backgroundColor: accentColor }}>
-                <Link to="/dashboard/orders?tab=current">
+                <Link to="/dashboard/orders?tab=success">
                   {t("orderSuccess.viewOrdersCta")}
                 </Link>
               </Button>

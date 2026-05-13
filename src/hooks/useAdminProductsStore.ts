@@ -1,36 +1,120 @@
 import { create } from "zustand";
+
 import { apiJson } from "@/lib/api";
+
 import type { Product } from "@/lib/api.types";
 
 interface AdminProductsState {
-  products: Product[] | null;
+  products: Product[];
+
   loading: boolean;
+
   error: string | null;
-  hiddenById: Record<string, boolean | undefined>;
+
   fetchProducts: () => Promise<void>;
-  toggleHidden: (productId: string) => void;
+
+  toggleHidden: (
+    productId: string,
+    isAvailable: boolean,
+  ) => Promise<void>;
 }
 
-export const useAdminProductsStore = create<AdminProductsState>((set) => ({
-  products: null,
-  loading: false,
-  error: null,
-  hiddenById: {},
+export const useAdminProductsStore =
+  create<AdminProductsState>((set, get) => ({
 
-  fetchProducts: async () => {
-    set({ loading: true, error: null });
-    try {
-      const products = await apiJson<Product[]>("/products");
-      set({ products, loading: false });
-    } catch (e) {
+    products: [],
+
+    loading: false,
+
+    error: null,
+
+    /* ------------------------------------------------------------------ */
+    /*                           FETCH PRODUCTS                           */
+    /* ------------------------------------------------------------------ */
+
+    fetchProducts: async () => {
+
+      if (get().loading) return;
+
       set({
-        loading: false,
-        error: e instanceof Error ? e.message : "Failed to load products",
-        products: null,
+        loading: true,
+        error: null,
       });
-    }
-  },
 
-  toggleHidden: (productId) =>
-    set((s) => ({ hiddenById: { ...s.hiddenById, [productId]: !s.hiddenById[productId] } })),
-}));
+      try {
+
+        const products =
+          await apiJson<Product[]>(
+            "/products",
+          );
+
+        set({
+          products,
+          loading: false,
+        });
+
+      } catch (e) {
+
+        set({
+          loading: false,
+
+          error:
+            e instanceof Error
+              ? e.message
+              : "Failed to load products",
+
+          products: [],
+        });
+      }
+    },
+
+    /* ------------------------------------------------------------------ */
+    /*                         HIDE / UNHIDE PRODUCT                      */
+    /* ------------------------------------------------------------------ */
+
+    toggleHidden: async (
+      productId,
+      isAvailable,
+    ) => {
+
+      try {
+
+        /* ---------------- API UPDATE ---------------- */
+
+        await apiJson(
+          `/products/${productId}/status`,
+          {
+            method: "PATCH",
+
+            body: JSON.stringify({
+              isAvailable,
+            }),
+          },
+        );
+
+        /* ---------------- LOCAL UPDATE ---------------- */
+
+        set((state) => ({
+          products: state.products.map(
+            (product) =>
+              product.id === productId
+                ? {
+                    ...product,
+
+                    isAvailable,
+                  }
+                : product,
+          ),
+        }));
+
+      } catch (e) {
+
+        set({
+          error:
+            e instanceof Error
+              ? e.message
+              : "Failed to update status",
+        });
+      }
+    },
+  }));
