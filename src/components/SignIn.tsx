@@ -36,7 +36,6 @@ export function SignIn({
 
     void login(draft.email, draft.password, otpCode)
   .then((data) => {
-        console.log(data.role)
 
     // custom redirect from protected route
     if (search.redirect) {
@@ -57,7 +56,6 @@ export function SignIn({
 
      
     }
-    console.log(data.role)
     // default redirects
     if (data.role === "EMPLOYEE") {
       router.navigate({
