@@ -197,7 +197,7 @@ function SkuCard({
         {label}
       </div>
 
-      <div className="mt-1 font-mono text-sm font-bold text-black">
+      <div className="mt-1 text-sm font-bold text-black">
         {value}
       </div>
     </div>

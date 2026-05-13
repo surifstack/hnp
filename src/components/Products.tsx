@@ -377,7 +377,7 @@ function SkuPill({
         {label}
       </div>
 
-      <div className="mt-1 text-[11px] font-mono font-bold text-black">
+      <div className="mt-1 text-[11px]  font-bold text-black">
         {value}
       </div>
     </div>

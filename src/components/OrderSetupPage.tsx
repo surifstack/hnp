@@ -179,7 +179,7 @@ export function OrderSetupPage({ slug }: { slug: string }) {
               {selectedSku && (
                 <span className="rounded-full bg-gray-100 px-3 py-1 text-[11px] font-medium text-gray-600">
                   SKU:
-                  <span className="ml-1 font-mono text-black">
+                  <span className="ml-1  text-black">
                     {selectedSku}
                   </span>
                 </span>

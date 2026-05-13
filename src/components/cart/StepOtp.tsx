@@ -117,7 +117,7 @@ export function StepOtp({
 
         <AlertDescription className="text-lime-700">
           {t("otp.demoUse")}{" "}
-          <span className="rounded-md bg-white px-2 py-1 font-mono font-black text-black">
+          <span className="rounded-md bg-white px-2 py-1 font-black text-black">
             {DUMMY_OTP}
           </span>
         </AlertDescription>
