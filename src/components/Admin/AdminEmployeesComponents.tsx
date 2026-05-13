@@ -23,10 +23,12 @@ import { useAdminEmployeeStore } from "@/hooks/useAdminEmployeeStore";
 import { PagePagination } from "../PagePagination";
 
 import {
+  DeleteModal,
   EmployeeCard,
   EmployeesSkeleton,
 } from "../Helpers/EmployeeHelper";
 import { EmployeeDialog } from "./EmployeeDialog";
+import { HNPUserStatus } from "@/lib/hnp.types";
 
 export function AdminEmployeesComponents() {
 
@@ -47,9 +49,22 @@ export function AdminEmployeesComponents() {
       (s) => s.loading
     );
 
+   const submitting =
+    useAdminEmployeeStore(
+      (s) => s.submitting
+    );
+  const setFormError =
+    useAdminEmployeeStore(
+      (s) => s.setFormError
+    );
+
   const error =
     useAdminEmployeeStore(
       (s) => s.error
+    );
+  const formError = 
+    useAdminEmployeeStore(
+      (s) => s.formError
     );
 
   const search =
@@ -82,15 +97,9 @@ export function AdminEmployeesComponents() {
       (s) => s.setStatus
     );
 
-  const deleteEmployee =
-    useAdminEmployeeStore(
-      (s) => s.deleteEmployee
-    );
 
-  const toggleStatus =
-    useAdminEmployeeStore(
-      (s) => s.toggleStatus
-    );
+
+ 
 
   useEffect(() => {
     fetchEmployees(1);
@@ -149,37 +158,67 @@ export function AdminEmployeesComponents() {
             </div>
 
             {/* FILTER */}
-            <Select
-              value={status}
-              onValueChange={setStatus}
-            >
-              <SelectTrigger className="h-11 w-[150px] rounded-2xl border-slate-200">
-                <SelectValue />
-              </SelectTrigger>
+           <Select
+            value={status}
+            onValueChange={setStatus}
+          >
+            <SelectTrigger className="h-11 w-[150px] rounded-2xl border-slate-200">
+              <SelectValue placeholder="Select status" />
+            </SelectTrigger>
 
-              <SelectContent>
-                <SelectItem value="all">
-                  All
-                </SelectItem>
+            <SelectContent>
 
-                <SelectItem value="active">
-                  Active
-                </SelectItem>
+              <SelectItem value="*">
+                All
+              </SelectItem>
 
-                <SelectItem value="inactive">
-                  Inactive
+              {HNPUserStatus.map((item) => (
+                <SelectItem
+                  key={item}
+                  value={item}
+                >
+                  {item.charAt(0) + item.slice(1).toLowerCase()}
                 </SelectItem>
-              </SelectContent>
-            </Select>
+              ))}
+
+            </SelectContent>
+          </Select>
+
+          <Button
+            type="button"
+            className="h-11 rounded-2xl"
+            onClick={() => {
+
+              // reset form first
+              setForm({
+                firstName: "",
+                lastName: "",
+                email: "",
+                phoneNumber: "",
+                phoneCountryCode: "+1",
+              });
+
+              // clear old error
+              setFormError("");
+
+              // open dialog
+              setOpenAdd(true);
+            }}
+          >
+            <Plus className="mr-2 h-4 w-4" />
+
+            Add Employee
+          </Button>
 
             {/* ADD EMPLOYEE */}
            <EmployeeDialog
             open={openAdd}
             setOpen={setOpenAdd}
             mode="add"
+            error={formError}
             form={form}
             setForm={setForm}
-            loading={loading}
+            loading={submitting}
             onSubmit={createEmployee}
           />
           </div>
@@ -188,12 +227,11 @@ export function AdminEmployeesComponents() {
 
       {/* GRID */}
       <section className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <DeleteModal />
         {employees.map((employee) => (
           <EmployeeCard
             key={employee._id}
             employee={employee}
-            onDelete={deleteEmployee}
-            onToggle={toggleStatus}
           />
         ))}
       </section>

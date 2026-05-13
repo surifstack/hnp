@@ -22,11 +22,25 @@ import { COUNTRY_OPTIONS } from "@/config/languages";
 
 type EmployeeDialogProps = {
   open: boolean;
+
   setOpen: (v: boolean) => void;
+
   mode: "add" | "edit";
+
   form: EmployeePayload;
-  setForm: React.Dispatch<React.SetStateAction<EmployeePayload>>;
+
+  setForm: (
+    value:
+      | Partial<EmployeePayload>
+      | ((
+          prev: EmployeePayload
+        ) => EmployeePayload)
+  ) => void;
+
   loading: boolean;
+
+  error?: string;
+
   onSubmit: () => void;
 };
 
@@ -37,9 +51,12 @@ export function EmployeeDialog({
   form,
   setForm,
   loading,
+  error,
   onSubmit,
 }: EmployeeDialogProps) {
-  const isEdit = mode === "edit";
+
+  const isEdit =
+    mode === "edit";
 
   const isDisabled =
     !form.firstName ||
@@ -48,14 +65,29 @@ export function EmployeeDialog({
     !form.phoneNumber;
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="rounded-3xl border-slate-200 sm:max-w-lg overflow-hidden p-0">
+    <Dialog
+      open={open}
+      onOpenChange={setOpen}
+    >
+      <DialogContent
+        className="
+          rounded-3xl
+          border-slate-200
+          sm:max-w-lg
+          overflow-hidden
+          p-0
+        "
+      >
 
         {/* HEADER */}
         <div className="border-b border-slate-200 bg-white px-6 py-5">
+
           <DialogHeader>
+
             <DialogTitle className="text-xl font-bold text-slate-900">
-              {isEdit ? "Edit Employee" : "Add Employee"}
+              {isEdit
+                ? "Edit Employee"
+                : "Add Employee"}
             </DialogTitle>
 
             <DialogDescription className="text-slate-500">
@@ -63,29 +95,56 @@ export function EmployeeDialog({
                 ? "Update employee details and contact information"
                 : "Create a new employee for your team"}
             </DialogDescription>
+
           </DialogHeader>
         </div>
 
         {/* BODY */}
-        <div className="px-6 py-6 space-y-6">
+        <div className="space-y-6 px-6 py-6">
+
+          {/* ERROR */}
+          {error && (
+            <div
+              className="
+                rounded-2xl
+                border
+                border-red-200
+                bg-red-50
+                px-4
+                py-3
+                text-sm
+                text-red-500
+              "
+            >
+              {error}
+            </div>
+          )}
 
           {/* NAME */}
           <div className="space-y-2">
+
             <p className="text-xs font-semibold uppercase text-slate-500">
               Personal Information
             </p>
 
             <div className="grid grid-cols-2 gap-3">
+
               <Input
                 placeholder="First Name"
                 value={form.firstName}
                 onChange={(e) =>
                   setForm((p) => ({
                     ...p,
-                    firstName: e.target.value,
+                    firstName:
+                      e.target.value,
                   }))
                 }
-                className="h-11 rounded-2xl border-slate-200 bg-white focus:ring-[var(--neon-green)]"
+                className="
+                  h-11
+                  rounded-2xl
+                  border-slate-200
+                  bg-white
+                "
               />
 
               <Input
@@ -94,16 +153,24 @@ export function EmployeeDialog({
                 onChange={(e) =>
                   setForm((p) => ({
                     ...p,
-                    lastName: e.target.value,
+                    lastName:
+                      e.target.value,
                   }))
                 }
-                className="h-11 rounded-2xl border-slate-200 bg-white focus:ring-[var(--neon-green)]"
+                className="
+                  h-11
+                  rounded-2xl
+                  border-slate-200
+                  bg-white
+                "
               />
+
             </div>
           </div>
 
           {/* EMAIL */}
           <div className="space-y-2">
+
             <p className="text-xs font-semibold uppercase text-slate-500">
               Contact
             </p>
@@ -115,67 +182,141 @@ export function EmployeeDialog({
               onChange={(e) =>
                 setForm((p) => ({
                   ...p,
-                  email: e.target.value,
+                  email:
+                    e.target.value,
                 }))
               }
-              className="h-11 rounded-2xl border-slate-200 bg-white focus:ring-[var(--neon-green)]"
+              className="
+                h-11
+                rounded-2xl
+                border-slate-200
+                bg-white
+              "
             />
           </div>
 
           {/* PHONE */}
           <div className="space-y-2">
+
             <p className="text-xs font-semibold uppercase text-slate-500">
               Phone
             </p>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-4 gap-3">
 
+              {/* COUNTRY CODE */}
               <Select
-                value={form.phoneCountryCode}
+                value={
+                  form.phoneCountryCode ||
+                  "+1"
+                }
                 onValueChange={(v) =>
                   setForm((p) => ({
                     ...p,
-                    phoneCountryCode: v,
+                    phoneCountryCode:
+                      v,
                   }))
                 }
               >
-                <SelectTrigger className="h-11 rounded-2xl border-slate-200">
-                  <SelectValue placeholder="Code" />
+
+                <SelectTrigger
+                  className="
+                    h-11
+                    rounded-2xl
+                    border-slate-200
+                  "
+                >
+                  <SelectValue>
+                    {
+                      COUNTRY_OPTIONS.find(
+                        (c) =>
+                          c.dialCode ===
+                          (
+                            form.phoneCountryCode ||
+                            "+1"
+                          )
+                      )?.dialCode
+                    }
+                  </SelectValue>
                 </SelectTrigger>
 
                 <SelectContent>
-                  {COUNTRY_OPTIONS.map((c) => (
-                    <SelectItem key={c.dialCode} value={c.dialCode}>
-                      {c.flag} {c.dialCode}
-                    </SelectItem>
-                  ))}
+
+                  {COUNTRY_OPTIONS.map(
+                    (c) => (
+                      <SelectItem
+                        key={`${c.code}-${c.dialCode}`}
+                        value={
+                          c.dialCode
+                        }
+                      >
+
+                        <div className="flex items-center gap-2">
+
+                          <span>
+                            {c.flag}
+                          </span>
+
+                          <span>
+                            {c.name}
+                          </span>
+
+                          <span className="text-slate-400">
+                            {
+                              c.dialCode
+                            }
+                          </span>
+
+                        </div>
+
+                      </SelectItem>
+                    )
+                  )}
+
                 </SelectContent>
               </Select>
 
+              {/* PHONE NUMBER */}
               <Input
                 placeholder="Phone number"
-                value={form.phoneNumber}
+                value={
+                  form.phoneNumber
+                }
                 onChange={(e) =>
                   setForm((p) => ({
                     ...p,
-                    phoneNumber: e.target.value,
+                    phoneNumber:
+                      e.target.value,
                   }))
                 }
-                className="col-span-2 h-11 rounded-2xl border-slate-200"
+                className="
+                  col-span-3
+                  h-11
+                  rounded-2xl
+                  border-slate-200
+                "
               />
+
             </div>
           </div>
 
           {/* BUTTON */}
-          <div className="pt-2 space-y-2">
+          <div className="space-y-2 pt-2">
+
             <Button
               onClick={onSubmit}
-              disabled={loading || isDisabled}
+              disabled={
+                loading ||
+                isDisabled
+              }
               className="
-                h-11 w-full rounded-2xl
-                bg-[var(--neon-green)] text-black
-                hover:bg-[var(--neon-green)]/90
+                h-11
+                w-full
+                rounded-2xl
+                bg-[var(--neon-green)]
                 font-bold
+                text-black
+                hover:bg-[var(--neon-green)]/90
                 disabled:opacity-50
               "
             >
@@ -190,9 +331,11 @@ export function EmployeeDialog({
 
             {isDisabled && (
               <p className="text-center text-xs text-slate-400">
-                Please fill all required fields
+                Please fill all
+                required fields
               </p>
             )}
+
           </div>
         </div>
       </DialogContent>

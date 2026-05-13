@@ -11,7 +11,13 @@ import {
   Briefcase,
 } from "lucide-react";
 
-import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 import { Button } from "@/components/ui/button";
 
@@ -22,61 +28,121 @@ import { CustomerRow } from "./UserHelpers";
 
 type Props = {
   employee: HnpUser;
-
-  onDelete: (id: string) => void;
-
-  onToggle: (
-    id: string,
-    status: UserStatus
-  ) => void;
-
-  onUpdated?: () => void;
 };
-
 
 
 
 export function EmployeeCard({
   employee,
-  onDelete,
-  onToggle,
 }: Props) {
-  const [openEdit, setOpenEdit] = useState(false);
 
-  const isActive = employee.status === "ACTIVE";
+ const form =
+  useAdminEmployeeStore(
+    (s) => s.form
+  );
 
-  const joinedDate = new Date(employee.createdAt);
+  const openEdit =
+  useAdminEmployeeStore(
+    (s) => s.openEdit
+  );
+
+  const editingId =
+  useAdminEmployeeStore(
+    (s) => s.editingId
+  );
+
+   const setEditingId =
+  useAdminEmployeeStore(
+    (s) => s.setEditingId
+  );
+  
+  const setOpenEdit =
+  useAdminEmployeeStore(
+    (s) => s.setOpenEdit
+  );
+const setForm =
+  useAdminEmployeeStore(
+    (s) => s.setForm
+  );
+
+const updateEmployee =
+  useAdminEmployeeStore(
+    (s) => s.updateEmployee
+  );
+
+const submitting =
+  useAdminEmployeeStore(
+    (s) => s.submitting
+  );
+const setDeleteId =
+  useAdminEmployeeStore(
+    (s) => s.setDeleteId
+  );
+const setDeleteConfirmOpen =
+  useAdminEmployeeStore(
+    (s) => s.setDeleteConfirmOpen
+  );
+const formError =
+  useAdminEmployeeStore(
+    (s) => s.formError
+  );
+
+  const isActive =
+    employee.status === "ACTIVE";
+
+  const joinedDate =
+    new Date(employee.createdAt);
+
+  const toggleStatus =
+      useAdminEmployeeStore(
+        (s) => s.toggleStatus
+      );
 
   return (
-    <div className="
-      overflow-hidden rounded-3xl border border-slate-200
-      bg-white shadow-sm transition-all duration-300
-      hover:-translate-y-1 hover:shadow-xl
-    ">
+    <div
+      className="
+        overflow-hidden
+        rounded-3xl
+        border
+        border-slate-200
+        bg-white
+        shadow-sm
+      "
+    >
 
-      {/* NEON TOP BAR */}
       <div className="h-1 w-full bg-[var(--neon-green)]" />
 
-      <div className="p-6 space-y-5">
+      <div className="space-y-5 p-6">
 
         {/* HEADER */}
         <div className="flex items-start justify-between gap-4">
 
           <div>
+
             <h3 className="text-lg font-bold text-slate-900">
-              {employee.firstName} {employee.lastName}
+              {employee.firstName}{" "}
+              {employee.lastName}
             </h3>
 
             <div className="mt-2 flex items-center gap-2 text-sm text-slate-500">
+
               <Calendar className="h-4 w-4" />
-              Joined {joinedDate.toLocaleDateString()}
+
+              Joined{" "}
+              {joinedDate.toLocaleDateString()}
             </div>
+
           </div>
 
-          {/* STATUS */}
           <div
             className={`
-              rounded-full border px-3 py-1 text-xs font-bold uppercase
+              rounded-full
+              border
+              px-3
+              py-1
+              text-xs
+              font-bold
+              uppercase
               ${
                 isActive
                   ? "border-emerald-200 bg-emerald-100 text-emerald-700"
@@ -86,43 +152,56 @@ export function EmployeeCard({
           >
             {employee.status}
           </div>
+
         </div>
 
-        {/* CONTACT INFO */}
-        <div className="space-y-3 rounded-2xl bg-slate-50 p-4 border border-slate-100">
+        {/* CONTACT */}
+        <div className="space-y-3 rounded-2xl border border-slate-100 bg-slate-50 p-4">
 
           <CustomerRow
-            icon={<Mail className="h-4 w-4" />}
+            icon={
+              <Mail className="h-4 w-4" />
+            }
             value={employee.email}
           />
 
           <CustomerRow
-            icon={<Phone className="h-4 w-4" />}
+            icon={
+              <Phone className="h-4 w-4" />
+            }
             value={`${employee.phoneCountryCode} ${employee.phoneNumber}`}
           />
 
-          {employee.role && (
-            <CustomerRow
-              icon={<Briefcase className="h-4 w-4" />}
-              value={employee.role}
-            />
-          )}
         </div>
-
-        {/* STATS */}
-        <div className="grid grid-cols-2 gap-3">
-
-        
-        </div>
-
-      
 
         {/* ACTIONS */}
         <div className="flex justify-end gap-2 pt-2">
 
           <Button
             variant="outline"
-            onClick={() => setOpenEdit(true)}
+             onClick={() => {
+                // fill zustand form
+                setForm({
+                  firstName:
+                    employee.firstName || "",
+
+                  lastName:
+                    employee.lastName || "",
+
+                  email:
+                    employee.email || "",
+
+                  phoneCountryCode:
+                    employee.phoneCountryCode ||
+                    "+1",
+
+                  phoneNumber:
+                    employee.phoneNumber || "",
+                });
+                setEditingId(employee._id); // ✅ important
+
+                setOpenEdit(true);
+              }}
             className="rounded-xl"
           >
             Edit
@@ -130,39 +209,149 @@ export function EmployeeCard({
 
           <Button
             variant="outline"
-            onClick={() => onToggle(employee._id, employee.status)}
+            onClick={() =>
+              toggleStatus(
+                employee._id,
+                employee.status
+              )
+            }
             className="rounded-xl"
           >
-            {isActive ? "Disable" : "Enable"}
+            {isActive
+              ? "Disable"
+              : "Enable"}
           </Button>
 
           <Button
-            onClick={() => onDelete(employee._id)}
-            className="rounded-xl bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
+            onClick={() =>{
+                 setDeleteId(employee._id);
+        setDeleteConfirmOpen(true);
+            }
+            }
+            className="
+              rounded-xl
+              border
+              border-red-200
+              bg-red-50
+              text-red-600
+            "
           >
             Delete
           </Button>
+
         </div>
       </div>
 
-      {/* EDIT MODAL */}
+
+
+      {/* EDIT DIALOG */}
       <EmployeeDialog
         open={openEdit}
         setOpen={setOpenEdit}
         mode="edit"
-        form={{
-          firstName: employee.firstName || "",
-          lastName: employee.lastName || "",
-          email: employee.email || "",
-          phoneCountryCode: employee.phoneCountryCode || "",
-          phoneNumber: employee.phoneNumber || "",
+        form={form}
+        setForm={setForm}
+        loading={submitting}
+        error={formError}
+        onSubmit={async () => {
+
+          if (!editingId) return;
+
+            await updateEmployee(
+              editingId,
+              form
+            );
+
+            const latestError =
+              useAdminEmployeeStore.getState()
+                .formError;
+
+            if (!latestError) {
+              setOpenEdit(false);
+              setEditingId(null); // reset
+            }
         }}
-        setForm={() => {}}
-        loading={false}
-        onSubmit={() => {}}
       />
     </div>
   );
+}
+
+
+export function DeleteModal(){
+
+  
+
+  const deleteConfirmOpen =
+  useAdminEmployeeStore(
+    (s) => s.deleteConfirmOpen
+  );
+
+const setDeleteConfirmOpen =
+  useAdminEmployeeStore(
+    (s) => s.setDeleteConfirmOpen
+  );
+  const deleteEmployee =
+  useAdminEmployeeStore(
+    (s) => s.deleteEmployee
+  );
+const deleteId =
+  useAdminEmployeeStore(
+    (s) => s.deleteId
+  );
+
+  const setDeleteId =
+  useAdminEmployeeStore(
+    (s) => s.setDeleteId
+  );
+  return  (
+
+      <Dialog
+  open={deleteConfirmOpen}
+  onOpenChange={setDeleteConfirmOpen}
+>
+  <DialogContent className="rounded-2xl">
+
+    <DialogHeader>
+      <DialogTitle>
+        Delete Employee?
+      </DialogTitle>
+    </DialogHeader>
+
+    <p className="text-sm text-slate-500">
+      This action cannot be undone.
+    </p>
+
+    <div className="flex justify-end gap-2 pt-4">
+
+      <Button
+        variant="outline"
+        onClick={() =>
+          setDeleteConfirmOpen(false)
+        }
+      >
+        Cancel
+      </Button>
+
+      <Button
+        className="bg-red-500 text-white"
+        onClick={async () => {
+
+          if (!deleteId) return;
+
+          await deleteEmployee(deleteId);
+
+          setDeleteConfirmOpen(false);
+          setDeleteId("");
+        }}
+      >
+        Delete
+      </Button>
+
+    </div>
+
+  </DialogContent>
+</Dialog>
+  )
 }
 
 /* ================= INFO CARD ================= */

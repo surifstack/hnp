@@ -20,6 +20,7 @@ import { apiJson } from "@/lib/api";
 import type { Pagination ,UserDetail} from "@/lib/api.types";
 import { PagePagination } from "../PagePagination";
 import { UserCard, UsersSkeleton } from "../Helpers/UserHelpers";
+import { HNPUserStatus } from "@/lib/hnp.types";
 
 
 
@@ -227,36 +228,40 @@ export function AdminUsersComponents() {
             </div>
 
             {/* FILTER */}
-            <Select
-              value={currentTab}
-              onValueChange={(value) => {
-                navigate({
-                  search: {
-                    ...search,
-                    tab: value,
-                    page: 1,
-                  },
-                });
-              }}
-            >
-              <SelectTrigger className="h-11 w-[160px] rounded-2xl">
-                <SelectValue />
-              </SelectTrigger>
+          <Select
+            value={currentTab}
+            onValueChange={(value) => {
+              navigate({
+                search: {
+                  ...search,
+                  tab: value,
+                  page: 1,
+                },
+              });
+            }}
+          >
+            <SelectTrigger className="h-11 w-[160px] rounded-2xl">
+              <SelectValue />
+            </SelectTrigger>
 
-              <SelectContent className="rounded-2xl">
-                <SelectItem value="all">
-                  All Users
-                </SelectItem>
+            <SelectContent className="rounded-2xl">
 
-                <SelectItem value="active">
-                  Active Users
-                </SelectItem>
+              <SelectItem value="all">
+                All Users
+              </SelectItem>
 
-                <SelectItem value="blocked">
-                  Blocked Users
+              {HNPUserStatus.map((status) => (
+                <SelectItem
+                  key={status}
+                  value={status}
+                >
+                  {status.charAt(0) +
+                    status.slice(1).toLowerCase()}
                 </SelectItem>
-              </SelectContent>
-            </Select>
+              ))}
+
+            </SelectContent>
+          </Select>
           </div>
         </div>
       </section>

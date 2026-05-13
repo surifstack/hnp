@@ -16,10 +16,15 @@ export type UserRole =
   | "EMPLOYEE"
   | "ADMIN";
 
-export type UserStatus =
-  | "ACTIVE"
-  | "BLOCKED";
+export const HNPUserStatus = [
+  "ACTIVE",
+  "INACTIVE",
+  "BLOCKED",
+] as const;
 
+export type UserStatus =
+  typeof HNPUserStatus[number];
+  
 export interface HnpUser {
   id: string;
   _id:string;
