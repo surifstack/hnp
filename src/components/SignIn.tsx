@@ -74,7 +74,7 @@ export function SignIn({
     }
 
     router.navigate({
-      to: "/dashboard",
+      to: redirect ? redirect : "/dashboard",
     });
   })
   .catch((err) => {
