@@ -16,6 +16,7 @@ import { NoActiveOrder } from "./NoActiveOrder";
 import { StepCard } from "./StepCard";
 import { FlyerPreview } from "./FlyerPreview";
 import { useOverflowStore } from "@/hooks/useOverflowStore";
+import { useSessionStore } from "@/hooks/useSessionStore";
 
 export function TextApprovalFlowPage({ slug }: { slug: string }) {
   const router = useRouter();
@@ -30,6 +31,7 @@ export function TextApprovalFlowPage({ slug }: { slug: string }) {
   const resetApprovals = useHnpStore((s) => s.order.resetApprovals);
   const draft = useHnpStore((s) => s.order.draft);
   const setDraft = useHnpStore((s) => s.order.setDraft);
+  const user = useSessionStore((s) => s.user);
 
   const approveTitle = useHnpStore((s) => s.order.approveTitle);
   const approveSecondary = useHnpStore((s) => s.order.approveSecondary);
@@ -269,6 +271,7 @@ const hasOverflow =overflowMap?.title || overflowMap?.secondary ||overflowMap?.l
               className="h-11 flex-1 rounded-2xl bg-lime-500 text-sm font-black uppercase text-black transition-all hover:bg-lime-400"
               disabled={!allApproved || loading || hasOverflow}
               onClick={async () => {
+                
                 if (!finalApproved) {
                   await approveAll();
                   await textAllApproved(true);

@@ -37,26 +37,38 @@ export function SignIn({
     void login(draft.email, draft.password, otpCode)
   .then((data) => {
 
-    // custom redirect from protected route
-    if (search.redirect) {
-      const redirect = search.redirect;
+    // ONLY USER uses redirect logic
+    if (data.role === "USER") {
 
-      // ONLY restrict normal USER
-      if (
-        data.role === "USER" &&
-        (redirect.startsWith("/admin") ||
-          redirect.startsWith("/employee"))
-      ) {
-        router.navigate({
-          to: redirect,
-        });
+      if (search.redirect) {
+        const redirect = search.redirect;
 
+        // block protected routes
+        if (
+          redirect.startsWith("/admin") ||
+          redirect.startsWith("/employee")
+        ) {
+          router.navigate({
+            to: "/dashboard",
+          });
+
+          return;
+        }
+
+        // allow safe redirect
+        window.location.assign(redirect);
         return;
       }
 
-     
+      // no redirect
+      router.navigate({
+        to: "/dashboard",
+      });
+
+      return;
     }
-    // default redirects
+
+    // EMPLOYEE always here
     if (data.role === "EMPLOYEE") {
       router.navigate({
         to: "/employee/orders",
@@ -65,6 +77,7 @@ export function SignIn({
       return;
     }
 
+    // ADMIN always here
     if (data.role === "ADMIN") {
       router.navigate({
         to: "/admin/orders",
@@ -72,16 +85,12 @@ export function SignIn({
 
       return;
     }
-
-    router.navigate({
-      to: redirect ? redirect : "/dashboard",
-    });
   })
   .catch((err) => {
     setError(err instanceof Error ? err.message : "Unable to sign in");
   })
   .finally(() => setSubmitting(false));
-}
+  };
 
   return (
     <SiteLayout>
@@ -171,7 +180,7 @@ export function SignIn({
             <div className="space-y-4">
               {devOtp ? (
                 <p className="rounded-xl border border-lime-200 bg-lime-50 px-4 py-3 text-sm font-semibold text-lime-800">
-                  Development OTP: <span className="text-black">{devOtp}</span>
+                  Development OTP: <span className="font-mono text-black">{devOtp}</span>
                 </p>
               ) : null}
 

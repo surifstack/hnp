@@ -31,7 +31,11 @@ export function ProofPage({ slug }: { slug: string }) {
 
 
     if (!user?.id || user.role !== 'USER') {
-      return <SignIn search={{redirect :`/products/${slug}/proof`}} />
+      router.navigate({
+                    to:  `/signin?redirect=/products/$slug/proof`,
+                    params: { slug }
+                  });
+                  return
     }
 
   return (
