@@ -53,10 +53,7 @@ export function SignIn({
         return;
       }
 
-      // ADMIN + EMPLOYEE allowed
-      window.location.assign(redirect);
-
-      return;
+     
     }
 
     // default redirects
