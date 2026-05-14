@@ -4,7 +4,13 @@ import { HnpLayout } from "@/components/hnp/HnpLayout";
 import { requireRoles } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin")({
-  beforeLoad: ({ location }) => requireRoles(["ADMIN"], location.href),
+  // IMPORTANT:
+  // Auth is cookie-based on the API domain. During SSR the app server does not
+  // receive the API cookie, so server-side role checks will incorrectly
+  // redirect logged-in users to /signin on hard refresh.
+  // We therefore enforce role access on the client only.
+  beforeLoad: ({ location }) =>
+    typeof window === "undefined" ? undefined : requireRoles(["ADMIN"], location.href),
   component: AdminLayoutRoute,
 });
 

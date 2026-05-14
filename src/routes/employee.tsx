@@ -4,7 +4,12 @@ import { HnpLayout } from "@/components/hnp/HnpLayout";
 import { requireRoles } from "@/lib/auth";
 
 export const Route = createFileRoute("/employee")({
-  beforeLoad: ({ location }) => requireRoles(["EMPLOYEE", "ADMIN"], location.href),
+  // See src/routes/admin.tsx for rationale: server-side role checks can't see
+  // the API-domain cookie, causing false /signin redirects on hard refresh.
+  beforeLoad: ({ location }) =>
+    typeof window === "undefined"
+      ? undefined
+      : requireRoles(["EMPLOYEE", "ADMIN"], location.href),
   component: EmployeeLayoutRoute,
 });
 
