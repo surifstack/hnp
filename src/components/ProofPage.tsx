@@ -22,6 +22,7 @@ export function ProofPage({ slug }: { slug: string }) {
   const addOrder = useHnpStore((s) => s.cart.addOrder);
   const resetApprovals = useHnpStore((s) => s.order.resetApprovals);
   const user = useSessionStore((s) => s.user);
+  const sessionStatus = useSessionStore((s) => s.status);
 
   const loading = useHnpStore((s) => s.order.loading);
 
@@ -29,14 +30,29 @@ export function ProofPage({ slug }: { slug: string }) {
     return <NoActiveOrder />;
   }
 
+  // Avoid redirecting during initial session rehydration (prevents 1-2s flicker/collapse).
+  // Only decide after the session status is "ready".
+  if (sessionStatus !== "ready") {
+    return (
+      <SiteLayout>
+        <div className="mx-auto w-full max-w-5xl space-y-4 pb-28 md:pb-6">
+          <section className="text-sm text-gray-500 text-center py-10">
+            {t("common.loading", { defaultValue: "Loading..." })}
+          </section>
+        </div>
+      </SiteLayout>
+    );
+  }
 
-    if (!user?.id || user.role !== 'USER') {
-      router.navigate({
-                    to:  `/signin?redirect=/products/$slug/proof`,
-                    params: { slug }
-                  });
-                  return
-    }
+  if (!user?.id) {
+    return <SignIn search={{ redirect: `/products/${slug}/proof` }} />;
+  }
+
+  if (user.role !== "USER") {
+    // Logged in as employee/admin; send them to their correct area.
+    void router.navigate({ to: user.role === "EMPLOYEE" ? "/employee" : "/admin" });
+    return null;
+  }
 
   return (
     <SiteLayout>
