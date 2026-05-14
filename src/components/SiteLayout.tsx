@@ -91,7 +91,7 @@ export function SiteLayout({
           </Link>
 
           {/* Tabs */}
-          {/* {showTabs && (
+          {showTabs && (
             <nav className="mt-5">
               <div className="flex justify-center sm:justify-center gap-3 overflow-x-auto pb-2 px-1 snap-x snap-mandatory">
                 <Link
@@ -102,7 +102,7 @@ export function SiteLayout({
                 </Link>
               </div>
             </nav>
-          )} */}
+          )}
         </div>
       </header>
 
