@@ -26,10 +26,12 @@ import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductsSlugRouteImport } from './routes/products.$slug'
 import { Route as EmployeeUsersRouteImport } from './routes/employee.users'
+import { Route as EmployeeProfileRouteImport } from './routes/employee.profile'
 import { Route as EmployeeOrdersRouteImport } from './routes/employee.orders'
 import { Route as DashboardProfileRouteImport } from './routes/dashboard.profile'
 import { Route as DashboardOrdersRouteImport } from './routes/dashboard.orders'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as AdminProfileRouteImport } from './routes/admin.profile'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminEmployeesRouteImport } from './routes/admin.employees'
@@ -124,6 +126,11 @@ const EmployeeUsersRoute = EmployeeUsersRouteImport.update({
   path: '/users',
   getParentRoute: () => EmployeeRoute,
 } as any)
+const EmployeeProfileRoute = EmployeeProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => EmployeeRoute,
+} as any)
 const EmployeeOrdersRoute = EmployeeOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
@@ -142,6 +149,11 @@ const DashboardOrdersRoute = DashboardOrdersRouteImport.update({
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProfileRoute = AdminProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminProductsRoute = AdminProductsRouteImport.update({
@@ -200,10 +212,12 @@ export interface FileRoutesByFullPath {
   '/admin/employees': typeof AdminEmployeesRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/profile': typeof AdminProfileRoute
   '/admin/users': typeof AdminUsersRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/employee/orders': typeof EmployeeOrdersRoute
+  '/employee/profile': typeof EmployeeProfileRoute
   '/employee/users': typeof EmployeeUsersRoute
   '/products/$slug': typeof ProductsSlugRouteWithChildren
   '/admin/': typeof AdminIndexRoute
@@ -227,10 +241,12 @@ export interface FileRoutesByTo {
   '/admin/employees': typeof AdminEmployeesRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/profile': typeof AdminProfileRoute
   '/admin/users': typeof AdminUsersRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/employee/orders': typeof EmployeeOrdersRoute
+  '/employee/profile': typeof EmployeeProfileRoute
   '/employee/users': typeof EmployeeUsersRoute
   '/admin': typeof AdminIndexRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -257,10 +273,12 @@ export interface FileRoutesById {
   '/admin/employees': typeof AdminEmployeesRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/profile': typeof AdminProfileRoute
   '/admin/users': typeof AdminUsersRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/employee/orders': typeof EmployeeOrdersRoute
+  '/employee/profile': typeof EmployeeProfileRoute
   '/employee/users': typeof EmployeeUsersRoute
   '/products/$slug': typeof ProductsSlugRouteWithChildren
   '/admin/': typeof AdminIndexRoute
@@ -290,10 +308,12 @@ export interface FileRouteTypes {
     | '/admin/employees'
     | '/admin/orders'
     | '/admin/products'
+    | '/admin/profile'
     | '/admin/users'
     | '/dashboard/orders'
     | '/dashboard/profile'
     | '/employee/orders'
+    | '/employee/profile'
     | '/employee/users'
     | '/products/$slug'
     | '/admin/'
@@ -317,10 +337,12 @@ export interface FileRouteTypes {
     | '/admin/employees'
     | '/admin/orders'
     | '/admin/products'
+    | '/admin/profile'
     | '/admin/users'
     | '/dashboard/orders'
     | '/dashboard/profile'
     | '/employee/orders'
+    | '/employee/profile'
     | '/employee/users'
     | '/admin'
     | '/dashboard'
@@ -346,10 +368,12 @@ export interface FileRouteTypes {
     | '/admin/employees'
     | '/admin/orders'
     | '/admin/products'
+    | '/admin/profile'
     | '/admin/users'
     | '/dashboard/orders'
     | '/dashboard/profile'
     | '/employee/orders'
+    | '/employee/profile'
     | '/employee/users'
     | '/products/$slug'
     | '/admin/'
@@ -498,6 +522,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EmployeeUsersRouteImport
       parentRoute: typeof EmployeeRoute
     }
+    '/employee/profile': {
+      id: '/employee/profile'
+      path: '/profile'
+      fullPath: '/employee/profile'
+      preLoaderRoute: typeof EmployeeProfileRouteImport
+      parentRoute: typeof EmployeeRoute
+    }
     '/employee/orders': {
       id: '/employee/orders'
       path: '/orders'
@@ -524,6 +555,13 @@ declare module '@tanstack/react-router' {
       path: '/users'
       fullPath: '/admin/users'
       preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/profile': {
+      id: '/admin/profile'
+      path: '/profile'
+      fullPath: '/admin/profile'
+      preLoaderRoute: typeof AdminProfileRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/products': {
@@ -589,6 +627,7 @@ interface AdminRouteChildren {
   AdminEmployeesRoute: typeof AdminEmployeesRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminProductsRoute: typeof AdminProductsRoute
+  AdminProfileRoute: typeof AdminProfileRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
@@ -597,6 +636,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminEmployeesRoute: AdminEmployeesRoute,
   AdminOrdersRoute: AdminOrdersRoute,
   AdminProductsRoute: AdminProductsRoute,
+  AdminProfileRoute: AdminProfileRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
@@ -621,12 +661,14 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 
 interface EmployeeRouteChildren {
   EmployeeOrdersRoute: typeof EmployeeOrdersRoute
+  EmployeeProfileRoute: typeof EmployeeProfileRoute
   EmployeeUsersRoute: typeof EmployeeUsersRoute
   EmployeeIndexRoute: typeof EmployeeIndexRoute
 }
 
 const EmployeeRouteChildren: EmployeeRouteChildren = {
   EmployeeOrdersRoute: EmployeeOrdersRoute,
+  EmployeeProfileRoute: EmployeeProfileRoute,
   EmployeeUsersRoute: EmployeeUsersRoute,
   EmployeeIndexRoute: EmployeeIndexRoute,
 }
@@ -694,3 +736,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}

@@ -3,7 +3,10 @@ import {
   getLanguageOption,
 } from "@/config/languages";
 
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Search,
   Eye,
@@ -29,12 +32,25 @@ import { OrderDetail } from "@/lib/api.types";
 export function OrderCard({
   order,
   onStatusChange,
+  onRejectItem,
+  onRejectAll,
 }: {
   order: OrderDetail;
 
   onStatusChange: (
     id: string,
     status: string
+  ) => void;
+
+  onRejectItem: (
+    orderId: string,
+    itemId: string,
+    reason?: string
+  ) => void;
+
+  onRejectAll: (
+    orderId: string,
+    reason?: string
   ) => void;
 }) {
   const country =
@@ -230,6 +246,18 @@ export function OrderCard({
                 </DialogDescription>
               </DialogHeader>
 
+              <div className="mt-4 flex justify-end">
+                <RejectDialog
+                  triggerLabel="Reject All Items"
+                  title="Reject all items"
+                  description="This will reject every item and cancel the whole order."
+                  confirmLabel="Reject All"
+                  onConfirm={(reason) =>
+                    onRejectAll(order._id, reason)
+                  }
+                />
+              </div>
+
               <div className="space-y-6">
                 {order.items.map(
                   (item) => {
@@ -310,6 +338,18 @@ export function OrderCard({
                             label="Status"
                             value={
                               item.status
+                            }
+                          />
+                        </div>
+
+                        <div className="mt-4 flex justify-end">
+                          <RejectDialog
+                            triggerLabel="Reject Item"
+                            title="Reject item"
+                            description="Add a reason (optional). If all items are rejected, the order is cancelled."
+                            confirmLabel="Reject"
+                            onConfirm={(reason) =>
+                              onRejectItem(order._id, item.id, reason)
                             }
                           />
                         </div>
@@ -418,4 +458,61 @@ export function OrdersSkeleton() {
   );
 }
 
+function RejectDialog({
+  triggerLabel,
+  title,
+  description,
+  confirmLabel,
+  onConfirm,
+}: {
+  triggerLabel: string;
+  title: string;
+  description: string;
+  confirmLabel: string;
+  onConfirm: (reason?: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [reason, setReason] = useState("");
 
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="destructive" className="rounded-2xl">
+          {triggerLabel}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="rounded-3xl sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
+        <Textarea
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          placeholder="Reason (optional)"
+          className="rounded-2xl"
+        />
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="outline"
+            className="rounded-2xl"
+            onClick={() => setOpen(false)}
+          >
+            Close
+          </Button>
+          <Button
+            variant="destructive"
+            className="rounded-2xl"
+            onClick={() => {
+              onConfirm(reason.trim() || undefined);
+              setReason("");
+              setOpen(false);
+            }}
+          >
+            {confirmLabel}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Shield, Users, Package, ClipboardList, UserRound } from "lucide-react";
+import { Shield, Users, Package, ClipboardList, UserRound, Settings } from "lucide-react";
 import { HnpLayout } from "@/components/hnp/HnpLayout";
 import { requireRoles } from "@/lib/auth";
 
@@ -28,6 +28,7 @@ function AdminLayoutRoute() {
         { to: "/admin/products", label: "Products", icon: <Package /> },
         { to: "/admin/orders", label: "Orders", icon: <ClipboardList /> },
         { to: "/admin/users", label: "Users", icon: <UserRound /> },
+        { to: "/admin/profile", label: "Profile", icon: <Settings /> },
       ]}
     />
   );

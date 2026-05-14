@@ -139,19 +139,7 @@ export function UserDetailsModal({
           </div>
         )}
 
-        {/* ACTION */}
-        <div className="mt-8">
-          <Button
-            asChild
-            className="rounded-2xl"
-          >
-            <Link
-              to={`/dashboard/orders?search=${user._id}`}
-            >
-              View User Orders
-            </Link>
-          </Button>
-        </div>
+      
       </DialogContent>
     </Dialog>
   );

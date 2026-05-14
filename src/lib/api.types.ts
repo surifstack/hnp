@@ -224,6 +224,12 @@ export interface OrderItem {
 
   status: string;
 
+  rejection?: {
+    reason?: string;
+    rejectedAt?: string;
+    rejectedBy?: string;
+  };
+
   approvals: {
     title: boolean;
     secondary: boolean;
@@ -246,6 +252,8 @@ export interface OrderDetail extends Order {
   items: OrderItem[];
 
   totals: MoneyTotals;
+
+  cancelReason?: string;
 
   checkoutInfo: {
     checkoutAt: string;

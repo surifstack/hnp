@@ -10,6 +10,12 @@ export const Route = createFileRoute("/dashboard/orders")({
       search.tab === "cancelled"
         ? search.tab
         : "success",
+    page:
+      typeof search.page === "number"
+        ? search.page
+        : typeof search.page === "string"
+          ? Number(search.page) || 1
+          : 1,
   }),
 
   head: () => ({

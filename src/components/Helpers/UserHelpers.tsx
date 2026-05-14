@@ -219,38 +219,6 @@ export function UserCard({
           />
         </div>
 
-        {/* LAST ORDER */}
-        {user.lastOrder && (
-          <div className="mt-5 rounded-2xl border border-slate-200 p-4">
-            <p className="text-xs font-bold uppercase tracking-wide text-slate-500">
-              Last Order
-            </p>
-
-            <div className="mt-2 flex items-center justify-between">
-              <div>
-                <p className="text-sm font-semibold text-slate-900">
-                  #
-                  {user.lastOrder._id.slice(
-                    -8
-                  )}
-                </p>
-
-                <p className="text-xs text-slate-400">
-                  {new Date(
-                    user.lastOrder.createdAt
-                  ).toLocaleDateString()}
-                </p>
-              </div>
-
-              <div className="text-sm font-bold text-slate-900">
-                {formatMoney(
-                  user.lastOrder.total,
-                  user.lastOrder.currency
-                )}
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* FOOTER */}
         <div className="mt-6 flex justify-end">

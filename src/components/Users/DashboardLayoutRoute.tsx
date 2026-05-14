@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { LayoutDashboard, Package, ShoppingCart } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingCart, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DashboardScaffold, type DashboardNavItem } from "@/components/dashboard/DashboardScaffold";
 
@@ -16,11 +16,11 @@ const NAV: DashboardNavItem[] = [
     label: "Orders",
     icon: <Package className="h-5 w-5" />,
   },
-  // {
-  //   to: "/dashboard/profile",
-  //   label: "Profile",
-  //   icon: <UserRound className="h-5 w-5" />,
-  // },
+  {
+    to: "/dashboard/profile",
+    label: "Profile",
+    icon: <UserRound className="h-5 w-5" />,
+  },
 ];
 
 export function DashboardLayoutRoute() {

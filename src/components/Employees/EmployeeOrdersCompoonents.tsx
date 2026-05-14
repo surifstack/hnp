@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
 import {
   Dialog,
@@ -87,6 +88,7 @@ export function EmployeeOrdersCompoonents({
     offset:0
   });
   const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const [error, setError] = useState("");
 
@@ -122,7 +124,7 @@ export function EmployeeOrdersCompoonents({
 
         const response =
           await apiJson<OrdersResponse>(
-            `/employee/orders?type=${currentTab}&limit=${pagination.limit}&page=${Number(search.page ?? 0)}`
+            `/employee/orders?type=${currentTab}&limit=${pagination.limit}&page=${Number(search.page ?? 1)}${search.userId ? `&userId=${encodeURIComponent(String(search.userId))}` : ""}`
           );
 
           if (
@@ -160,7 +162,7 @@ export function EmployeeOrdersCompoonents({
     return () => {
       cancelled = true;
     };
-  }, [currentTab,search.page, user?.id]);
+  }, [currentTab, search.page, user?.id, refreshKey]);
 
   /* ================= LOADING ================= */
 
@@ -193,6 +195,30 @@ export function EmployeeOrdersCompoonents({
             <p className="mt-1 text-sm text-slate-500">
               Manage customer orders efficiently
             </p>
+
+            {search.userId ? (
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <div className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-bold text-slate-700">
+                  Filtered by user: {String(search.userId).slice(-8)}
+                </div>
+                <Button
+                  variant="outline"
+                  className="h-8 rounded-full px-3 text-xs"
+                  onClick={() =>
+                    navigate({
+                      to: "/employee/orders",
+                      search: {
+                        ...search,
+                        userId: undefined,
+                        page: 1,
+                      },
+                    })
+                  }
+                >
+                  Clear
+                </Button>
+              </div>
+            ) : null}
           </div>
 
           {/* FILTER */}
@@ -205,7 +231,9 @@ export function EmployeeOrdersCompoonents({
                 navigate({
                   to: "/employee/orders",
                   search: {
+                    ...search,
                     tab: value,
+                    page: 1,
                   },
                 });
               }}
@@ -263,6 +291,7 @@ export function EmployeeOrdersCompoonents({
             <OrderCard
               key={order._id}
               order={order}
+              onUpdated={() => setRefreshKey((k) => k + 1)}
             />
           ))}
 
@@ -270,10 +299,12 @@ export function EmployeeOrdersCompoonents({
         </section>
         </>
       )}
-<PagePagination
+
+  {pagination.totalPages > 1 && <PagePagination
   currentPage={Number(search.page || 1)}
   totalPages={pagination.totalPages}
-/>
+/>}
+
     </div>
   );
 }
@@ -282,8 +313,10 @@ export function EmployeeOrdersCompoonents({
 
 function OrderCard({
   order,
+  onUpdated,
 }: {
   order: OrderDetail;
+  onUpdated: () => void;
 }) {
   const money = formatCents(
     order.totals.total,
@@ -428,7 +461,7 @@ function OrderCard({
             {country?.name ?? order.countryCode}
           </div>
 
-          <OrderDetailsModal order={order} />
+          <OrderDetailsModal order={order} onUpdated={onUpdated} />
         </div>
       </div>
     </div>
@@ -439,8 +472,10 @@ function OrderCard({
 
 function OrderDetailsModal({
   order,
+  onUpdated,
 }: {
   order: OrderDetail;
+  onUpdated: () => void;
 }) {
   const money = formatCents(
     order.totals.total,
@@ -451,8 +486,65 @@ function OrderDetailsModal({
     order.countryCode
   );
 
+  const [open, setOpen] = useState(false);
+
+  const [statusUpdating, setStatusUpdating] =
+    useState(false);
+  const [cancelOpen, setCancelOpen] =
+    useState(false);
+  const [cancelReason, setCancelReason] =
+    useState("");
+  const [actionError, setActionError] =
+    useState("");
+
+  const canEmployeeEdit =
+    order.status !== "cancelled" &&
+    order.status !== "failed" &&
+    order.status !== "payment_failed";
+
+  async function updateStatus(next: string) {
+    try {
+      setActionError("");
+      setStatusUpdating(true);
+      await apiJson(`/employee/orders/${order._id}/status`, {
+        method: "PATCH",
+        body: JSON.stringify({ status: next }),
+      });
+      onUpdated();
+      setOpen(false);
+    } catch (e) {
+      setActionError("Failed to update status");
+    } finally {
+      setStatusUpdating(false);
+    }
+  }
+
+  async function cancelOrder() {
+    try {
+      const reason = cancelReason.trim();
+      if (!reason) {
+        setActionError("Reason is required");
+        return;
+      }
+      setActionError("");
+      setStatusUpdating(true);
+      await apiJson(`/employee/orders/${order._id}/cancel`, {
+        method: "PATCH",
+        body: JSON.stringify({ reason }),
+      });
+      setCancelOpen(false);
+      setCancelReason("");
+      onUpdated();
+      setOpen(false);
+    } catch (e) {
+      setActionError("Failed to cancel order");
+    } finally {
+      setStatusUpdating(false);
+    }
+  }
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
           variant="outline"
@@ -476,6 +568,100 @@ function OrderDetailsModal({
             Complete order information
           </DialogDescription>
         </DialogHeader>
+
+        {canEmployeeEdit ? (
+          <div className="mt-4 flex flex-col gap-3 rounded-3xl border border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-slate-900">
+              Employee Actions
+            </p>
+            <p className="text-xs text-slate-500">
+              Update status or cancel with reason
+            </p>
+            {actionError ? (
+              <p className="mt-2 text-sm text-red-600">
+                {actionError}
+              </p>
+            ) : null}
+          </div>
+
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <Select
+              value={order.status}
+              onValueChange={(v) => updateStatus(v)}
+              disabled={statusUpdating}
+            >
+              <SelectTrigger className="h-11 w-full rounded-2xl border-slate-200 bg-white sm:w-[220px]">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent className="rounded-2xl">
+                <SelectItem value="pending">
+                  Pending
+                </SelectItem>
+                <SelectItem value="shipped">
+                  Shipped
+                </SelectItem>
+                <SelectItem value="completed">
+                  Completed
+                </SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Dialog open={cancelOpen} onOpenChange={setCancelOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="destructive"
+                  className="h-11 rounded-2xl"
+                  disabled={statusUpdating}
+                >
+                  Cancel Order
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="rounded-3xl sm:max-w-lg">
+                <DialogHeader>
+                  <DialogTitle>Cancel order</DialogTitle>
+                  <DialogDescription>
+                    Add a reason. This will be visible to the user.
+                  </DialogDescription>
+                </DialogHeader>
+                <Textarea
+                  value={cancelReason}
+                  onChange={(e) => setCancelReason(e.target.value)}
+                  placeholder="Reason for cancellation..."
+                  className="rounded-2xl"
+                />
+                <div className="flex justify-end gap-2">
+                  <Button
+                    variant="outline"
+                    className="rounded-2xl"
+                    onClick={() => setCancelOpen(false)}
+                    disabled={statusUpdating}
+                  >
+                    Close
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    className="rounded-2xl"
+                    onClick={cancelOrder}
+                    disabled={statusUpdating}
+                  >
+                    Confirm Cancel
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
+        ) : order.status === "cancelled" && order.cancelReason ? (
+          <div className="mt-4 rounded-3xl border border-red-200 bg-red-50 p-4">
+            <p className="text-xs font-bold uppercase tracking-wide text-red-700">
+              Cancelled reason
+            </p>
+            <p className="mt-2 text-sm font-semibold text-red-900">
+              {order.cancelReason}
+            </p>
+          </div>
+        ) : null}
 
         {/* CUSTOMER + ADDRESS */}
         <div className="mt-6 grid gap-5 lg:grid-cols-2">

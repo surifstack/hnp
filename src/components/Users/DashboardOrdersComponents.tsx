@@ -188,7 +188,9 @@ export function DashboardOrdersComponents({
                 navigate({
                   to: "/dashboard/orders",
                   search: {
+                    ...search,
                     tab: value,
+                    page: 1,
                   },
                 });
               }}
@@ -525,6 +527,17 @@ function OrderCard({
 
                     </div>
 
+                    {order.status === "cancelled" && order.cancelReason ? (
+                      <div className="mt-4 rounded-3xl border border-red-200 bg-red-50 p-4">
+                        <p className="text-xs font-bold uppercase tracking-wide text-red-700">
+                          Cancellation reason
+                        </p>
+                        <p className="mt-2 text-sm font-semibold text-red-900">
+                          {order.cancelReason}
+                        </p>
+                      </div>
+                    ) : null}
+
                     {/* CUSTOMER + ADDRESS */}
 
                     <div className="mt-8 grid grid-cols-1 gap-5 lg:grid-cols-2">
@@ -667,6 +680,17 @@ function OrderCard({
                                 />
 
                               </div>
+
+                              {item.status === "rejected" && item.rejection?.reason ? (
+                                <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4">
+                                  <p className="text-xs font-bold uppercase tracking-wide text-red-700">
+                                    Rejection reason
+                                  </p>
+                                  <p className="mt-2 text-sm font-semibold text-red-900">
+                                    {item.rejection.reason}
+                                  </p>
+                                </div>
+                              ) : null}
 
                               {/* TEXT */}
 

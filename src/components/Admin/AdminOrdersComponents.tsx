@@ -126,6 +126,40 @@ export function AdminOrdersComponents() {
     }
   }
 
+  async function rejectItem(
+    orderId: string,
+    itemId: string,
+    reason?: string
+  ) {
+    try {
+      await apiJson(
+        `/admin/orders/${orderId}/items/${itemId}/reject`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({ reason }),
+        }
+      );
+      fetchOrders(pagination.currentPage);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async function rejectAll(
+    orderId: string,
+    reason?: string
+  ) {
+    try {
+      await apiJson(`/admin/orders/${orderId}/reject-all`, {
+        method: "PATCH",
+        body: JSON.stringify({ reason }),
+      });
+      fetchOrders(pagination.currentPage);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   useEffect(() => {
     fetchOrders(1);
   }, []);
@@ -232,6 +266,8 @@ export function AdminOrdersComponents() {
             onStatusChange={
               updateStatus
             }
+            onRejectItem={rejectItem}
+            onRejectAll={rejectAll}
           />
         ))}
       </section>
@@ -270,4 +306,3 @@ export function AdminOrdersComponents() {
 }
 
 /* ================= CARD ================= */
-

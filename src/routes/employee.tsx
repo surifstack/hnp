@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ClipboardList, UserRound } from "lucide-react";
+import { ClipboardList, Settings, UserRound } from "lucide-react";
 import { HnpLayout } from "@/components/hnp/HnpLayout";
 import { requireRoles } from "@/lib/auth";
 
@@ -25,6 +25,7 @@ function EmployeeLayoutRoute() {
         { to: "/employee", label: "Overview", icon: <ClipboardList /> },
         { to: "/employee/orders", label: "Orders", icon: <ClipboardList /> },
         { to: "/employee/users", label: "Users", icon: <UserRound /> },
+        { to: "/employee/profile", label: "Profile", icon: <Settings /> },
       ]}
     />
   );
