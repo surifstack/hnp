@@ -141,7 +141,8 @@ export function DashboardScaffold({
       }
 
       if (!user) {
-        return <SignIn search={{ redirect: redirectTo }} />;
+        console.log('scafold');
+;        return <SignIn search={{ redirect: redirectTo }} />;
       }
 
   return (

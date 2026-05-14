@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "@tanstack/react-router";
 import { LayoutDashboard, Package, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
