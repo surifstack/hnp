@@ -73,7 +73,7 @@ const hasOverflow =overflowMap?.title || overflowMap?.secondary ||overflowMap?.l
     <SiteLayout>
       <div className="mx-auto w-full max-w-6xl px-4 py-4 pb-28 md:pb-4 space-y-4">
         {/* HEADER */}
-        <div className="rounded-3xl border border-lime-200 bg-white p-4 shadow-sm">
+        {/* <div className="rounded-3xl border border-lime-200 bg-white p-4 shadow-sm">
           <div className="mb-2 flex items-center gap-2">
             <div className="inline-flex items-center gap-2 rounded-full bg-lime-100 px-3 py-1 text-xs font-bold text-lime-700">
               <BadgeCheck className="h-4 w-4" />
@@ -94,7 +94,7 @@ const hasOverflow =overflowMap?.title || overflowMap?.secondary ||overflowMap?.l
               {error}
             </p>
           )}
-        </div>
+        </div> */}
 
         {/* PROGRESS */}
         <div className="rounded-3xl border border-lime-200 bg-white p-4 shadow-sm">
