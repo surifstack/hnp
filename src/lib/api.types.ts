@@ -59,18 +59,20 @@ export interface Product {
   };
 }
 
+export const ORDER_STATUS = {
+  PENDING: "pending",
+  COMPLETED: "completed",
+  PAYMENT_PENDING: "payment_pending",
+  CANCELLED: "cancelled",
+  FAILED: "failed",
+  SHIPPED: "shipped",
+  PAYMENT_FAILED: "payment_failed",
+} as const;
+
+export const ORDER_STATUSES = Object.values(ORDER_STATUS);
+
 export type OrderStatus =
-  | "Draft"
-  | "In Progress"
-  | "Awaiting Approval"
-  | "Proof Generated"
-  | "Awaiting Payment"
-  | "Paid"
-  | "In Production"
-  | "Shipped"
-  | "Completed"
-  | "Failed"
-  | "Payment Failed";
+  (typeof ORDER_STATUS)[keyof typeof ORDER_STATUS];
 
 export interface Order {
   id: string;

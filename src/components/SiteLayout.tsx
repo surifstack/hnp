@@ -26,6 +26,9 @@ export function SiteLayout({
   const cartCount = useHnpStore((s) => s.cart.items.length);
   const sessionStatus = useSessionStore((s) => s.status);
   const user = useSessionStore((s) => s.user);
+  const link = !user?.id ? "/signin" : user.role === "USER" ? "/dashboard" : user.role === "EMPLOYEE" ? "/employee/orders" : "/admin/orders";
+
+
 
   useEffect(() => {
     if (showTabs) {
@@ -116,7 +119,7 @@ export function SiteLayout({
           <Link to="/contact" className="text-black hover:underline">
             {t("common.contact")}
           </Link>
-          <Link to="/dashboard" className="text-black hover:underline">
+          <Link to={link} className="text-black hover:underline">
             {t("common.dashboard")}
           </Link>
          

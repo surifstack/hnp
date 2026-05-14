@@ -39,12 +39,15 @@ import { formatCents } from "@/components/cart/cartTotals";
 
 import { apiJson } from "@/lib/api";
 
-import type {
-  OrderDetail,
-  Pagination,
+import {
+  ORDER_STATUS,
+  type CheckoutResponse,
+  type OrderDetail,
+  type Pagination,
 } from "@/lib/api.types";
 import { getLanguageOption , getCountryOption } from "@/config/languages";
 import { PagePagination } from "../PagePagination";
+import { toast } from "sonner";
 
 /* ================= TYPES ================= */
 
@@ -285,10 +288,63 @@ function OrderCard({
 }: {
   order: OrderDetail;
 }) {
+  const [loadingOrderId, setLoadingOrderId] = useState<string | null>(null);
+
   const money = formatCents(
     order.totals.total,
     order.totals.currency
   );
+
+    const handlePayment = async (orderId: string) => {
+  try {
+    setLoadingOrderId(orderId);
+
+    const resp = await apiJson<CheckoutResponse>(
+      `/orders/checkout/${orderId}`,
+      {
+        method: "POST",
+        body: JSON.stringify({ orderId }),
+      }
+    );
+
+    /* ---------------------------------------------------------------------- */
+    /*                          VALIDATE RESPONSE                             */
+    /* ---------------------------------------------------------------------- */
+
+    if (!resp?.checkoutId) {
+      toast.error("Unable to create order");
+      return;
+    }
+
+    if (!resp?.payment?.url) {
+      toast.error("Unable to initialize payment");
+      return;
+    }
+
+    /* ---------------------------------------------------------------------- */
+    /*                            SUCCESS MESSAGE                             */
+    /* ---------------------------------------------------------------------- */
+
+    toast.success("Redirecting to secure payment...");
+
+    /* ---------------------------------------------------------------------- */
+    /*                           PAYMENT REDIRECT                             */
+    /* ---------------------------------------------------------------------- */
+
+    window.location.href = resp.payment.url;
+
+  } catch (e) {
+    toast.error(
+      e instanceof Error
+        ? e.message
+        : "Checkout failed"
+    );
+  } finally {
+    setLoadingOrderId(null);
+  }
+};
+
+console.log(order.status , '')
 
   const country =
       getCountryOption(
@@ -355,6 +411,24 @@ function OrderCard({
               >
                 {order.status.replaceAll("_", " ")}
               </div>
+
+             {order.status === ORDER_STATUS.PAYMENT_PENDING && (
+            <div className="flex items-center gap-3 mt-3">
+
+
+              {/* Pay Button */}
+              <button
+                onClick={() => handlePayment(order._id)}
+                disabled={loadingOrderId === order._id}
+                className="bg-[var(--neon-green)] hover:opacity-90 text-black font-semibold px-5 py-2 rounded-lg transition-all duration-300 shadow-[0_0_15px_var(--neon-green)] disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loadingOrderId === order._id
+                  ? "Processing..."
+                  : `Pay $${order.totals.total / 100}`}
+              </button>
+
+            </div>
+          )}
 
             </div>
 
