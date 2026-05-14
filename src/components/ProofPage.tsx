@@ -109,7 +109,7 @@ export function ProofPage({ slug }: { slug: string }) {
             </Button>
 
             {/* RESET */}
-            <Button
+            {/* <Button
               size="lg"
               variant="ghost"
               className="h-11 rounded-2xl text-sm font-bold uppercase text-gray-500 hover:bg-gray-100"
@@ -125,7 +125,7 @@ export function ProofPage({ slug }: { slug: string }) {
               <RotateCcw className="mr-2 h-4 w-4" />
 
               {t("proof.enterAnotherOrder")}
-            </Button>
+            </Button> */}
           </div>
         </div>
         </div>
