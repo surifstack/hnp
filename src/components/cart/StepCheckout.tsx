@@ -58,7 +58,8 @@ import { apiJson } from "@/lib/api";
 
 interface Props {
   state: FormState;
-
+setSubmitted:(value:boolean) => void;
+submitted:boolean;
   orderId?: string;
 
   onBack: () => void;
@@ -68,12 +69,12 @@ export function StepCheckout({
   state,
   orderId,
   onBack,
+  submitted,
+  setSubmitted
 }: Props) {
   const { t } = useTranslation();
   const router = useRouter();
 
-  const [submitted, setSubmitted] =
-    useState(false);
 
   const [checkout, setCheckout] =
     useState<CheckoutResponse | null>(
@@ -356,7 +357,10 @@ export function StepCheckout({
             : t("cart.checkoutFailed"),
         );
       } finally {
+        setTimeout(()=>{
         setSubmitted(false);
+
+        },500)
       }
     })();
   };
@@ -423,6 +427,8 @@ export function StepCheckout({
     getCountryOption(
       state.basic.country
     ) || null;
+
+ 
 
   return (
     <div className="space-y-4">

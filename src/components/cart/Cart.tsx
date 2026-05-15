@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SiteLayout } from "@/components/SiteLayout";
 import { Stepper } from "@/components/cart/Stepper";
 import { StepBasicDetails } from "@/components/cart/StepBasicDetails";
@@ -9,6 +9,7 @@ import { useHnpStore } from "@/hooks/useHnpStore";
 import { Button } from "@/components/ui/button";
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { CheckoutPaymentSkeleton } from "./CheckoutPaymentSkeleton";
 
 export function Cart({ orderId }: { orderId: string | undefined }) {
   const { t } = useTranslation();
@@ -17,7 +18,7 @@ export function Cart({ orderId }: { orderId: string | undefined }) {
   const activeOrderId = useHnpStore((s) => s.cart.activeOrderId);
   const setActive = useHnpStore((s) => s.cart.setActive);
   const loading = useHnpStore((s) => s.cart.loading);
-
+  const [submitted, setSubmitted] =useState(false);
   const step = useHnpStore((s) => s.checkout.step);
   const form = useHnpStore((s) => s.checkout.form);
   const setStep = useHnpStore((s) => s.checkout.setStep);
@@ -46,8 +47,13 @@ export function Cart({ orderId }: { orderId: string | undefined }) {
 
   const isCartEmpty = items.length === 0 && !loading;
   const canCheckout = items.length > 0 || !!effectiveActiveOrderId;
-
+if (submitted) {
+  return <CheckoutPaymentSkeleton />;
+}
   return (
+    <>
+        
+
     <SiteLayout>
       <div className="mx-auto w-full max-w-xl space-y-6">
 
@@ -154,6 +160,8 @@ export function Cart({ orderId }: { orderId: string | undefined }) {
 
             {step === 4 && (
               <StepCheckout
+                submitted={submitted}
+                setSubmitted={setSubmitted}
                 state={form}
                 orderId={effectiveActiveOrderId ?? undefined}
                 onBack={() => setStep(3)}
@@ -163,5 +171,6 @@ export function Cart({ orderId }: { orderId: string | undefined }) {
         )}
       </div>
     </SiteLayout>
+    </>
   );
 }

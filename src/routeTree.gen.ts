@@ -35,6 +35,7 @@ import { Route as AdminProfileRouteImport } from './routes/admin.profile'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminEmployeesRouteImport } from './routes/admin.employees'
+import { Route as AdminContactsRouteImport } from './routes/admin.contacts'
 import { Route as ProductsSlugIndexRouteImport } from './routes/products.$slug.index'
 import { Route as ProductsSlugProofRouteImport } from './routes/products.$slug.proof'
 import { Route as ProductsSlugOrderRouteImport } from './routes/products.$slug.order'
@@ -171,6 +172,11 @@ const AdminEmployeesRoute = AdminEmployeesRouteImport.update({
   path: '/employees',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminContactsRoute = AdminContactsRouteImport.update({
+  id: '/contacts',
+  path: '/contacts',
+  getParentRoute: () => AdminRoute,
+} as any)
 const ProductsSlugIndexRoute = ProductsSlugIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -209,6 +215,7 @@ export interface FileRoutesByFullPath {
   '/products': typeof ProductsRouteWithChildren
   '/qr': typeof QrRoute
   '/signin': typeof SigninRoute
+  '/admin/contacts': typeof AdminContactsRoute
   '/admin/employees': typeof AdminEmployeesRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
@@ -238,6 +245,7 @@ export interface FileRoutesByTo {
   '/order-success': typeof OrderSuccessRoute
   '/qr': typeof QrRoute
   '/signin': typeof SigninRoute
+  '/admin/contacts': typeof AdminContactsRoute
   '/admin/employees': typeof AdminEmployeesRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
@@ -270,6 +278,7 @@ export interface FileRoutesById {
   '/products': typeof ProductsRouteWithChildren
   '/qr': typeof QrRoute
   '/signin': typeof SigninRoute
+  '/admin/contacts': typeof AdminContactsRoute
   '/admin/employees': typeof AdminEmployeesRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
@@ -305,6 +314,7 @@ export interface FileRouteTypes {
     | '/products'
     | '/qr'
     | '/signin'
+    | '/admin/contacts'
     | '/admin/employees'
     | '/admin/orders'
     | '/admin/products'
@@ -334,6 +344,7 @@ export interface FileRouteTypes {
     | '/order-success'
     | '/qr'
     | '/signin'
+    | '/admin/contacts'
     | '/admin/employees'
     | '/admin/orders'
     | '/admin/products'
@@ -365,6 +376,7 @@ export interface FileRouteTypes {
     | '/products'
     | '/qr'
     | '/signin'
+    | '/admin/contacts'
     | '/admin/employees'
     | '/admin/orders'
     | '/admin/products'
@@ -585,6 +597,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEmployeesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/contacts': {
+      id: '/admin/contacts'
+      path: '/contacts'
+      fullPath: '/admin/contacts'
+      preLoaderRoute: typeof AdminContactsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/products/$slug/': {
       id: '/products/$slug/'
       path: '/'
@@ -624,6 +643,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminContactsRoute: typeof AdminContactsRoute
   AdminEmployeesRoute: typeof AdminEmployeesRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminProductsRoute: typeof AdminProductsRoute
@@ -633,6 +653,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminContactsRoute: AdminContactsRoute,
   AdminEmployeesRoute: AdminEmployeesRoute,
   AdminOrdersRoute: AdminOrdersRoute,
   AdminProductsRoute: AdminProductsRoute,
@@ -736,3 +757,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
