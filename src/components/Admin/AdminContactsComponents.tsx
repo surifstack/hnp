@@ -133,7 +133,7 @@ function ContactCard({
       </div>
 
       {/* ORDER */}
-      {contact?.order && (
+      {contact?.order?._id && (
         <div className="mt-4 rounded-2xl border border-slate-200 p-4">
           <div className="mb-3 flex items-center gap-2">
             <Package className="h-4 w-4 text-slate-500" />
